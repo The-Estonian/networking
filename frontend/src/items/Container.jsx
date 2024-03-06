@@ -7,7 +7,7 @@ import styles from './Container.module.css';
 const Container = () => {
   const [token, setToken] = useState('');
   useEffect(() => {
-    const storedToken = sessionStorage.getItem('jwtToken');
+    const storedToken = sessionStorage.getItem('socialNetworkToken');
     if (storedToken) {
       setToken(storedToken);
     }
@@ -19,7 +19,7 @@ const Container = () => {
   };
   return (
     <div className={styles.container}>
-      <Menu onLogout={handleLogout} />
+      <Menu token={token} onLogout={handleLogout} />
       <Outlet />
     </div>
   );

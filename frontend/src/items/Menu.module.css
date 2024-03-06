@@ -1,0 +1,33 @@
+.menu {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  margin: 1rem;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.linkButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  padding: 1rem;
+  color: white;
+  cursor: pointer;
+  background-color: black;
+  margin: 0.1rem;
+  border-radius: 4px;
+  width: 10rem;
+  height: 3rem;
+  border: 2px solid transparent;
+  font-size: inherit;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.active {
+  border: 2px solid red;
+}
+.transition{
+  border: 3px solid yellow;
+}

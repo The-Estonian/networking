@@ -1,0 +1,10 @@
+.userInputContainer {
+    margin-top: 0.1rem;
+  width: 100%;
+}
+
+.userInput {
+  width: 100%;
+  margin-right: auto;
+  outline: none;
+}

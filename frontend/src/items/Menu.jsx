@@ -1,13 +1,31 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import Login from '../authentication/Login';
 
 import styles from './Menu.module.css';
+
+const activeClassName = ({ isActive, isPending }) =>
+  [isPending ? styles.transition : '', isActive ? styles.active : ''].join(
+    ' '
+  ) +
+  ' ' +
+  styles.linkButton;
 
 const Menu = (props) => {
   return (
     <div className={styles.menu}>
-      <Link to={`/dashboard`}>Dashboard</Link>
-      <Link to={`/profile`}>Profile</Link>
-      <a onClick={props.onLogout}>Logout</a>
+      <NavLink to={`/posts`} className={activeClassName}>
+        Posts
+      </NavLink>
+      <NavLink to={`/profile`} className={activeClassName}>
+        Profile
+      </NavLink>
+      {props.token ? (
+        <a onClick={props.onLogout} className={styles.linkButton}>
+          Logout
+        </a>
+      ) : (
+        <Login />
+      )}
     </div>
   );
 };
