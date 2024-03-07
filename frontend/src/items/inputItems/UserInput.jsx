@@ -12,6 +12,7 @@ const UserInput = forwardRef((props, ref) => {
         name={props.name}
         id={props.name}
         ref={ref}
+        required
       />
     </div>
   );

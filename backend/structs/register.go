@@ -6,7 +6,7 @@ type Register struct {
 	FirstName    string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	DateOfBirth    string `json:"dateOfBirth"`
-	Avatar    string `json:"avatar"`
 	Username string `json:"username"`
 	AboutUser string `json:"aboutUser"`
+	Avatar    string `json:"avatar"`
 }

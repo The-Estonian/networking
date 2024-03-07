@@ -17,45 +17,13 @@ const Login = () => {
   const lastNameRef = useRef(null);
   const dateRef = useRef(null);
   const usernameRef = useRef(null);
-  const avatarRef = useRef(null);
   const aboutUserRef = useRef(null);
-  // let [authError, setAuthError] = useState('');
+  const avatarRef = useRef(null);
+
+  let [authError, setAuthError] = useState('');
   let [loginPress, setLoginPress] = useState(false);
   let [register, setRegister] = useState(false);
-  //   const handleLogin = async () => {
-  //     try {
-  //       const loginValue = loginRef.current.value;
-  //       const passwordValue = passwordRef.current.value;
 
-  //       const authHeader = base64Encode(loginValue, passwordValue);
-  //       // Perform authentication and get the token from the server
-  //       const response = await fetch('https://01.kood.tech/api/auth/signin', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: authHeader,
-  //         },
-  //         // body: JSON.stringify(/* your authentication credentials */),
-  //       });
-
-  //       if (!response.ok) {
-  //         // Handle authentication failure
-  //         // console.error('Authentication failed');
-  //         setAuthError('Wrong Username or Password');
-  //         return;
-  //       }
-  //       const token = await response.json();
-
-  //       // Store the token securely (e.g., in local storage)
-  //       props.onLogin(token);
-  //       sessionStorage.setItem('jwtToken', token);
-  //       navigate('/dashboard');
-
-  //       // Redirect or perform any other actions after successful login
-  //     } catch (error) {
-  //       console.error('Error during login:', error);
-  //     }
-  //   };
   const toggleRegister = () => {
     setRegister(!register);
   };
@@ -63,25 +31,59 @@ const Login = () => {
     setLoginPress(!loginPress);
   };
 
-  const sendRequest = () => {
-    console.log('LOGGING IN');
-    console.log({
-      email: emailRef.current.value,
-      password: passwordRef.current.value,
-      firstName: firstNameRef.current.value,
-      lastName: lastNameRef.current.value,
-      date: dateRef.current.value,
-      username: usernameRef?.current?.value,
-      avatar: avatarRef?.current?.value,
-      aboutUser: aboutUserRef?.current?.value,
-    });
+  const sendRequest = async () => {
+    const fileInput = avatarRef?.current;
+    const file = fileInput?.files[0];
+    if (file) {
+      if (!(file.type.startsWith('image/') || file.type.endsWith('gif'))) {
+        console.error('Invalid file type. Please select an image or GIF.');
+        return;
+      }
+    }
+
+    const formData = new FormData();
+    formData.append('email', emailRef.current.value);
+    formData.append('password', passwordRef.current.value);
+    formData.append('firstName', firstNameRef?.current?.value);
+    formData.append('lastName', lastNameRef?.current?.value);
+    formData.append('date', dateRef?.current?.value);
+    formData.append('username', usernameRef?.current?.value);
+    formData.append('aboutUser', aboutUserRef?.current?.value);
+    formData.append('avatar', file);
+
+    console.log(formData);
+    try {
+      const response = await fetch('http://localhost:8080/register', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        referrerPolicy: 'no-referrer',
+        redirect: 'follow',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        setAuthError('Wrong Username or Password');
+        return;
+      }
+      const resp = await response.json();
+      console.log(resp);
+      // sessionStorage.setItem('jwtToken', resp.sessionId);
+    } catch (error) {
+      console.log('Error logging in');
+      console.log(error);
+    }
   };
 
   return (
     <>
       {loginPress ? (
         <div className={styles.login}>
-          <UserInput title='Email' type='email' name='email' ref={emailRef}/>
+          <UserInput title='Email' type='email' name='email' ref={emailRef} />
           <UserInput
             title='Password'
             type='password'
@@ -118,22 +120,25 @@ const Login = () => {
                 title='About you'
                 type='text'
                 name='about'
-                ref={usernameRef}
+                ref={aboutUserRef}
               />
-                <UserInput
-                  title='Avatar'
+              <span>Avatar</span>
+              <label className={styles.avatarContainer}>
+                <input
+                  className={styles.userInput}
                   type='file'
                   name='avatar'
-                  ref={usernameRef}
+                  id='avatar'
+                  ref={avatarRef}
+                  accept='.jpg, .jpeg, .gif'
                 />
-              <label className={styles.avatarContainer}>
                 Select file
               </label>
             </div>
           ) : (
             ''
           )}
-          {/* <span>{authError}</span> */}
+          <span>{authError}</span>
           <div className={styles.selectButton}>
             <button
               onClick={sendRequest}

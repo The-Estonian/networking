@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/database/sqlite"
+	"backend/midware"
 	"backend/urlHandlers"
 	"fmt"
 	"log"
@@ -13,9 +14,10 @@ import (
 
 func main() {
 	sqlite.Create()
-	r := mux.NewRouter()
-	urlHandlers.StartHandlers(r)
-	http.Handle("/", r)
+	newRouter := mux.NewRouter()
+	newRouter.Use(midware.CorsMiddleware)
+	urlHandlers.StartHandlers(newRouter)
+	http.Handle("/", newRouter)
 	fmt.Println("Backend server started on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -42,11 +42,11 @@
 
 .switch {
   position: relative;
-  top: 0rem;
+  top: 0.2rem;
   left: 3.1rem;
   background: red;
   border: none;
-  padding: 0.3rem 1rem;
+  padding: 0.4rem 1rem;
   color: white;
   cursor: pointer;
   transform: rotate(-35deg);
