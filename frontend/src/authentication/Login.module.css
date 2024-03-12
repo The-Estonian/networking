@@ -49,6 +49,7 @@
   padding: 0.4rem 1rem;
   color: white;
   cursor: pointer;
+  font-size: 1.rem;
   transform: rotate(-35deg);
 }
 
@@ -76,4 +77,8 @@ input[type='file'] {
   background: white;
   color: black;
   cursor: pointer;
+}
+
+.error {
+  color: red;
 }

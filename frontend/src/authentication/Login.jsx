@@ -4,12 +4,6 @@ import UserInput from '../items/inputItems/UserInput';
 
 import styles from './Login.module.css';
 
-// const base64Encode = (username, password) => {
-//   const credentials = `${username}:${password}`;
-//   const encodedCredentials = btoa(credentials);
-//   return `Basic ${encodedCredentials}`;
-// };
-
 const Login = () => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -22,61 +16,52 @@ const Login = () => {
 
   let [authError, setAuthError] = useState('');
   let [loginPress, setLoginPress] = useState(false);
-  let [register, setRegister] = useState(false);
+  let [registerOrLogin, setRegisterOrLogin] = useState(false);
 
-  const toggleRegister = () => {
-    setRegister(!register);
+  const toggleRegisterOrLogin = () => {
+    setRegisterOrLogin(!registerOrLogin);
   };
-  const toggleLogin = () => {
+  const toggleOpenLogin = () => {
     setLoginPress(!loginPress);
   };
 
+  // send login / register request to server
   const sendRequest = async () => {
-    const fileInput = avatarRef?.current;
-    const file = fileInput?.files[0];
-    if (file) {
-      if (!(file.type.startsWith('image/') || file.type.endsWith('gif'))) {
-        console.error('Invalid file type. Please select an image or GIF.');
-        return;
-      }
-    }
-
+    // if logging in
     const formData = new FormData();
     formData.append('email', emailRef.current.value);
     formData.append('password', passwordRef.current.value);
-    formData.append('firstName', firstNameRef?.current?.value);
-    formData.append('lastName', lastNameRef?.current?.value);
-    formData.append('date', dateRef?.current?.value);
-    formData.append('username', usernameRef?.current?.value);
-    formData.append('aboutUser', aboutUserRef?.current?.value);
-    formData.append('avatar', file);
+
+    // if registering
+    if (registerOrLogin) {
+      const fileInput = avatarRef?.current;
+      const file = fileInput?.files[0];
+      if (file) {
+        if (!(file.type.startsWith('image/') || file.type.endsWith('gif'))) {
+          setAuthError('Avatar file must be a jpg or gif');
+          console.error('Invalid file type. Please select an image or GIF.');
+          return;
+        }
+      }
+
+      formData.append('firstName', firstNameRef?.current?.value);
+      formData.append('lastName', lastNameRef?.current?.value);
+      formData.append('date', dateRef?.current?.value);
+      formData.append('username', usernameRef?.current?.value);
+      formData.append('aboutUser', aboutUserRef?.current?.value);
+      formData.append('avatar', file);
+
+      // register request and handling
+    } else {
+      // login request and handling
+      Login(formData).then((data)=> {
+        console.log(data);
+  
+        // sessionStorage.setItem('jwtToken', resp.sessionId);
+      })
+    }
 
     console.log(formData);
-    try {
-      const response = await fetch('http://localhost:8080/register', {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        referrerPolicy: 'no-referrer',
-        redirect: 'follow',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        setAuthError('Wrong Username or Password');
-        return;
-      }
-      const resp = await response.json();
-      console.log(resp);
-      // sessionStorage.setItem('jwtToken', resp.sessionId);
-    } catch (error) {
-      console.log('Error logging in');
-      console.log(error);
-    }
   };
 
   return (
@@ -90,7 +75,8 @@ const Login = () => {
             name='password'
             ref={passwordRef}
           />
-          {register ? (
+          {/* open extra inputs if register */}
+          {registerOrLogin ? (
             <div className={styles.register}>
               <UserInput
                 title='First name'
@@ -138,29 +124,29 @@ const Login = () => {
           ) : (
             ''
           )}
-          <span>{authError}</span>
+          <span className={styles.error}>{authError}</span>
           <div className={styles.selectButton}>
             <button
               onClick={sendRequest}
               className={styles.submit}
               type='submit'
             >
-              {!register ? 'Login' : 'Register'}
+              {!registerOrLogin ? 'Login' : 'Register'}
             </button>
             <button
-              onClick={toggleLogin}
+              onClick={toggleOpenLogin}
               className={styles.submit}
               type='submit'
             >
               Cancel
             </button>
           </div>
-          <span className={styles.switch} onClick={toggleRegister}>
-            {register ? 'Login' : 'Register'}
+          <span className={styles.switch} onClick={toggleRegisterOrLogin}>
+            {registerOrLogin ? 'Login' : 'Register'}
           </span>
         </div>
       ) : (
-        <button className={styles.loginButton} onClick={toggleLogin}>
+        <button className={styles.loginButton} onClick={toggleOpenLogin}>
           Login
         </button>
       )}
