@@ -1,3 +1,6 @@
+### terraform
+terraform/*
+
 ### FORUM PROJECT ###
 rtforum.db
 frontend/dist
