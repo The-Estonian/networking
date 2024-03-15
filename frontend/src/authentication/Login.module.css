@@ -7,7 +7,7 @@
   color: white;
   border-radius: 4px;
   padding: 0.5rem;
-  width: 10rem;
+  width: 15rem;
   text-align: center;
   overflow: hidden;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -25,7 +25,7 @@
   background-color: black;
   margin: 0.1rem;
   border-radius: 4px;
-  width: 10rem;
+  width: 15rem;
   height: 3rem;
   border: 3px solid transparent;
   font-size: inherit;
@@ -43,7 +43,7 @@
 .switch {
   position: relative;
   top: 0.2rem;
-  left: 3.1rem;
+  left: 5.5rem;
   background: red;
   border: none;
   padding: 0.4rem 1rem;
@@ -60,7 +60,8 @@
   align-items: center;
 }
 
-input[type='date'] {
+input[type='date'],
+input[type='text'] {
   width: 100%;
   text-align: center;
 }
@@ -80,5 +81,16 @@ input[type='file'] {
 }
 
 .error {
+  color: red;
+}
+
+.required::after{
+  content: " *";
+  color: red;
+  position: relative;
+  top: 0.2rem;
+}
+
+.errorMsg{
   color: red;
 }

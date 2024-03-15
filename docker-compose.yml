@@ -5,6 +5,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: estonian/social-network-backend:latest
     ports:
       - '8080:8080'
     networks:
@@ -14,8 +15,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: estonian/social-network-frontend:latest
     ports:
-      - '3000:3000'
+      - '80:80'
     networks:
       - social-network
 
