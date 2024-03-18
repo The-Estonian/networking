@@ -22,8 +22,13 @@ func ValidateSetToUsers(email, password, firstName, lastName, date_of_birth, ava
 	if err != nil {
 		helpers.CheckErr("ValidateSetToUsers, convert Date", err)
 	}
+	if len(username) > 0 {
+		username = helpers.StandardizeName(username)
+	}
 
-	username = helpers.StandardizeName(username)
-	// date_of_birth = helpers.StandardizeName(date_of_birth)
 	database.SetToUsers(email, password, firstName, lastName, parsedDate, avatar, username, aboutuser)
+}
+
+func ValidateRemoveUserSession(hash string) {
+	database.SetRemoveHash(hash)
 }

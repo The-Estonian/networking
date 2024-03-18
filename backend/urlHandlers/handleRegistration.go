@@ -12,14 +12,14 @@ import (
 	"github.com/google/uuid"
 )
 
-func handleRegistration(w http.ResponseWriter, r *http.Request) {
-
+func HandleRegistration(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Registration attempt!")
 	err := r.ParseMultipartForm(10 << 20) // 10 MB limit
 	if err != nil {
 		http.Error(w, "Avatar file too big", http.StatusInternalServerError)
 		return
 	}
-	
+
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
 	firstName := r.PostFormValue("firstName")
@@ -70,7 +70,6 @@ func handleRegistration(w http.ResponseWriter, r *http.Request) {
 
 			callback["newUser"] = "created"
 		} else {
-
 			validators.ValidateSetToUsers(email, password, firstName, lastName, date, "", username, aboutUser)
 			callback["newUser"] = "created"
 		}

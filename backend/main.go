@@ -5,19 +5,22 @@ import (
 	"backend/midware"
 	"backend/urlHandlers"
 	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
 	sqlite.Create()
-	newRouter := mux.NewRouter()
-	newRouter.Use(midware.CorsMiddleware)
-	urlHandlers.StartHandlers(newRouter)
-	http.Handle("/", newRouter)
-	fmt.Println("Backend server started on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	mux := http.NewServeMux()
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: midware.CorsMiddleware(mux),
+	}
+	urlHandlers.StartHandlers(mux)
+	fmt.Println("Backend running on port 8080")
+	err := server.ListenAndServe()
+	if err != nil {
+		panic(err)
+	}
 }

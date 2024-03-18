@@ -1,6 +1,6 @@
-export const Login = async (formData) => {
+export const Register = async (formData) => {
   try {
-    const response = await fetch('http://localhost:8080/login', {
+    const response = await fetch('http://localhost:8080/register', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -13,7 +13,7 @@ export const Login = async (formData) => {
     console.log(resp);
     return resp;
   } catch (error) {
-    console.log('Login error');
+    console.log('Registration error');
     console.log(error);
   }
 };

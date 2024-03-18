@@ -1,19 +1,17 @@
-export const Login = async (formData) => {
+export const Logout = async () => {
   try {
-    const response = await fetch('http://localhost:8080/login', {
+    const response = await fetch('http://localhost:8080/logout', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
       referrerPolicy: 'no-referrer',
       redirect: 'follow',
-      body: formData,
       credentials: 'include',
     });
     const resp = await response.json();
-    console.log(resp);
     return resp;
   } catch (error) {
-    console.log('Login error');
+    console.log('Logout error');
     console.log(error);
   }
 };

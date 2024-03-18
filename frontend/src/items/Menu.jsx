@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import Login from '../authentication/Login';
+
 
 import styles from './Menu.module.css';
 
@@ -16,16 +16,25 @@ const Menu = (props) => {
       <NavLink to={`/posts`} className={activeClassName}>
         Posts
       </NavLink>
+      <NavLink to={`/groups`} className={activeClassName}>
+        Groups
+      </NavLink>
+      <NavLink to={`/chat`} className={activeClassName}>
+        Chat
+      </NavLink>
+      <NavLink to={`/followers`} className={activeClassName}>
+        Followers
+      </NavLink>
       <NavLink to={`/profile`} className={activeClassName}>
         Profile
       </NavLink>
-      {props.token ? (
+      {/* {props.token ? ( */}
         <a onClick={props.onLogout} className={styles.linkButton}>
           Logout
         </a>
-      ) : (
-        <Login />
-      )}
+      {/* // ) : (
+      //   <Login />
+      // )} */}
     </div>
   );
 };

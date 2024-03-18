@@ -35,3 +35,33 @@ func GetUsernameIfExists(username string) bool {
 	defer db.Close()
 	return true
 }
+
+func GetUserIdPswByEmail(email string) (string, string) {
+	db := sqlite.DbConnection()
+	var userId string
+	var userPsw string
+	command := "SELECT id,password FROM users WHERE email=?"
+	err := db.QueryRow(command, email).Scan(&userId, &userPsw)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetPswByEmail", err)
+		}
+		return "0", "Email error"
+	}
+	defer db.Close()
+	return userId, userPsw
+}
+
+func GetUserSession(cookie string) bool {
+	db := sqlite.DbConnection()
+	command := "SELECT user FROM session WHERE hash=?"
+	err := db.QueryRow(command, cookie).Scan(&cookie)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetUserSession", err)
+		}
+		return false
+	}
+	defer db.Close()
+	return true
+}

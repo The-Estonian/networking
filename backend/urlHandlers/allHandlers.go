@@ -1,9 +1,10 @@
 package urlHandlers
 
-import (
-	"github.com/gorilla/mux"
-)
+import "net/http"
 
-func StartHandlers(r *mux.Router) {
-	r.HandleFunc("/register", handleRegistration).Methods("POST", "OPTIONS")
+func StartHandlers(r *http.ServeMux) {
+	r.HandleFunc("/login", HandleLogin)
+	r.HandleFunc("/register", HandleRegistration)
+	r.HandleFunc("/status", HandleStatus)
+	r.HandleFunc("/logout", HandleLogout)
 }
