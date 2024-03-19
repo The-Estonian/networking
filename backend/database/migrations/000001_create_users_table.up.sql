@@ -4,8 +4,8 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     firstName TEXT NOT NULL,
     lastName TEXT NOT NULL,
-    date_of_birth DATE NOT NULL,
-    avatar TEXT,
+    dateOfBirth DATE NOT NULL,
     username TEXT,
-    aboutuser TEXT
+    aboutuser TEXT,
+    avatar TEXT
 );

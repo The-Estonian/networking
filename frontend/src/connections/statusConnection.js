@@ -1,4 +1,4 @@
-export const Status = async () => {
+export const GetStatus = async () => {
   try {
     const response = await fetch('http://localhost:8080/status', {
       method: 'POST',

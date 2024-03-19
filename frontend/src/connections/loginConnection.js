@@ -1,4 +1,4 @@
-export const Login = async (formData) => {
+export const GetLogin = async (formData) => {
   try {
     const response = await fetch('http://localhost:8080/login', {
       method: 'POST',

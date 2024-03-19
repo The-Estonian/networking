@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-import { Status } from '../connections/statusConnection.js';
-import { Logout } from '../connections/logoutConnection.js';
+import { GetStatus } from '../connections/statusConnection.js';
+import { SetLogout } from '../connections/logoutConnection.js';
 
 import Menu from './Menu';
 import Authenticate from '../authentication/Authenticate';
@@ -15,7 +15,7 @@ const Container = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    Status().then((data) => {
+    GetStatus().then((data) => {
       if (data['login'] == 'fail') {
         setActiveSession('false');
       } else if (data['login'] == 'success') {
@@ -28,7 +28,7 @@ const Container = () => {
   const handleLogout = () => {
     setActiveSession('false');
     document.cookie = 'socialNetworkAuth=false';
-    Logout().then((data) => {
+    SetLogout().then((data) => {
       console.log('Logout => ', data);
     });
   };

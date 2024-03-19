@@ -1,4 +1,4 @@
-export const Logout = async () => {
+export const SetLogout = async () => {
   try {
     const response = await fetch('http://localhost:8080/logout', {
       method: 'POST',

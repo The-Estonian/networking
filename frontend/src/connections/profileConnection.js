@@ -1,19 +1,17 @@
-export const SetRegister = async (formData) => {
+export const GetProfile = async () => {
   try {
-    const response = await fetch('http://localhost:8080/register', {
+    const response = await fetch('http://localhost:8080/profile', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
       referrerPolicy: 'no-referrer',
       redirect: 'follow',
-      body: formData,
       credentials: 'include',
     });
     const resp = await response.json();
-    console.log(resp);
     return resp;
   } catch (error) {
-    console.log('Registration error');
+    console.log('Profile error');
     console.log(error);
   }
 };

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 
-import { Login } from '../connections/loginConnection.js';
-import { Register } from '../connections/registerConnection.js';
+import { GetLogin } from '../connections/loginConnection.js';
+import { SetRegister } from '../connections/registerConnection.js';
 
 import styles from './Authenticate.module.css';
 
@@ -119,7 +119,7 @@ const Authenticate = (props) => {
       formData.append('aboutUser', aboutUser);
       formData.append('avatar', file);
 
-      Register(formData).then((data) => {
+      SetRegister(formData).then((data) => {
         resetInputs();
         console.log(data);
         console.log('Forward to login');
@@ -128,14 +128,18 @@ const Authenticate = (props) => {
         props.modal(false);
       });
     } else {
-      Login(formData).then((data) => {
+      GetLogin(formData).then((data) => {
         resetInputs();
         console.log('Response after login');
         console.log(data);
-
         // if valid
-        props.currSession("true");
-        // sessionStorage.setItem('socialNetworkToken', resp.sessionId);
+        if (data.login === "success") {
+          props.currSession("true");
+        } else {
+          setInputError(true);
+          setInputErrorText(data.error);
+          console.log(data.error);
+        }
         props.modal(false);
       });
     }

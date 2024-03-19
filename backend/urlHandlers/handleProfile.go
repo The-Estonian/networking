@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func HandleStatus(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Status attempt!")
+func HandleProfile(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Profile attempt!")
 
 	var callback = make(map[string]string)
 	cookie, err := r.Cookie("socialNetworkSession")
@@ -37,8 +37,14 @@ func HandleStatus(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
+		// get profile info
+		userProfile := validators.ValidateUserProfile(cookie.Value)
+		fmt.Println("profileHandler:", userProfile)
+		profileJson, err := json.Marshal(userProfile)
+		helpers.CheckErr("profileJson", err)
+		callback["profile"] = string(profileJson)
 	}
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("handleLogin", err)
+	helpers.CheckErr("HandleProfile", err)
 	w.Write(writeData)
 }

@@ -3,6 +3,7 @@ package validators
 import (
 	"backend/database"
 	"backend/helpers"
+	"backend/structs"
 
 	"github.com/google/uuid"
 )
@@ -19,6 +20,7 @@ func ValidateUserRegistration(email, username string) (bool, bool) {
 	return emailExists, false
 }
 
+// check if username and password match
 func ValidateUserLogin(email, password string) (bool, string) {
 	email = helpers.StandardizeName(email)
 	userId, userPsw := database.GetUserIdPswByEmail(email)
@@ -36,6 +38,16 @@ func ValidateUserLogin(email, password string) (bool, string) {
 	}
 }
 
-func ValidateUserSession(cookie string) bool {
+// check if user has valid session
+func ValidateUserSession(cookie string) string {
 	return database.GetUserSession(cookie)
+}
+
+// provide user profile from db
+func ValidateUserProfile(hash string) structs.Profile {
+	// get userid by hash
+	userId := database.GetUserSession(hash)
+	// get user profile by userid
+	return database.GetUserProfile(userId)
+
 }

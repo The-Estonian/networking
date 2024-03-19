@@ -66,7 +66,7 @@ func HandleRegistration(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			validators.ValidateSetToUsers(email, password, firstName, lastName, date, imageName.String(), username, aboutUser)
+			validators.ValidateSetToUsers(email, password, firstName, lastName, date, imageName.String()+fileExtension, username, aboutUser)
 
 			callback["newUser"] = "created"
 		} else {
