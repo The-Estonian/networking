@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import Container from './items/Container';
-import ErrorPage from './items/ErrorPage';
-import Profile from './items/Profile';
-import Posts from './items/Posts';
+import Container from './items/RootContainer/Container';
+import ErrorPage from './items/RootContainer/ErrorPage';
+import Profile from './items/Profile/Profile';
+import Posts from './items/Posts/Posts';
 
 import './index.css';
 

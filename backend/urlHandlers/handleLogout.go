@@ -37,6 +37,7 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 		Value:   "false",
 		Expires: time.Now(),
 		Path:    "/",
+		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &authCookie)
 	callback["login"] = "fail"

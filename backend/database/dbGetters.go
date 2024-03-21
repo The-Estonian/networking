@@ -45,11 +45,11 @@ func GetUserIdPswByEmail(email string) (string, string) {
 	db := sqlite.DbConnection()
 	var userId string
 	var userPsw string
-	command := "SELECT id,password FROM users WHERE email=?"
+	command := "SELECT id, password FROM users WHERE email=?"
 	err := db.QueryRow(command, email).Scan(&userId, &userPsw)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			helpers.CheckErr("GetPswByEmail", err)
+			helpers.CheckErr("GetUserIdPswByEmail", err)
 		}
 		return "0", "Email error"
 	}
@@ -60,7 +60,7 @@ func GetUserIdPswByEmail(email string) (string, string) {
 // get userId session by hash from session table
 func GetUserSession(cookie string) string {
 	db := sqlite.DbConnection()
-	command := "SELECT user FROM session WHERE hash=?"
+	command := "SELECT user_fk_users FROM session WHERE hash=?"
 	err := db.QueryRow(command, cookie).Scan(&cookie)
 	if err != nil {
 		if err != sql.ErrNoRows {
@@ -75,7 +75,7 @@ func GetUserSession(cookie string) string {
 func GetUserProfile(userId string) structs.Profile {
 	db := sqlite.DbConnection()
 	var userProfile structs.Profile
-	command := "SELECT id, email, firstName, lastName, dateOfBirth, username, aboutuser, avatar FROM users WHERE id=?"
+	command := "SELECT id, email, first_name, last_name, date_of_birth, username, about_user, avatar FROM users WHERE id=?"
 	err := db.QueryRow(command, userId).Scan(&userProfile.Id,
 		&userProfile.Email,
 		&userProfile.FirstName,

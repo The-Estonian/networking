@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { GetProfile } from '../connections/profileConnection.js';
+import { GetProfile } from '../../connections/profileConnection.js';
 
 import styles from './Profile.module.css';
 

@@ -32,3 +32,7 @@ func ValidateSetToUsers(email, password, firstName, lastName, date_of_birth, ava
 func ValidateRemoveUserSession(hash string) {
 	database.SetRemoveHash(hash)
 }
+
+func ValidateSetNewPost(user, postContent, privacy string) {
+	database.SetNewPost(user, postContent, privacy)
+}

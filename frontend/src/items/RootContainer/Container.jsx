@@ -1,12 +1,12 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-import { GetStatus } from '../connections/statusConnection.js';
-import { SetLogout } from '../connections/logoutConnection.js';
+import { GetStatus } from '../../connections/statusConnection.js';
+import { SetLogout } from '../../connections/logoutConnection.js';
 
-import Menu from './Menu';
-import Authenticate from '../authentication/Authenticate';
-import Modal from './Modal';
+import Menu from '../Menu/Menu';
+import Authenticate from '../../authentication/Authenticate.jsx';
+import Modal from './Modal.jsx';
 
 import styles from './Container.module.css';
 

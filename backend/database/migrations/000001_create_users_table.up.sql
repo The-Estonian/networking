@@ -2,10 +2,10 @@ CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT NOT NULL,
     password TEXT NOT NULL,
-    firstName TEXT NOT NULL,
-    lastName TEXT NOT NULL,
-    dateOfBirth DATE NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    date_of_birth DATE NOT NULL,
     username TEXT,
-    aboutuser TEXT,
+    about_user TEXT,
     avatar TEXT
 );

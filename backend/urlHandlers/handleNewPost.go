@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func HandleProfile(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Profile attempt!")
+func HandleNewPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("NewPost attempt!")
 
 	var callback = make(map[string]string)
 	cookie, err := r.Cookie("socialNetworkSession")
@@ -28,23 +28,21 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &sessionCookie)
 
 		authCookie := http.Cookie{
-			Name:    "socialNetworkAuth",
-			Value:   "false",
-			Expires: time.Now(),
-			Path:    "/",
+			Name:     "socialNetworkAuth",
+			Value:    "false",
+			Expires:  time.Now(),
+			Path:     "/",
 			SameSite: http.SameSiteLaxMode,
 		}
 		http.SetCookie(w, &authCookie)
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		// get profile info
-		userProfile := validators.ValidateUserProfile(cookie.Value)
-		profileJson, err := json.Marshal(userProfile)
-		helpers.CheckErr("HandleProfile json", err)
-		callback["profile"] = string(profileJson)
+		// get posts info
+		callback["newPost"] = "accepted"
+		validators.ValidateSetNewPost("1", "Test content", "1")
 	}
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("HandleProfile", err)
+	helpers.CheckErr("HandlePosts", err)
 	w.Write(writeData)
 }
