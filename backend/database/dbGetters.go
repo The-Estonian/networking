@@ -91,6 +91,5 @@ func GetUserProfile(userId string) structs.Profile {
 		fmt.Println("User profile not found in users table!")
 	}
 	defer db.Close()
-	fmt.Println("Fetched profile: ", userProfile)
 	return userProfile
 }

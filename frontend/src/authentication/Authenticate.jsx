@@ -174,7 +174,6 @@ const Authenticate = (props) => {
 
   return (
     <>
-      {/* {loginMenuOpen ? ( */}
       <div className={styles.login}>
         <span className={styles.required}>Email</span>
         <input

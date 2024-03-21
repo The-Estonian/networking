@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import { GetStatus } from '../connections/statusConnection.js';
@@ -13,6 +13,7 @@ import styles from './Container.module.css';
 const Container = () => {
   const [activeSession, setActiveSession] = useState('false');
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     GetStatus().then((data) => {
@@ -31,6 +32,7 @@ const Container = () => {
     SetLogout().then((data) => {
       console.log('Logout => ', data);
     });
+    navigate('/');
   };
   return (
     <div className={styles.container}>
@@ -40,7 +42,7 @@ const Container = () => {
       ) : (
         <Authenticate modal={setShowModal} currSession={setActiveSession} />
       )}
-      <Outlet />
+      <Outlet modal={setShowModal} />
     </div>
   );
 };

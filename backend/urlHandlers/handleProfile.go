@@ -39,7 +39,6 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "success"
 		// get profile info
 		userProfile := validators.ValidateUserProfile(cookie.Value)
-		fmt.Println("profileHandler:", userProfile)
 		profileJson, err := json.Marshal(userProfile)
 		helpers.CheckErr("profileJson", err)
 		callback["profile"] = string(profileJson)

@@ -4,3 +4,20 @@
   justify-content: center;
   margin: auto;
 }
+
+.avatar {
+  max-width: 10rem;
+  max-height: 10rem;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid black;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.avatarImg {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}

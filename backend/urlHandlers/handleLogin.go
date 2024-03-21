@@ -34,6 +34,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 			Value:    "true",
 			Expires:  time.Now().Add(time.Minute * 10),
 			Path:     "/",
+			SameSite: http.SameSiteLaxMode,
 		}
 		http.SetCookie(w, &authCookie)
 		callback["login"] = "success"
