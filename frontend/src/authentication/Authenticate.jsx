@@ -257,7 +257,7 @@ const Authenticate = (props) => {
             className={styles.submit}
             type='submit'
           >
-            {!switchRegOrLogin ? 'Login' : 'Register'}
+            {!switchRegOrLogin ? 'Login?' : 'Register'}
           </button>
         </div>
         {inputError ? (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { GetProfile } from '../../connections/profileConnection.js';
 
@@ -8,15 +8,18 @@ import styles from './Profile.module.css';
 const Profile = () => {
   const [userProfile, setUserProfile] = useState('');
   const navigate = useNavigate();
+  const [modal] = useOutletContext();
   useEffect(() => {
+    modal(true);
     GetProfile().then((data) => {
       if (data.login === 'success') {
         setUserProfile(JSON.parse(data.profile));
+        modal(false);
       } else {
         navigate('/');
       }
     });
-  }, [navigate]);
+  }, [navigate, modal]);
   return (
     <div className={styles.profile}>
       <span>SOMEONE STYLE THIS PLEASE!</span>

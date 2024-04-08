@@ -26,7 +26,7 @@ RUN rm -rf ./*
 
 COPY --from=build-stage /app/dist .
 
-EXPOSE 80 443
+EXPOSE 80 443 3000
 
 # RUN certbot --nginx --agree-tos --no-eff-email -d devpipe.ee
 

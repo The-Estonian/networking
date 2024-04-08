@@ -42,7 +42,7 @@ const Container = () => {
       ) : (
         <Authenticate modal={setShowModal} currSession={setActiveSession} />
       )}
-      <Outlet modal={setShowModal} />
+      <Outlet context={[setShowModal]} />
     </div>
   );
 };
