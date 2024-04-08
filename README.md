@@ -1,10 +1,10 @@
 To audit the program, find the steps [here](https://github.com/01-edu/public/tree/master/subjects/social-network/audit)
 
-# Social Network
+# Networking
 
 ## Project Description
 
-Social Network stack:
+Networking stack:
 
 Frontend: React
 
@@ -19,8 +19,8 @@ Place where you can create posts with categories, comment the posts, create grou
 Open first terminal
 
 ```bash
-git clone https://01.kood.tech/git/jsaar/social-network
-cd social-network
+git clone https://github.com/The-Estonian/networking
+cd networking
 cd backend
 go get
 go run .
