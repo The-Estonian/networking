@@ -14,17 +14,15 @@ CMD ["npm", "run", "build"]
 # Stage 2: Production stage
 FROM nginx:latest
 
-# RUN apt-get update && \
-#     apt-get install -y certbot python3-certbot-nginx && \
-#     apt-get clean
+RUN apt-get update && \
+    apt-get install -y certbot python3-certbot-nginx && \
+    apt-get clean
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
-WORKDIR /usr/share/nginx/html
-
 RUN rm -rf ./*
 
-COPY --from=build-stage /app/dist .
+COPY --from=build-stage /app/dist /usr/share/nginx/html
 
 EXPOSE 80 443 3000
 
