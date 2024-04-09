@@ -1,32 +1,32 @@
 # # Stage 1: Build stage
-# FROM node:latest AS build-stage
+FROM node:latest AS build-stage
 
-# WORKDIR /app
+WORKDIR /app
 
-# COPY package*.json ./
+COPY package*.json ./
 
-# RUN npm install
+RUN npm install
 
-# COPY . .
+COPY . .
 
-# CMD ["npm", "run", "build"]
+CMD ["npm", "run", "build"]
 
 # Stage 2: Production stage
 FROM nginx:latest
 
-# RUN apt-get update && \
-#     apt-get install -y certbot python3-certbot-nginx && \
-#     apt-get clean
+RUN apt-get update && \
+    apt-get install -y certbot python3-certbot-nginx && \
+    apt-get clean
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
-COPY /dist /usr/share/nginx/html
+# COPY /dist /usr/share/nginx/html
 
 WORKDIR /usr/share/nginx/html
 
 # RUN rm -rf ./*
 
-# COPY --from=build-stage /app/dist .
+COPY --from=build-stage /app/dist/* .
 
 EXPOSE 80 443 3000
 
