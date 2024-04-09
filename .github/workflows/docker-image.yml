@@ -34,9 +34,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@35.157.138.185 << 'ENDSSH'
             sudo docker pull estonian/social-network-frontend:latest
-            sudo docker stop estonian/social-network-frontend || true
-            sudo docker rm estonian/social-network-frontend || true
-            sudo docker run -d --name estonian/social-network-frontend -p 80:3000 estonian/social-network-frontend:latest
+            sudo docker stop social-network-frontend || true
+            sudo docker rm social-network-frontend || true
+            sudo docker run -d --name social-network-frontend -p 80:3000 estonian/social-network-frontend:latest
           ENDSSH
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
