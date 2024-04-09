@@ -1,5 +1,5 @@
 # # Stage 1: Build stage
-FROM node:latest AS build-stage
+FROM node:latest AS build
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ RUN npm install
 
 COPY . .
 
-CMD ["npm", "run", "build"]
+RUN npm run build
 
 # Stage 2: Production stage
 FROM nginx:latest
@@ -20,13 +20,9 @@ RUN apt-get update && \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# COPY /dist /usr/share/nginx/html
-
-WORKDIR /usr/share/nginx/html
-
 # RUN rm -rf ./*
 
-COPY --from=build-stage /app/dist/* .
+COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80 443 3000
 
