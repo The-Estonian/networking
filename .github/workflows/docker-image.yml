@@ -23,7 +23,6 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    - uses: actions/checkout@v3
 
     steps:
       - name: Set up SSH
