@@ -23,20 +23,22 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    - uses: actions/checkout@v3
+
     steps:
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.4
-      with:
-        ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-        
-    - name: Deploy Docker image to EC2
-      run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@35.157.138.185 << 'ENDSSH'
-          sudo docker pull estonian/discord-bot:${{ github.sha }}
-          sudo docker stop discord-bot || true
-          sudo docker rm discord-bot || true
-          sudo docker run -d --name discord-bot -e DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} -p 80:80 estonian/discord-bot:${{ github.sha }}
-        ENDSSH
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+            
+      - name: Deploy Docker image to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@35.157.138.185 << 'ENDSSH'
+            sudo docker pull estonian/social-network-frontend:latest
+            sudo docker stop estonian/social-network-frontend || true
+            sudo docker rm estonian/social-network-frontend || true
+            sudo docker run -d --name estonian/social-network-frontend -p 80:3000 estonian/social-network-frontend:latest
+          ENDSSH
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
