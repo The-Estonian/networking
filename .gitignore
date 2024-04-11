@@ -1,5 +1,6 @@
 ### terraform
-terraform/*
+frontend/frontend_terraform/*
+backend/backend_terraform/*
 
 ### FORUM PROJECT ###
 rtforum.db

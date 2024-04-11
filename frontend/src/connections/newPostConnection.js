@@ -1,6 +1,11 @@
+const backendUrl =
+  typeof window === 'undefined'
+    ? process.env.REACT_APP_BACKEND_URL
+    : 'http://localhost:8080';
+
 export const SendNewPost = async (formData) => {
   try {
-    const response = await fetch('http://localhost:8080/newpost', {
+    const response = await fetch(`${backendUrl}/newpost`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
