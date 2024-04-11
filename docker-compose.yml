@@ -16,7 +16,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - BACKEND_IP=${3.74.83.15}
+        - BACKEND_IP=${BACKEND_IP}
     image: estonian/social-network-frontend:latest
     ports:
       - '3000:3000'
