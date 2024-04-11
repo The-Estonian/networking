@@ -9,6 +9,8 @@ RUN npm install
 
 COPY . .
 
+ARG BACKEND_IP
+
 ENV REACT_APP_BACKEND_URL=${BACKEND_IP}
 
 RUN npm run build
