@@ -16,7 +16,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_ACCESS_TOKEN  }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: Build and push the Docker images
         run: |
-          BACKEND_IP=3.74.83.15 docker-compose build
+          BACKEND_IP=3.74.83.15 docker-compose build backend frontend
           docker-compose push
 
   deploy:
