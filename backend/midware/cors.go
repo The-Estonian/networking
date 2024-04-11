@@ -5,7 +5,7 @@ import "net/http"
 func CorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch origin := r.Header.Get("Origin"); origin {
-		case "http://localhost:3000", "3.64.52.101":
+		case "http://localhost:3000", "http://3.64.52.101":
 			(w).Header().Set("Access-Control-Allow-Origin", origin)
 		}
 		// (w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
