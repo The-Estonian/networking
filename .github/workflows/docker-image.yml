@@ -16,7 +16,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_ACCESS_TOKEN  }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: Build and push the Docker images
         run: |
-          BACKEND_IP={{ secrets.AWS_EC2_BACKEND }} docker-compose build backend frontend
+          BACKEND_IP=${{ secrets.AWS_EC2_BACKEND }} docker-compose build backend frontend
           docker-compose push
 
   deploy:
@@ -48,7 +48,7 @@ jobs:
 
       - name: Deploy Docker image to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@{{ secrets.AWS_EC2_BACKEND }} << 'ENDSSH'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_BACKEND }} << 'ENDSSH'
             sudo docker pull estonian/social-network-backend:latest
             sudo docker stop social-network-backend || true
             sudo docker rm social-network-backend || true
