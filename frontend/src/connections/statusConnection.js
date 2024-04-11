@@ -5,6 +5,7 @@ const backendUrl =
 
 export const GetStatus = async () => {
   try {
+    console.log(backendUrl);
     const response = await fetch(`${backendUrl}/status`, {
       method: 'POST',
       mode: 'cors',

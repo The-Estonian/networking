@@ -54,7 +54,7 @@ jobs:
             sudo docker pull estonian/social-network-backend:latest
             sudo docker stop social-network-backend || true
             sudo docker rm social-network-backend || true
-            sudo docker run -d --name social-network-backend -p 80:3000 estonian/social-network-backend:latest
+            sudo docker run -d --name social-network-backend -p 8080:8080 estonian/social-network-backend:latest
           ENDSSH
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
