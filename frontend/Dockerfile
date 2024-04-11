@@ -9,6 +9,8 @@ RUN npm install
 
 COPY . .
 
+ENV REACT_APP_BACKEND_URL=${BACKEND_IP}
+
 RUN npm run build
 
 # Stage 2: Production stage

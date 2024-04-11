@@ -17,7 +17,7 @@ jobs:
       run: echo "${{ secrets.DOCKER_ACCESS_TOKEN  }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
     - name: Build and push the Docker images
       run: |
-        COMPOSE_VERBOSE=1 docker-compose build
+        BACKEND_IP=3.74.83.15 docker-compose build
         docker-compose push
 
   deploy:
@@ -28,15 +28,32 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.4
         with:
-          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY_FRONTEND }}
             
       - name: Deploy Docker image to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@35.157.138.185 << 'ENDSSH'
+          ssh -o StrictHostKeyChecking=no ubuntu@3.64.52.101 << 'ENDSSH'
             sudo docker pull estonian/social-network-frontend:latest
             sudo docker stop social-network-frontend || true
             sudo docker rm social-network-frontend || true
             sudo docker run -d --name social-network-frontend -p 80:3000 estonian/social-network-frontend:latest
+          ENDSSH
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY_BACKEND }}
+            
+      - name: Deploy Docker image to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@3.74.83.15 << 'ENDSSH'
+            sudo docker pull estonian/social-network-backend:latest
+            sudo docker stop social-network-backend || true
+            sudo docker rm social-network-backend || true
+            sudo docker run -d --name social-network-backend -p 80:3000 estonian/social-network-backend:latest
           ENDSSH
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
