@@ -2,24 +2,22 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ['master']
   pull_request:
-    branches: [ "master" ]
+    branches: ['master']
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_ACCESS_TOKEN  }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    - name: Build and push the Docker images
-      run: |
-        # export BACKEND_IP=3.74.83.15 
-        docker-compose build
-        docker-compose push
+      - uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_ACCESS_TOKEN  }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Build and push the Docker images
+        run: |
+          BACKEND_IP=3.74.83.15 docker-compose build
+          docker-compose push
 
   deploy:
     needs: build
@@ -30,7 +28,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY_FRONTEND }}
-            
+
       - name: Deploy Docker image to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@3.64.52.101 << 'ENDSSH'
@@ -47,7 +45,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY_BACKEND }}
-            
+
       - name: Deploy Docker image to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@3.74.83.15 << 'ENDSSH'
