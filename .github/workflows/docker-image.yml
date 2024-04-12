@@ -36,6 +36,8 @@ jobs:
             sudo docker stop social-network-frontend || true
             sudo docker rm social-network-frontend || true
             sudo docker run -d --name social-network-frontend -p 443:3000 estonian/social-network-frontend:latest
+            sudo docker exec -it social-network-frontend /bin/bash
+            certbot -v --nginx --agree-tos --no-eff-email -m social@network.com -d www.devpipe.ee
           ENDSSH
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
