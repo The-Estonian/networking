@@ -28,16 +28,18 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Now(),
 		Path:     "/",
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
 	}
 	http.SetCookie(w, &sessionCookie)
 
 	authCookie := http.Cookie{
-		Name:    "socialNetworkAuth",
-		Value:   "false",
-		Expires: time.Now(),
-		Path:    "/",
-		SameSite: http.SameSiteLaxMode,
+		Name:     "socialNetworkAuth",
+		Value:    "false",
+		Expires:  time.Now(),
+		Path:     "/",
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
 	}
 	http.SetCookie(w, &authCookie)
 	callback["login"] = "fail"

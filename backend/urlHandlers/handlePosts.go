@@ -23,7 +23,8 @@ func HandlePosts(w http.ResponseWriter, r *http.Request) {
 			Expires:  time.Now(),
 			Path:     "/",
 			HttpOnly: true,
-			SameSite: http.SameSiteLaxMode,
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
 		}
 		http.SetCookie(w, &sessionCookie)
 
@@ -32,7 +33,8 @@ func HandlePosts(w http.ResponseWriter, r *http.Request) {
 			Value:    "false",
 			Expires:  time.Now(),
 			Path:     "/",
-			SameSite: http.SameSiteLaxMode,
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
 		}
 		http.SetCookie(w, &authCookie)
 		callback["login"] = "fail"

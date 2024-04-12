@@ -25,7 +25,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 			Expires:  time.Now().Add(time.Minute * 10),
 			Path:     "/",
 			HttpOnly: true,
-			SameSite: http.SameSiteLaxMode,
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
 		}
 		http.SetCookie(w, &sessionCookie)
 
@@ -34,7 +35,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 			Value:    "true",
 			Expires:  time.Now().Add(time.Minute * 10),
 			Path:     "/",
-			SameSite: http.SameSiteLaxMode,
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
 		}
 		http.SetCookie(w, &authCookie)
 		callback["login"] = "success"
