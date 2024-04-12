@@ -35,8 +35,8 @@ jobs:
             sudo docker pull estonian/social-network-frontend:latest
             sudo docker stop social-network-frontend || true
             sudo docker rm social-network-frontend || true
-            sudo docker run -d --name social-network-frontend -p 443:3000 estonian/social-network-frontend:latest
-            sudo docker exec -it social-network-frontend certbot -v --nginx --agree-tos --no-eff-email -m social@network.com -d www.devpipe.ee
+            sudo docker run -d --name social-network-frontend -p 443:433 -p 80:80 estonian/social-network-frontend:latest
+            sudo docker exec social-network-frontend certbot -v --nginx --agree-tos --no-eff-email -m social@network.com -d www.devpipe.ee
             
           ENDSSH
         env:
