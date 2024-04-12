@@ -30,6 +30,6 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80 443 3000
 
-RUN certbot --nginx --agree-tos --no-eff-email -d devpipe.ee
+RUN certbot -v --nginx --agree-tos --no-eff-email -m social@network.com -d devpipe.ee
 
 CMD ["nginx", "-g", "daemon off;"]
