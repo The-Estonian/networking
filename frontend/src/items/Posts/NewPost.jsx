@@ -10,7 +10,7 @@ const NewPost = () => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
-  const [newPostPrivacy, setNewPostPrivacy] = useState('');
+  const [newPostPrivacy, setNewPostPrivacy] = useState('1');
   const newPostPicRef = useRef(null);
 
   let [inputError, setInputError] = useState(false);
@@ -66,11 +66,11 @@ const NewPost = () => {
     SendNewPost({
       title: newPostTitle,
       content: newPostContent,
-      privacy: '1',
+      privacy: newPostPrivacy,
     });
     setNewPostTitle('');
     setNewPostContent('');
-    setNewPostPrivacy('');
+    setNewPostPrivacy('1'); //Set back to first choice after making first post
     switchNewPostOpen();
   };
 
@@ -92,8 +92,8 @@ const NewPost = () => {
                 type='radio'
                 id='public'
                 name='privacy'
-                value='public'
-                checked={newPostPrivacy === 'public' || newPostPrivacy === ''}
+                value='1'
+                checked={newPostPrivacy === '1' || newPostPrivacy === '1'}
                 onChange={validateNewPostPrivacyInput}
               />
               <span>Public</span>
@@ -103,8 +103,8 @@ const NewPost = () => {
                 type='radio'
                 id='private'
                 name='privacy'
-                value='private'
-                checked={newPostPrivacy === 'private'}
+                value='2'
+                checked={newPostPrivacy === '2'}
                 onChange={validateNewPostPrivacyInput}
               />
               <span>Private</span>
@@ -114,8 +114,8 @@ const NewPost = () => {
                 type='radio'
                 id='almost_private'
                 name='privacy'
-                value='almost private'
-                checked={newPostPrivacy === 'almost private'}
+                value='3'
+                checked={newPostPrivacy === '3'}
                 onChange={validateNewPostPrivacyInput}
               />
               <span>Almost Private</span>

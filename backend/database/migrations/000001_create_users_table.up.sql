@@ -9,3 +9,5 @@ CREATE TABLE users (
     about_user TEXT,
     avatar TEXT
 );
+
+--INSERT INTO users posts_privacy (privacy) VALUES ("public");

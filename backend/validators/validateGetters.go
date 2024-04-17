@@ -49,5 +49,4 @@ func ValidateUserProfile(hash string) structs.Profile {
 	userId := database.GetUserSession(hash)
 	// get user profile by userid
 	return database.GetUserProfile(userId)
-
 }

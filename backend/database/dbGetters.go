@@ -93,3 +93,33 @@ func GetUserProfile(userId string) structs.Profile {
 	defer db.Close()
 	return userProfile
 }
+
+func GetAllPosts() []structs.Posts {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var allPosts []structs.Posts
+
+	command := "SELECT posts.id, users.username, users.avatar, posts.post_Title, posts.post_content, posts.privacy_fk_posts_privacy, posts.date FROM posts INNER JOIN users ON posts.user_fk_users == users.id"
+	rows, err := db.Query(command)
+	if err != nil {
+		helpers.CheckErr("getAllPosts", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post structs.Posts
+		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Privacy, &post.Date)
+		if err != nil {
+			helpers.CheckErr("getAllPosts", err)
+			continue
+		}
+		allPosts = append(allPosts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("getAllPosts", err)
+	}
+	return allPosts
+}

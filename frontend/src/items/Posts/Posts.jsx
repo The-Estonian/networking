@@ -15,9 +15,8 @@ const Posts = () => {
     modal(true);
     GetPosts().then((data) => {
       if (data.login === 'success') {
-        console.log(data);
-        // setAllPosts(JSON.parse(data.posts));
-        setAllPosts(["post1", "post2", "post3", "post4"])
+        console.log(data.posts);
+        data.posts == null ? setAllPosts([]) : setAllPosts(data.posts)
         modal(false);
       } else {
         navigate('/');
@@ -27,9 +26,24 @@ const Posts = () => {
   return (
     <div className={styles.posts}>
       <NewPost />
-      {allPosts.map((eachPost) => {
-        <p>{eachPost}</p>;
-      })}
+      {allPosts.map((eachPost, index) => (
+        <div className={styles.post} key={index}>
+          <h3>{eachPost.Title}</h3>
+          <p>{eachPost.Content}</p>
+          <p>{eachPost.Username}</p>
+          <p>{eachPost.Privacy}</p>
+          <p>{eachPost.Date}</p>
+          {eachPost.Avatar ? (
+          <img
+            className={styles.avatarImg}
+            src={`http://localhost:8080/avatar/${eachPost.Avatar}`}
+            alt='Avatar'
+          ></img>
+        ) : (
+          ''
+        )}
+        </div>
+      ))}
     </div>
   );
 };

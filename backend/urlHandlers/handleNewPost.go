@@ -1,6 +1,7 @@
 package urlHandlers
 
 import (
+	"backend/structs"
 	"backend/helpers"
 	"backend/validators"
 	"encoding/json"
@@ -12,10 +13,18 @@ import (
 func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("NewPost attempt!")
 
+	err := json.NewDecoder(r.Body).Decode(&structs.NewPost)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	var callback = make(map[string]string)
 	cookie, err := r.Cookie("socialNetworkSession")
+	UserID := validators.ValidateUserSession(cookie.Value)
 	// if not err and cookie valid
-	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
+
+	if err != nil || UserID == "0" { 
 		// check status
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
@@ -42,7 +51,9 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "success"
 		// get posts info
 		callback["newPost"] = "accepted"
-		validators.ValidateSetNewPost("1", "Test content", "1")
+
+		validators.ValidateSetNewPost(UserID, structs.NewPost.Title, structs.NewPost.Content, structs.NewPost.Privacy)
+
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandlePosts", err)
