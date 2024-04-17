@@ -16,7 +16,7 @@ const Posts = () => {
     GetPosts().then((data) => {
       if (data.login === 'success') {
         console.log(data.posts);
-        data.posts == null ? setAllPosts([]) : setAllPosts(data.posts)
+        data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
         modal(false);
       } else {
         navigate('/');
@@ -34,14 +34,14 @@ const Posts = () => {
           <p>{eachPost.Privacy}</p>
           <p>{eachPost.Date}</p>
           {eachPost.Avatar ? (
-          <img
-            className={styles.avatarImg}
-            src={`http://localhost:8080/avatar/${eachPost.Avatar}`}
-            alt='Avatar'
-          ></img>
-        ) : (
-          ''
-        )}
+            <img
+              className={styles.avatarImg}
+              src={`http://localhost:8080/avatar/${eachPost.Avatar}`}
+              alt='Avatar'
+            ></img>
+          ) : (
+            ''
+          )}
         </div>
       ))}
     </div>

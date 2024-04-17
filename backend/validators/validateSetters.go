@@ -36,4 +36,3 @@ func ValidateRemoveUserSession(hash string) {
 func ValidateSetNewPost(user, title, postContent, privacy string) {
 	database.SetNewPost(user, title, postContent, privacy)
 }
-

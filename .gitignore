@@ -3,9 +3,7 @@ frontend/frontend_terraform/*
 backend/backend_terraform/*
 
 ### FORUM PROJECT ###
-rtforum.db
-frontend/dist
-frontend/node_modules
+backend/database/sqlite/social-network.db
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:

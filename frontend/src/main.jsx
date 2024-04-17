@@ -8,6 +8,7 @@ import Profile from './items/Profile/Profile';
 import Posts from './items/Posts/Posts';
 
 import './index.css';
+
 const router = createBrowserRouter([
   {
     path: '/',

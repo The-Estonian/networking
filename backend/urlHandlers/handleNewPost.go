@@ -1,8 +1,8 @@
 package urlHandlers
 
 import (
-	"backend/structs"
 	"backend/helpers"
+	"backend/structs"
 	"backend/validators"
 	"encoding/json"
 	"fmt"
@@ -24,7 +24,7 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 	UserID := validators.ValidateUserSession(cookie.Value)
 	// if not err and cookie valid
 
-	if err != nil || UserID == "0" { 
+	if err != nil || UserID == "0" {
 		// check status
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",

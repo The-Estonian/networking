@@ -16,7 +16,7 @@ func HandlePosts(w http.ResponseWriter, r *http.Request) {
 
 	var callback = make(map[string]interface{})
 	var sendPosts []structs.Posts
-	
+
 	cookie, err := r.Cookie("socialNetworkSession")
 	// if not err and cookie valid
 	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {

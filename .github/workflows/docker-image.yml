@@ -7,20 +7,20 @@ on:
     branches: ['master']
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  # build:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_ACCESS_TOKEN  }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      - name: Build and push the Docker images
-        run: |
-          BACKEND_IP=${{ secrets.AWS_EC2_BACKEND }}:8080 docker-compose build backend frontend
-          docker-compose push
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Log in to Docker Hub
+  #       run: echo "${{ secrets.DOCKER_ACCESS_TOKEN  }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+  #     - name: Build and push the Docker images
+  #       run: |
+  #         BACKEND_IP=${{ secrets.AWS_EC2_BACKEND }}:8080 docker-compose build backend frontend
+  #         docker-compose push
 
   deploy:
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -39,23 +39,23 @@ jobs:
             sudo docker exec social-network-frontend certbot -v --nginx --agree-tos --no-eff-email -m social@network.com -d www.devpipe.ee
             
           ENDSSH
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        # env:
+        #   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        #   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY_BACKEND }}
+      # - name: Set up SSH
+      #   uses: webfactory/ssh-agent@v0.5.4
+      #   with:
+      #     ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY_BACKEND }}
 
-      - name: Deploy Docker image to EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_BACKEND }} << 'ENDSSH'
-            sudo docker pull estonian/social-network-backend:latest
-            sudo docker stop social-network-backend || true
-            sudo docker rm social-network-backend || true
-            sudo docker run -d --name social-network-backend -p 8080:8080 estonian/social-network-backend:latest
-          ENDSSH
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      # - name: Deploy Docker image to EC2
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_BACKEND }} << 'ENDSSH'
+      #       sudo docker pull estonian/social-network-backend:latest
+      #       sudo docker stop social-network-backend || true
+      #       sudo docker rm social-network-backend || true
+      #       sudo docker run -d --name social-network-backend -p 8080:8080 estonian/social-network-backend:latest
+      #     ENDSSH
+      #   env:
+      #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      #     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

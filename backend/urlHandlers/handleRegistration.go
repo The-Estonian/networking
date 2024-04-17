@@ -32,8 +32,6 @@ func HandleRegistration(w http.ResponseWriter, r *http.Request) {
 
 	checkEmail, checkUsername := validators.ValidateUserRegistration(email, username)
 
-
-
 	if checkEmail {
 		callback["email"] = "already exists"
 	}
