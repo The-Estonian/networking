@@ -8,7 +8,7 @@ export const SendNewPost = async (formData) => {
       cache: 'no-cache',
       referrerPolicy: 'no-referrer',
       redirect: 'follow',
-      body: formData,
+      body: JSON.stringify(formData),
       credentials: 'include',
     });
     const resp = await response.json();
