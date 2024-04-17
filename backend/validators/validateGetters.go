@@ -50,3 +50,7 @@ func ValidateUserProfile(hash string) structs.Profile {
 	// get user profile by userid
 	return database.GetUserProfile(userId)
 }
+
+func ValidatePosts() []structs.Posts{
+	return database.GetAllPosts()
+}

@@ -1,7 +1,6 @@
 package urlHandlers
 
 import (
-	"backend/database"
 	"backend/helpers"
 	"backend/structs"
 	"backend/validators"
@@ -44,7 +43,7 @@ func HandlePosts(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		sendPosts = database.GetAllPosts()
+		sendPosts = validators.ValidatePosts()
 		callback["posts"] = sendPosts
 	}
 	writeData, err := json.Marshal(callback)
