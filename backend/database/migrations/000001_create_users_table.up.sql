@@ -9,3 +9,6 @@ CREATE TABLE users (
     about_user TEXT,
     avatar TEXT
 );
+
+INSERT INTO users (email, password, first_name, last_name, date_of_birth) 
+VALUES ("Asd@asd.com", "$2a$14$f93Qadhf7vVe.LoebyXLvOwMcTTxlZMEcXZEnefj4KMVv6kSuYigC", "Asd", "Asd", "1990-03-01 00:00:00+00:00");
