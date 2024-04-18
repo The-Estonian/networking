@@ -6,6 +6,7 @@ import Container from './items/RootContainer/Container';
 import ErrorPage from './items/RootContainer/ErrorPage';
 import Profile from './items/Profile/Profile';
 import Posts from './items/Posts/Posts';
+import Chat from './items/Chat/Chat';
 
 import './index.css';
 
@@ -25,7 +26,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/chat',
-        element: <div>CHAT GO HERE TO-DO</div>,
+        element: <Chat />,
       },
       {
         path: '/followers',

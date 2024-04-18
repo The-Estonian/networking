@@ -123,3 +123,30 @@ func GetAllPosts() []structs.Posts {
 	}
 	return allPosts
 }
+
+func GetAllUsers() []structs.Profile {
+	db := sqlite.DbConnection()
+	var allUsers []structs.Profile
+
+	command := "SELECT id, username, email FROM users"
+	rows, err := db.Query(command)
+	if err != nil {
+		helpers.CheckErr("getAllPosts", err)
+		return nil
+	}
+
+	for rows.Next() {
+		var user structs.Profile
+		err = rows.Scan(&user.Id, &user.Username, &user.Email)
+		if err != nil {
+			helpers.CheckErr("getAllPosts", err)
+			continue
+		}
+		allUsers = append(allUsers, user)
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+	return allUsers
+}

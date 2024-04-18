@@ -2,7 +2,6 @@ const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
 
 export const GetStatus = async () => {
   try {
-    console.log(backendUrl);
     const response = await fetch(`http://${backendUrl}/status`, {
       method: 'POST',
       mode: 'cors',

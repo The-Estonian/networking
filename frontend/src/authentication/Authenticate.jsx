@@ -118,7 +118,7 @@ const Authenticate = (props) => {
       formData.append('username', username);
       formData.append('aboutUser', aboutUser);
       formData.append('avatar', file);
-
+      console.log(formData);
       SetRegister(formData).then((data) => {
         resetInputs();
         console.log(data);
@@ -133,8 +133,8 @@ const Authenticate = (props) => {
         console.log('Response after login');
         console.log(data);
         // if valid
-        if (data.login === "success") {
-          props.currSession("true");
+        if (data.login === 'success') {
+          props.currSession('true');
         } else {
           setInputError(true);
           setInputErrorText(data.error);
@@ -172,6 +172,13 @@ const Authenticate = (props) => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      validateAllRequiredInputs();
+    }
+  };
+
   return (
     <>
       <div className={styles.login}>
@@ -190,6 +197,7 @@ const Authenticate = (props) => {
           name='password'
           value={password}
           onChange={validatePasswordInput}
+          onKeyDown={handleKeyPress}
         />
         {/* open extra inputs if register */}
         {switchRegOrLogin ? (
@@ -257,7 +265,7 @@ const Authenticate = (props) => {
             className={styles.submit}
             type='submit'
           >
-            {!switchRegOrLogin ? 'Login?' : 'Register'}
+            {!switchRegOrLogin ? 'Login' : 'Register'}
           </button>
         </div>
         {inputError ? (

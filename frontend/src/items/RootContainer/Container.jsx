@@ -1,5 +1,8 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import useWebSocket from 'react-use-websocket';
+
+const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
 
 import { GetStatus } from '../../connections/statusConnection.js';
 import { SetLogout } from '../../connections/logoutConnection.js';
@@ -15,6 +18,10 @@ const Container = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
+  useWebSocket(`ws://${backendUrl}/websocket`, {
+    share: true,
+  });
+  
   useEffect(() => {
     GetStatus().then((data) => {
       if (data['login'] == 'fail') {
