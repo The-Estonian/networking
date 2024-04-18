@@ -58,3 +58,11 @@ func ValidatePosts() []structs.Posts {
 func ValidateUserList() []structs.Profile {
 	return database.GetAllUsers()
 }
+
+// provide user profile posts from db
+func ValidateProfilePosts(hash string) []structs.ProfilePosts {
+	// get userid by hash
+	userId := database.GetUserSession(hash)
+	// get user profile posts by userid
+	return database.GetProfilePosts(userId)
+}
