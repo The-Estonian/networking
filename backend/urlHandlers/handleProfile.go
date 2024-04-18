@@ -45,6 +45,12 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		profileJson, err := json.Marshal(userProfile)
 		helpers.CheckErr("HandleProfile json", err)
 		callback["profile"] = string(profileJson)
+
+		// get profile posts
+		profilePosts := validators.ValidateProfilePosts(cookie.Value)
+		postsJson, err := json.Marshal(profilePosts)
+		helpers.CheckErr("HandleProfilePosts json", err)
+		callback["posts"] = string(postsJson)
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleProfile", err)
