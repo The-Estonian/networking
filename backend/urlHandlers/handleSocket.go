@@ -25,8 +25,8 @@ var broadcast = make(chan Message)
 type Message struct {
 	Type             string   `json:"type"`
 	Status           string   `json:"status"`
-	From             string   `json:"fromuser"`
-	FromId           string   `json:"fromuserid"`
+	// From             string   `json:"fromuser"`
+	// FromId           string   `json:"fromuserid"`
 	Message          string   `json:"message"`
 	To               string   `json:"touser"`
 	ConnectedClients []string `json:"connectedclients"`
@@ -110,7 +110,6 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 	for {
 		var msg Message
 		err := conn.ReadJSON(&msg)
-		fmt.Println(msg)
 		if err != nil {
 			client.mu.Lock()
 			delete(clients, client)

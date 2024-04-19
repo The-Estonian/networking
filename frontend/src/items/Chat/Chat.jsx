@@ -39,7 +39,11 @@ const Chat = () => {
   };
 
   const sendMessage = () => {
-    sendJsonMessage({ Message: textMessage });
+    sendJsonMessage({
+      type: 'message',
+      Message: textMessage,
+      touser: activeChatPartner,
+    });
     setTextMessage('');
   };
 
