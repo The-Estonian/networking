@@ -134,7 +134,7 @@ func GetAllPosts() []structs.Posts {
 
 	for rows.Next() {
 		var post structs.Posts
-		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date)
+		err = rows.Scan(&post.PostID, &post.Username, &post.Picture, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date)
 		if err != nil {
 			helpers.CheckErr("getAllPosts", err)
 			continue
@@ -152,11 +152,11 @@ func GetNewPost() structs.Posts {
 	db := sqlite.DbConnection()
 	var lastPost structs.Posts
 
-	command := "SELECT posts.id, users.username, users.avatar, posts.post_Title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC LIMIT 1"
-	err := db.QueryRow(command).Scan(&lastPost.PostID, &lastPost.Username, &lastPost.Avatar, &lastPost.Title, &lastPost.Content, &lastPost.Picture, &lastPost.Privacy, &lastPost.Date)
+	command := "SELECT posts.id, users.username, users.avatar, posts.post_title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC LIMIT 1"
+	err := db.QueryRow(command).Scan(&lastPost.PostID, &lastPost.Username, &lastPost.Picture, &lastPost.Title, &lastPost.Content, &lastPost.Picture, &lastPost.Privacy, &lastPost.Date)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			helpers.CheckErr("getLastPost", err)
+			helpers.CheckErr("getNewpost", err)
 		}
 		fmt.Println("Error selecting last post")
 	}

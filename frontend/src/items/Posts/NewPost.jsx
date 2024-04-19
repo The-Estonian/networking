@@ -12,10 +12,11 @@ const NewPost = ({ setAllPosts }) => {
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostPrivacy, setNewPostPrivacy] = useState('1');
   const newPostPicRef = useRef(null);
-
-  let [inputError, setInputError] = useState(false);
-  let [inputErrorText, setInputErrorText] = useState('');
-
+  
+  const [authError, setAuthError] = useState('');
+  const [inputError, setInputError] = useState(false);
+  const [inputErrorText, setInputErrorText] = useState('');
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +64,7 @@ const NewPost = ({ setAllPosts }) => {
   const submitNewPost = async () => {
     console.log('Sending new post');
     const fileInput = newPostPicRef.current;
+    const file = fileInput?.files[0];
     if (file) {
       if (!(file.type.startsWith('image/') || file.type.endsWith('gif'))) {
         setAuthError('Avatar file must be a jpg or gif');
@@ -140,6 +142,7 @@ const NewPost = ({ setAllPosts }) => {
             id='file'
             ref={newPostPicRef}
           />
+          {authError}
           <div className={styles.openNewPostOptions}>
             <span className={styles.openNewPostSubmit} onClick={submitNewPost}>
               Submit
