@@ -14,8 +14,8 @@ const Posts = () => {
   useEffect(() => {
     modal(true);
     GetPosts().then((data) => {
+      console.log("postid",data);
       if (data.login === 'success') {
-        console.log(data.posts);
         data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
         modal(false);
       } else {
@@ -24,8 +24,9 @@ const Posts = () => {
     });
   }, [navigate, modal]);
   return (
-    <div className={styles.posts}>
-      <NewPost />
+    <div className={styles.postsContainer}>
+      <NewPost setAllPosts={setAllPosts} />
+
       {allPosts.map((eachPost, index) => (
         <div className={styles.post} key={index}>
           <h3>{eachPost.Title}</h3>
@@ -37,6 +38,15 @@ const Posts = () => {
             <img
               className={styles.avatarImg}
               src={`http://localhost:8080/avatar/${eachPost.Avatar}`}
+              alt='Avatar'
+            ></img>
+          ) : (
+            ''
+          )}
+            {eachPost.Picture ? (
+            <img
+              className={styles.avatarImg}
+              src={`http://localhost:8080/avatar/${eachPost.Picture}`}
               alt='Avatar'
             ></img>
           ) : (

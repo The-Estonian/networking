@@ -6,7 +6,7 @@ import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewPost.module.css';
 
-const NewPost = () => {
+const NewPost = ({ setAllPosts }) => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
@@ -60,17 +60,28 @@ const NewPost = () => {
     setNewPostOpen(!newPostOpen);
   };
 
-  const submitNewPost = () => {
+  const submitNewPost = async () => {
     console.log('Sending new post');
-    console.log(newPostTitle, newPostContent, newPostPrivacy);
-    SendNewPost({
-      title: newPostTitle,
-      content: newPostContent,
-      privacy: newPostPrivacy,
-    });
+    const fileInput = newPostPicRef.current;
+    if (file) {
+      if (!(file.type.startsWith('image/') || file.type.endsWith('gif'))) {
+        setAuthError('Avatar file must be a jpg or gif');
+        console.error('Invalid file type. Please select an image or GIF.');
+        return;
+      }
+    }
+    const formData = new FormData();
+    formData.append('title', newPostTitle)
+    formData.append('content', newPostContent)
+    formData.append('privacy', newPostPrivacy)
+    formData.append('picture', file)
+
+    const resp = await SendNewPost(formData)
+    setAllPosts(prevPosts => [resp.SendnewPost, ...prevPosts])
+    
     setNewPostTitle('');
     setNewPostContent('');
-    setNewPostPrivacy('1'); //Set back to first choice after making first post
+    setNewPostPrivacy('1');
     switchNewPostOpen();
   };
 
