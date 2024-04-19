@@ -11,7 +11,7 @@ type Posts struct {
 	Date     string
 }
 
-var NewPost struct {
+type NewPost struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
 	Picture string `json:"picture"`

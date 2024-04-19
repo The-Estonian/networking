@@ -15,10 +15,10 @@ const Authenticate = (props) => {
   const [aboutUser, setAboutUser] = useState('');
   const avatar = useRef(null);
 
-  let [authError, setAuthError] = useState('');
-  let [switchRegOrLogin, setSwitchRegOrLogin] = useState(false);
-  let [inputError, setInputError] = useState(false);
-  let [inputErrorText, setInputErrorText] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [switchRegOrLogin, setSwitchRegOrLogin] = useState(false);
+  const [inputError, setInputError] = useState(false);
+  const [inputErrorText, setInputErrorText] = useState('');
 
   const toggleRegisterOrLogin = () => {
     setSwitchRegOrLogin(!switchRegOrLogin);
