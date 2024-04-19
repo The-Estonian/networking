@@ -55,6 +55,9 @@ func ValidatePosts() []structs.Posts {
 	return database.GetAllPosts()
 }
 
+func ValidateNewPost() structs.Posts {
+	return database.GetNewPost()
+}
 func ValidateUserList() []structs.Profile {
 	return database.GetAllUsers()
 }

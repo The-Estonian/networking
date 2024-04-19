@@ -1,7 +1,16 @@
-.posts{
+.postsContainer{
     display: flex;
     flex-direction: column;
     margin: auto;
+    height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.post {
+    background-color: hsl(0, 0%, 70%);
+    margin-bottom: 20px;
+    width: 50vw;
 }
 
 .avatarImg {

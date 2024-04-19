@@ -8,11 +8,10 @@ export const SendNewPost = async (formData) => {
       cache: 'no-cache',
       referrerPolicy: 'no-referrer',
       redirect: 'follow',
-      body: JSON.stringify(formData),
+      body: formData,
       credentials: 'include',
     });
     const resp = await response.json();
-    console.log(resp);
     return resp;
   } catch (error) {
     console.log('SendNewPost error');

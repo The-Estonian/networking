@@ -6,12 +6,14 @@ type Posts struct {
 	Avatar   string
 	Title    string
 	Content  string
+	Picture  string
 	Privacy  string
 	Date     string
 }
 
 var NewPost struct {
-	Title   string
-	Content string
-	Privacy string
+	Title   string `json:"title"`
+	Content string `json:"content"`
+	Picture string `json:"picture"`
+	Privacy string `json:"privacy"`
 }
