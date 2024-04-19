@@ -41,7 +41,7 @@ func HandleUserList(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 		// send user list
-		callback["userList"] = validators.ValidateUserList()
+		callback["userList"] = validators.ValidateUserList(cookie.Value)
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("handleLogin", err)

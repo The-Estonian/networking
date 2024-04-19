@@ -17,19 +17,16 @@ const Chat = () => {
     GetUserList().then((data) => {
       if (data) {
         if (data.login === 'success') {
-          data.userList == null
-            ? setUserList([])
-            : setUserList(data.userList) &&
-              setActiveChatPartner(data.userList[0].Id);
+          setUserList(data.userList || []);
+          if (data.userList && data.userList.length > 0) {
+            setActiveChatPartner(data.userList[0].Id);
+          }
           modal(false);
         } else {
           navigate('/');
         }
       }
     });
-
-    // get user from server and set them
-    // setUserList(['user1', 'user2', 'user3', "user4"]);
   }, [navigate, modal]);
   const { sendJsonMessage } = useWebSocket(`ws://${backendUrl}/websocket`, {
     share: true,

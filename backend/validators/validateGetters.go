@@ -58,8 +58,9 @@ func ValidatePosts() []structs.Posts {
 func ValidateNewPost() structs.Posts {
 	return database.GetNewPost()
 }
-func ValidateUserList() []structs.Profile {
-	return database.GetAllUsers()
+func ValidateUserList(hash string) []structs.Profile {
+	userId := database.GetUserSession(hash)
+	return database.GetAllUsers(userId)
 }
 
 // provide user profile posts from db

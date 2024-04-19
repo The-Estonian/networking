@@ -163,7 +163,7 @@ func GetNewPost() structs.Posts {
 	defer db.Close()
 	return lastPost
 }
-func GetAllUsers() []structs.Profile {
+func GetAllUsers(userId string) []structs.Profile {
 	db := sqlite.DbConnection()
 	var allUsers []structs.Profile
 
@@ -181,7 +181,9 @@ func GetAllUsers() []structs.Profile {
 			helpers.CheckErr("getAllPosts", err)
 			continue
 		}
-		allUsers = append(allUsers, user)
+		if user.Id != userId {
+			allUsers = append(allUsers, user)
+		}
 	}
 
 	defer rows.Close()
