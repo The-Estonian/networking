@@ -10,5 +10,7 @@ func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/profile", HandleProfile)
 	r.HandleFunc("/posts", HandlePosts)
 	r.HandleFunc("/newpost", HandleNewPost)
+	r.HandleFunc("/websocket", HandleSocket)
+	r.HandleFunc("/userlist", HandleUserList)
 	r.Handle("/avatar/", http.StripPrefix("/avatar/", http.FileServer(http.Dir("./database/images"))))
 }

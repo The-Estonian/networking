@@ -20,6 +20,7 @@ const Posts = () => {
         modal(false);
       } else {
         navigate('/');
+        modal(false);
       }
     });
   }, [navigate, modal]);

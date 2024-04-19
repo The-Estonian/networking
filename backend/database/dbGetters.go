@@ -94,6 +94,30 @@ func GetUserProfile(userId string) structs.Profile {
 	return userProfile
 }
 
+func GetProfilePosts(userId string) []structs.ProfilePosts {
+	db := sqlite.DbConnection()
+	var profilePosts []structs.ProfilePosts
+	command := "SELECT id, user_fk_users, post_content, privacy_fk_posts_privacy, date FROM posts WHERE user_fk_users=?"
+	rows, err := db.Query(command, userId)
+	if err != nil {
+		helpers.CheckErr("GetProfilePosts", err)
+	}
+	for rows.Next() {
+		var profilePost structs.ProfilePosts
+		err = rows.Scan(&profilePost.PostId,
+			&profilePost.UserId,
+			&profilePost.PostContent,
+			&profilePost.PostPrivacy,
+			&profilePost.Date)
+		if err != nil {
+			helpers.CheckErr("GetProfilePosts", err)
+		}
+		profilePosts = append(profilePosts, profilePost)
+	}
+	defer db.Close()
+	return profilePosts
+}
+
 func GetAllPosts() []structs.Posts {
 	db := sqlite.DbConnection()
 	defer db.Close()
@@ -138,4 +162,30 @@ func GetNewPost() structs.Posts {
 	}
 	defer db.Close()
 	return lastPost
+}
+func GetAllUsers() []structs.Profile {
+	db := sqlite.DbConnection()
+	var allUsers []structs.Profile
+
+	command := "SELECT id, username, email FROM users"
+	rows, err := db.Query(command)
+	if err != nil {
+		helpers.CheckErr("getAllPosts", err)
+		return nil
+	}
+
+	for rows.Next() {
+		var user structs.Profile
+		err = rows.Scan(&user.Id, &user.Username, &user.Email)
+		if err != nil {
+			helpers.CheckErr("getAllPosts", err)
+			continue
+		}
+		allUsers = append(allUsers, user)
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+	return allUsers
 }

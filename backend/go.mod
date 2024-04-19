@@ -7,6 +7,7 @@ require github.com/mattn/go-sqlite3 v1.14.22
 require (
 	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/google/uuid v1.4.0
+	github.com/gorilla/websocket v1.5.1
 	golang.org/x/crypto v0.21.0
 )
 
@@ -18,6 +19,7 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/mod v0.11.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/tools v0.10.0 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
