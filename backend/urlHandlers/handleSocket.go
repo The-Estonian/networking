@@ -20,11 +20,11 @@ var upgrader = websocket.Upgrader{
 }
 
 var clients = make(map[*Client]bool)
-var broadcast = make(chan Message)
+var broadcast = make(chan SocketMessage)
 
-type Message struct {
-	Type             string   `json:"type"`
-	Status           string   `json:"status"`
+type SocketMessage struct {
+	Type   string `json:"type"`
+	Status string `json:"status"`
 	// From             string   `json:"fromuser"`
 	// FromId           string   `json:"fromuserid"`
 	Message          string   `json:"message"`
@@ -40,40 +40,43 @@ type Client struct {
 	lastActive  time.Time
 }
 
-func handleMessages() {
-	msg := <-broadcast
-	switch msg.Type {
-	case "message":
-		// set new message into db
-
-		// send to user directly
-		for client := range clients {
-			if msg.To == client.connOwnerId {
-				client.mu.Lock()
-				err := client.connection.WriteJSON(msg)
-				if err != nil {
-					fmt.Println(err)
-					client.connection.Close()
-					delete(clients, client)
+func handleMessages(userId string) {
+	for {
+		msg := <-broadcast
+		fmt.Println(msg)
+		switch msg.Type {
+		case "message":
+			// set new message into db
+			validators.ValidateSetNewMessage(userId, msg.Message, msg.To)
+			// send to user directly
+			for client := range clients {
+				if msg.To == client.connOwnerId {
+					client.mu.Lock()
+					err := client.connection.WriteJSON(msg)
+					if err != nil {
+						fmt.Println(err)
+						client.connection.Close()
+						delete(clients, client)
+					}
+					client.mu.Unlock()
 				}
+			}
+		case "onlineStatus":
+			users := []string{}
+			for key := range clients {
+				users = append(users, key.connOwnerId)
+			}
+			allUsers := SocketMessage{
+				Type:             "onlineStatus",
+				Status:           "online",
+				ConnectedClients: users,
+			}
+			// broadcast everyone that you are online/offline
+			for client := range clients {
+				client.mu.Lock()
+				client.connection.WriteJSON(allUsers)
 				client.mu.Unlock()
 			}
-		}
-	case "onlineStatus":
-		users := []string{}
-		for key := range clients {
-			users = append(users, key.connOwnerId)
-		}
-		allUsers := Message{
-			Type:             "onlineStatus",
-			Status:           "online",
-			ConnectedClients: users,
-		}
-		// broadcast everyone that you are online/offline
-		for client := range clients {
-			client.mu.Lock()
-			client.connection.WriteJSON(allUsers)
-			client.mu.Unlock()
 		}
 	}
 }
@@ -105,10 +108,10 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 		client.connection.Close()
 	}()
 
-	go handleMessages()
+	go handleMessages(userId)
 
 	for {
-		var msg Message
+		var msg SocketMessage
 		err := conn.ReadJSON(&msg)
 		if err != nil {
 			client.mu.Lock()

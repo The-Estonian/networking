@@ -16,8 +16,10 @@
 }
 
 .chat {
-  border: 1px solid white;
+  color: white;
   margin: 0.5rem;
+  margin-top: auto;
+  overflow-y: scroll;
 }
 
 .chatContainer {
@@ -30,7 +32,6 @@
 }
 
 .inputContainer {
-  margin-top: auto;
   display: flex;
 }
 
@@ -51,7 +52,15 @@
 }
 
 .inputContainer .chatInput {
-    text-align: left;
-    text-decoration: none;
-    outline: none;
+  text-align: left;
+  text-decoration: none;
+  outline: none;
+}
+
+.messageContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-top: 1px solid white;
 }

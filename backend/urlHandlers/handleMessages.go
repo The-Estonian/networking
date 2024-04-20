@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func HandleUserList(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("UserList attempt!")
+func HandleChatMessages(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get Message attempt!")
 
 	var callback = make(map[string]interface{})
 	cookie, err := r.Cookie("socialNetworkSession")
@@ -40,8 +40,9 @@ func HandleUserList(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		// send user list
-		callback["userList"], callback["activeUser"] = validators.ValidateUserList(cookie.Value)
+		// fetch return messages
+		partnerId := r.FormValue("partner")
+		callback["messages"] = validators.ValidateUserMessages(cookie.Value, partnerId)
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("handleLogin", err)
