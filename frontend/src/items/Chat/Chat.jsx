@@ -22,8 +22,14 @@ const Chat = () => {
         if (data.login === 'success') {
           // set messages
           setUserList(data.userList || []);
-          if (data.userList && data.userList.length > 0) {
-            setActiveChatPartner(data.userList[0].Id);
+          if (data?.userList?.length > 0) {
+            // set defaul chat partner and their messages on load
+            setPartnerGetMessages(data.userList[0].Id);
+            // scroll to bottom
+            setTimeout(() => {
+              chatContainerRef.current.scrollTop =
+                chatContainerRef.current.scrollHeight;
+            }, 100);
           }
           // set current user
           setCurrentUser(data.activeUser);
@@ -38,8 +44,20 @@ const Chat = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      if (allUserMessages.length > 0) {
-        setAllUserMessages([...allUserMessages, messageData]);
+      console.log(messageData);
+      console.log(allUserMessages);
+      if (allUserMessages?.length > 0) {
+        let messageObject = {
+          Date: new Date(),
+          Message: messageData.message,
+          MessageReceiver: messageData.touser,
+          MessageSender: activeChatPartner,
+        };
+        setAllUserMessages([...allUserMessages, messageObject]);
+        setTimeout(() => {
+          chatContainerRef.current.scrollTop =
+            chatContainerRef.current.scrollHeight;
+        }, 100);
       } else {
         setAllUserMessages([messageData]);
       }
@@ -53,17 +71,12 @@ const Chat = () => {
   };
 
   const sendMessage = () => {
-    // send to socket
+    // send to socket backend
     sendJsonMessage({
       type: 'message',
       message: textMessage,
       touser: activeChatPartner,
     });
-    // append to messagelist
-    // const currentDateTime = new Date();
-    // const dateTime = `${currentDateTime.getHours()}:${currentDateTime.getMinutes()}:${currentDateTime.getSeconds()} ${currentDateTime.getDate()}-${
-    //   currentDateTime.getMonth() + 1
-    // }-${currentDateTime.getFullYear()}`;
 
     let messageObject = {
       Date: new Date(),
@@ -71,8 +84,13 @@ const Chat = () => {
       MessageReceiver: activeChatPartner,
       MessageSender: currentUser,
     };
-    console.log(messageObject);
+    // set new message in the array
     setAllUserMessages([...allUserMessages, messageObject]);
+    // console.log(chatContainerRef.current);
+    setTimeout(() => {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }, 100);
     // clear message box
     setTextMessage('');
   };
@@ -90,7 +108,6 @@ const Chat = () => {
     const formData = new FormData();
     formData.append('partner', id);
     GetMessages(formData).then((data) => {
-      console.log(data.messages);
       setAllUserMessages(data.messages);
     });
   };

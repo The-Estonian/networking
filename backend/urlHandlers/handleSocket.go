@@ -40,10 +40,25 @@ type Client struct {
 	lastActive  time.Time
 }
 
+func periodicUserPresenceCheck() {
+	for {
+		time.Sleep(time.Minute)
+		// Iterate through clients and update their online status based on lastActive
+		currentTimestamp := time.Now()
+		for client := range clients {
+			client.mu.Lock()
+			if currentTimestamp.Sub(client.lastActive) > 3*time.Minute {
+				client.connection.Close()
+				delete(clients, client)
+			}
+			client.mu.Unlock()
+		}
+	}
+}
+
 func handleMessages(userId string) {
 	for {
 		msg := <-broadcast
-		fmt.Println(msg)
 		switch msg.Type {
 		case "message":
 			// set new message into db
@@ -109,6 +124,7 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	go handleMessages(userId)
+	go periodicUserPresenceCheck()
 
 	for {
 		var msg SocketMessage
