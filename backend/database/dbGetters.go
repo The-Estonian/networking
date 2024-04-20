@@ -192,3 +192,20 @@ func GetAllUsers(userId string) []structs.Profile {
 	defer db.Close()
 	return allUsers
 }
+
+// Get user privacy setting
+func GetUserPrivacy(userId string) string {
+	db := sqlite.DbConnection()
+	var privacy string
+	command := "SELECT privacy_fk_users_privacy FROM user_privacy WHERE user_fk_users=?"
+	err := db.QueryRow(command, userId).Scan(&privacy)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetUserPrivacy", err)
+		}
+		return "0"
+	}
+	defer db.Close()
+	return privacy
+	// 1 = public, 2 = private, 3 = almost private
+}

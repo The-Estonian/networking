@@ -37,3 +37,14 @@ func SetNewPost(user, title, postContent, image, privacy string) {
 	helpers.CheckErr("SetNewPost", err)
 	defer db.Close()
 }
+
+// SetUserPrivacy sets user privacy settings, it currently uses posts_privacy_table values
+// since the privacy settings values are the same for both users and posts
+// dunno, might be a bad idea
+func SetUserPrivacy(userId, privacyNmbr string) {
+	db := sqlite.DbConnection()
+	command := "INSERT OR REPLACE INTO user_privacy(user_fk_users, privacy_fk_users_privacy) VALUES(?, ?)"
+	_, err := db.Exec(command, userId, privacyNmbr)
+	helpers.CheckErr("SetUserPrivacy", err)
+	defer db.Close()
+}
