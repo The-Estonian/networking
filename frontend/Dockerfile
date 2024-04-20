@@ -9,10 +9,6 @@ RUN npm install
 
 COPY . .
 
-ARG BACKEND_IP
-
-ENV VITE_APP_BACKEND_URL=${BACKEND_IP}
-
 RUN npm run build
 
 # Stage 2: Production stage
