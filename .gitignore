@@ -1,6 +1,5 @@
 ### terraform
-frontend/frontend_terraform/*
-backend/backend_terraform/*
+terraform/*
 
 ### Social-network PROJECT ###
 backend/database/sqlite/social-network.db

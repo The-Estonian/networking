@@ -134,7 +134,7 @@ func GetAllPosts() []structs.Posts {
 
 	for rows.Next() {
 		var post structs.Posts
-		err = rows.Scan(&post.PostID, &post.Username, &post.Picture, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date)
+		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date)
 		if err != nil {
 			helpers.CheckErr("getAllPosts", err)
 			continue
@@ -153,7 +153,7 @@ func GetNewPost() structs.Posts {
 	var lastPost structs.Posts
 
 	command := "SELECT posts.id, users.username, users.avatar, posts.post_title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC LIMIT 1"
-	err := db.QueryRow(command).Scan(&lastPost.PostID, &lastPost.Username, &lastPost.Picture, &lastPost.Title, &lastPost.Content, &lastPost.Picture, &lastPost.Privacy, &lastPost.Date)
+	err := db.QueryRow(command).Scan(&lastPost.PostID, &lastPost.Username, &lastPost.Avatar, &lastPost.Title, &lastPost.Content, &lastPost.Picture, &lastPost.Privacy, &lastPost.Date)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			helpers.CheckErr("getNewpost", err)
@@ -163,7 +163,8 @@ func GetNewPost() structs.Posts {
 	defer db.Close()
 	return lastPost
 }
-func GetAllUsers() []structs.Profile {
+
+func GetAllUsers(userId string) []structs.Profile {
 	db := sqlite.DbConnection()
 	var allUsers []structs.Profile
 
@@ -181,11 +182,30 @@ func GetAllUsers() []structs.Profile {
 			helpers.CheckErr("getAllPosts", err)
 			continue
 		}
-		allUsers = append(allUsers, user)
+		if user.Id != userId {
+			allUsers = append(allUsers, user)
+		}
 	}
 
 	defer rows.Close()
 
 	defer db.Close()
 	return allUsers
+}
+
+func GetMessages(fromuser, touser string) []structs.ChatMessage {
+	fmt.Println(fromuser, "->", touser)
+	db := sqlite.DbConnection()
+	var UserMessages []structs.ChatMessage
+	command := "SELECT * FROM messages WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) ORDER BY id"
+	rows, err := db.Query(command, touser, fromuser, touser, fromuser)
+	defer db.Close()
+	helpers.CheckErr("GetMessage", err)
+	for rows.Next() {
+		var message structs.ChatMessage
+		rows.Scan(&message.ChatMessageId, &message.MessageSender, &message.Message, &message.MessageReceiver, &message.Date)
+		UserMessages = append(UserMessages, message)
+	}
+	defer rows.Close()
+	return UserMessages
 }
