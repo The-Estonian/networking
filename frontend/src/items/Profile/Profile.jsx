@@ -55,36 +55,49 @@ const Profile = () => {
           Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
         </span>
         <div className={styles.follow}>
-          <div>
-            <h2>Following</h2>
-            <ul>
-              {following.map((user, index) => (
-                <li key={index}>{user}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2>Followers</h2>
-            <ul>
-              {followers.map((user, index) => (
-                <li key={index}>{user}</li>
-              ))}
-            </ul>
-          </div>
+          {following ? (
+            <div>
+              <h2>Following</h2>
+              <ul>
+                {following.map((user, index) => (
+                  <li key={index}>{user}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>No users are being followed.</p>
+          )}
+
+          {followers ? (
+            <div>
+              <h2>Followers</h2>
+              <ul>
+                {followers.map((user, index) => (
+                  <li key={index}>{user}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>No followers found.</p>
+          )}
         </div>
       </div>
       <div className={styles.posts}>
-        <div>
-          <h2>Posts</h2>
-          <ul>
-            {posts.map((post, index) => (
-              <li key={index}>
-                <p>Post: {post.PostContent}</p>
-                <p>Date: {post.Date}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {posts ? (
+          <div>
+            <h2>Posts</h2>
+            <ul>
+              {posts.map((post, index) => (
+                <li key={index}>
+                  <p>Post: {post.PostContent}</p>
+                  <p>Date: {post.Date}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p>No posts found.</p>
+        )}
       </div>
     </div>
 
