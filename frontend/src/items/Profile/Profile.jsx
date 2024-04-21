@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { GetProfile } from '../../connections/profileConnection.js';
+import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
 
 import styles from './Profile.module.css';
 
@@ -10,6 +11,7 @@ const Profile = () => {
   const [following, setFollowing] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [privacy, setPrivacy] = useState(''); // WIP: useState must equal to database value
   const navigate = useNavigate();
   const [modal] = useOutletContext();
   useEffect(() => {
@@ -31,6 +33,20 @@ const Profile = () => {
     });
   }, [navigate, modal]);
 
+  const handlePrivacyChange = (e) => {
+    setPrivacy(e.target.value);
+    if (e.target.value !== '1'  && e.target.value !== '2') {
+      console.log('Do not change the value!!');
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    const formData = new FormData();
+    formData.append('privacy', privacy);
+
+    const resp = await SendNewPrivacy(formData);
+  }
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
@@ -46,6 +62,30 @@ const Profile = () => {
             ''
           )}
         </div>
+        {/* Privacy settings */}
+        <form>
+          <label>
+            <input
+              type="radio"
+              value="1"
+              checked={privacy === '1'}
+              onChange={handlePrivacyChange}
+            />
+            Public
+          </label>
+          <label>
+            <input
+              type="radio"
+              value='2'
+              checked={privacy === '2'}
+              onChange={handlePrivacyChange}
+            />
+            Private
+          </label>
+          <button type="button" onClick={handleSaveSettings}>
+            Save Settings
+          </button>
+        </form>
         <span>Id: {userProfile.Id}</span>
         <span>Email: {userProfile.Email}</span>
         <span>First Name: {userProfile.FirstName}</span>
@@ -54,6 +94,7 @@ const Profile = () => {
         <span>
           Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
         </span>
+        {/* Logged in user's followers and following*/}
         <div className={styles.follow}>
           {following ? (
             <div>
@@ -82,6 +123,7 @@ const Profile = () => {
           )}
         </div>
       </div>
+      {/* Logged in user's posts */}
       <div className={styles.posts}>
         {posts ? (
           <div>

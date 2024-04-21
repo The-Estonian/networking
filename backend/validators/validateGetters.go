@@ -77,3 +77,10 @@ func ValidateUserMessages(hash, partnerId string) []structs.ChatMessage {
 	// get user profile posts by userid
 	return database.GetMessages(userId, partnerId)
 }
+
+func ValidateUserPrivacy(hash string) string {
+	// get userid by hash
+	userId := database.GetUserSession(hash)
+	// get user profile privacy by userid
+	return database.GetUserPrivacy(userId)
+}
