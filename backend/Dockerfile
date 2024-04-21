@@ -4,7 +4,7 @@ FROM golang:latest
 #     apt-get install -y certbot && \
 #     apt-get clean
 
-WORKDIR /root
+WORKDIR /social-network
 
 COPY go.mod .
 
