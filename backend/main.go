@@ -20,7 +20,7 @@ func main() {
 	}
 	urlHandlers.StartHandlers(mux)
 	fmt.Println("Backend running on port 8080")
-	err := server.ListenAndServeTLS("certs/fullchain.pem", "certs/privkey.pem")
+	err := server.ListenAndServeTLS("/certs/fullchain.pem", "/certs/privkey.pem")
 	// err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
