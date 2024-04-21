@@ -17,10 +17,8 @@ func HandleNewPrivacy(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error parsing form", http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("form value r = ", r)
 
 	privacy := r.FormValue("privacy")
-	fmt.Println("privacy in handleNewPrivacy = ", privacy)
 
 	var callback = make(map[string]interface{})
 
@@ -54,7 +52,6 @@ func HandleNewPrivacy(w http.ResponseWriter, r *http.Request) {
 		callback["newPrivacy"] = "accepted"
 
 		validators.ValidateSetUserPrivacy(UserID, privacy)
-		fmt.Println("handleNewPrivacy, UserID, privacy = ", UserID, privacy)
 		callback["SendnewPrivacy"] = validators.ValidateUserPrivacy(cookie.Value)
 	}
 

@@ -3,7 +3,6 @@ package database
 import (
 	"backend/database/sqlite"
 	"backend/helpers"
-	"fmt"
 	"time"
 )
 
@@ -43,7 +42,6 @@ func SetNewPost(user, title, postContent, image, privacy string) {
 // since the privacy settings values are the same for both users and posts
 // dunno, might be a bad idea
 func SetUserPrivacy(userId, privacyNmbr string) {
-	fmt.Println("SetUserPrivacy userId, privacyNmbr = ", userId, privacyNmbr)
 	db := sqlite.DbConnection()
 	command := "INSERT OR REPLACE INTO user_privacy(user_fk_users, privacy_fk_users_privacy) VALUES(?, ?)"
 	_, err := db.Exec(command, userId, privacyNmbr)

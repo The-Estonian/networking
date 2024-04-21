@@ -37,15 +37,10 @@ const Profile = () => {
     setPrivacy(e.target.value);
     if (e.target.value !== '1'  && e.target.value !== '2') {
       console.log('Do not change the value!!');
-    } else {
-
-      console.log('Privacy: ', e.target.value);
     }
   };
 
   const handleSaveSettings = async () => {
-    console.log('What is privacy: ', privacy);
-    console.log('Sending new privacy settings');
     const formData = new FormData();
     formData.append('privacy', privacy);
 

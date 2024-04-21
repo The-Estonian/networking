@@ -209,3 +209,19 @@ func GetUserPrivacy(userId string) string {
 	return privacy
 	// 1 = public, 2 = private, 3 = almost private
 }
+
+// get userid if email in table
+func GetUserIdIfEmailExists(email string) string {
+	db := sqlite.DbConnection()
+	var userId string
+	command := "SELECT id FROM users WHERE email=?"
+	err := db.QueryRow(command, email).Scan(&userId)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetEmailIfExists", err)
+		}
+		return "no such email"
+	}
+	defer db.Close()
+	return userId
+}
