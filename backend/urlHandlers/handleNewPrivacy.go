@@ -1,33 +1,64 @@
 package urlHandlers
 
 import (
-	"backend/database"
+	"backend/helpers"
 	"backend/validators"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func HandleNewPrivacy(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("NewPrivacy attempt!")
 
-	cookie, err := r.Cookie("session")
+	err := r.ParseMultipartForm(10 << 20) // 10 MB, why do I need multipart form?
 	if err != nil {
-		http.Error(w, "No session", http.StatusInternalServerError)
+		http.Error(w, "Error parsing form", http.StatusInternalServerError)
 		return
 	}
-
-	hash := cookie.Value
-	userId := validators.ValidateUserSession(hash)
-	if userId == "0" {
-		http.Error(w, "Invalid session", http.StatusInternalServerError)
-		return
-	}
+	fmt.Println("form value r = ", r)
 
 	privacy := r.FormValue("privacy")
-	if privacy != "public" && privacy != "private" {
-		http.Error(w, "Invalid privacy value", http.StatusInternalServerError)
-		return
+	fmt.Println("privacy in handleNewPrivacy = ", privacy)
+
+	var callback = make(map[string]interface{})
+
+	cookie, err := r.Cookie("socialNetworkSession")
+	UserID := validators.ValidateUserSession(cookie.Value)
+
+	if err != nil || UserID == "0" {
+		sessionCookie := http.Cookie{
+			Name:     "socialNetworkSession",
+			Value:    "",
+			Expires:  time.Now(),
+			Path:     "/",
+			HttpOnly: true,
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
+		}
+		http.SetCookie(w, &sessionCookie)
+
+		authCookie := http.Cookie{
+			Name:     "socialNetworkAuth",
+			Value:    "false",
+			Expires:  time.Now(),
+			Path:     "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
+		}
+		http.SetCookie(w, &authCookie)
+		callback["login"] = "fail"
+	} else {
+		callback["login"] = "success"
+		callback["newPrivacy"] = "accepted"
+
+		validators.ValidateSetUserPrivacy(UserID, privacy)
+		fmt.Println("handleNewPrivacy, UserID, privacy = ", UserID, privacy)
+		callback["SendnewPrivacy"] = validators.ValidateUserPrivacy(cookie.Value)
 	}
 
-	database.SetUserPrivacy(userId, privacy)
+	writeData, err := json.Marshal(callback)
+	helpers.CheckErr("HandlePrivacy", err)
+	w.Write(writeData)
 }

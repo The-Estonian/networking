@@ -1,6 +1,7 @@
 const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
 
 export const SendNewPrivacy = async (formData) => {
+    console.log('FormData: ', formData);
   try {
     const response = await fetch(`http://${backendUrl}/newprivacy`, {
       method: 'POST',

@@ -71,7 +71,7 @@ func ValidateProfilePosts(hash string) []structs.ProfilePosts {
 	return database.GetProfilePosts(userId)
 }
 
-func ValidateProfilePrivacy(hash string) string {
+func ValidateUserPrivacy(hash string) string {
 	// get userid by hash
 	userId := database.GetUserSession(hash)
 	// get user profile privacy by userid

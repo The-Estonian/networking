@@ -41,7 +41,7 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 		// get profile privacy
-		profilePrivacy := validators.ValidateProfilePrivacy(cookie.Value)
+		profilePrivacy := validators.ValidateUserPrivacy(cookie.Value)
 		privacyJson, err := json.Marshal(profilePrivacy)
 		helpers.CheckErr("HandleProfile json", err)
 		callback["privacy"] = string(privacyJson)

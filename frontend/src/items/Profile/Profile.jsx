@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { GetProfile } from '../../connections/profileConnection.js';
+import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
 
 import styles from './Profile.module.css';
 
@@ -34,10 +35,21 @@ const Profile = () => {
 
   const handlePrivacyChange = (e) => {
     setPrivacy(e.target.value);
+    if (e.target.value !== '1'  && e.target.value !== '2') {
+      console.log('Do not change the value!!');
+    } else {
+
+      console.log('Privacy: ', e.target.value);
+    }
   };
 
-  const handleSaveSettings = () => {
+  const handleSaveSettings = async () => {
     console.log('What is privacy: ', privacy);
+    console.log('Sending new privacy settings');
+    const formData = new FormData();
+    formData.append('privacy', privacy);
+
+    const resp = await SendNewPrivacy(formData);
   }
 
   return (
@@ -60,8 +72,8 @@ const Profile = () => {
           <label>
             <input
               type="radio"
-              value="public"
-              checked={privacy === 'public'}
+              value="1"
+              checked={privacy === '1'}
               onChange={handlePrivacyChange}
             />
             Public
@@ -69,8 +81,8 @@ const Profile = () => {
           <label>
             <input
               type="radio"
-              value="private"
-              checked={privacy === 'private'}
+              value='2'
+              checked={privacy === '2'}
               onChange={handlePrivacyChange}
             />
             Private
