@@ -1,6 +1,9 @@
+const backendUrl =
+  import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080';
+
 export const GetLogin = async (formData) => {
   try {
-    const response = await fetch(`http://localhost:8080/login`, {
+    const response = await fetch(`${backendUrl}/login`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
