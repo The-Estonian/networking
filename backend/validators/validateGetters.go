@@ -70,3 +70,11 @@ func ValidateProfilePosts(hash string) []structs.ProfilePosts {
 	// get user profile posts by userid
 	return database.GetProfilePosts(userId)
 }
+
+func ValidateComments(postID string) []structs.Comments {
+	return database.GetAllComments(postID)
+}
+
+func ValidateNewComments() structs.Comments {
+	return database.GetNewComment()
+}

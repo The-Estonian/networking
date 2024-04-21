@@ -20,7 +20,7 @@ const router = createBrowserRouter([
         path: '/posts',
         element: <Posts />,
       },
-      {
+      { 
         path: '/groups',
         element: <div>GROUPS GO HERE TO-DO</div>,
       },
