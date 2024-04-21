@@ -238,3 +238,52 @@ func GetNewComment() structs.Comments {
 	defer db.Close()
 	return newComment
 }
+// Get user privacy setting
+func GetUserPrivacy(userId string) string {
+	db := sqlite.DbConnection()
+	var privacy string
+	command := "SELECT privacy_fk_users_privacy FROM user_privacy WHERE user_fk_users=?"
+	err := db.QueryRow(command, userId).Scan(&privacy)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetUserPrivacy", err)
+		}
+		return "0"
+	}
+	defer db.Close()
+	return privacy
+	// 1 = public, 2 = private, 3 = almost private
+}
+
+// get userid if email in table
+func GetUserIdIfEmailExists(email string) string {
+	db := sqlite.DbConnection()
+	var userId string
+	command := "SELECT id FROM users WHERE email=?"
+	err := db.QueryRow(command, email).Scan(&userId)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetEmailIfExists", err)
+		}
+		return "no such email"
+	}
+	defer db.Close()
+	return userId
+}
+
+func GetMessages(fromuser, touser string) []structs.ChatMessage {
+	fmt.Println(fromuser, "->", touser)
+	db := sqlite.DbConnection()
+	var UserMessages []structs.ChatMessage
+	command := "SELECT * FROM messages WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) ORDER BY id"
+	rows, err := db.Query(command, touser, fromuser, touser, fromuser)
+	defer db.Close()
+	helpers.CheckErr("GetMessage", err)
+	for rows.Next() {
+		var message structs.ChatMessage
+		rows.Scan(&message.ChatMessageId, &message.MessageSender, &message.Message, &message.MessageReceiver, &message.Date)
+		UserMessages = append(UserMessages, message)
+	}
+	defer rows.Close()
+	return UserMessages
+}

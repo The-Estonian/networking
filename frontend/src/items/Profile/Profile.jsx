@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { GetProfile } from '../../connections/profileConnection.js';
+import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
 
 import styles from './Profile.module.css';
 
@@ -10,6 +11,7 @@ const Profile = () => {
   const [following, setFollowing] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [privacy, setPrivacy] = useState(''); // WIP: useState must equal to database value
   const navigate = useNavigate();
   const [modal] = useOutletContext();
   useEffect(() => {
@@ -31,6 +33,20 @@ const Profile = () => {
     });
   }, [navigate, modal]);
 
+  const handlePrivacyChange = (e) => {
+    setPrivacy(e.target.value);
+    if (e.target.value !== '1'  && e.target.value !== '2') {
+      console.log('Do not change the value!!');
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    const formData = new FormData();
+    formData.append('privacy', privacy);
+
+    const resp = await SendNewPrivacy(formData);
+  }
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
@@ -46,6 +62,30 @@ const Profile = () => {
             ''
           )}
         </div>
+        {/* Privacy settings */}
+        <form>
+          <label>
+            <input
+              type="radio"
+              value="1"
+              checked={privacy === '1'}
+              onChange={handlePrivacyChange}
+            />
+            Public
+          </label>
+          <label>
+            <input
+              type="radio"
+              value='2'
+              checked={privacy === '2'}
+              onChange={handlePrivacyChange}
+            />
+            Private
+          </label>
+          <button type="button" onClick={handleSaveSettings}>
+            Save Settings
+          </button>
+        </form>
         <span>Id: {userProfile.Id}</span>
         <span>Email: {userProfile.Email}</span>
         <span>First Name: {userProfile.FirstName}</span>
@@ -54,37 +94,52 @@ const Profile = () => {
         <span>
           Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
         </span>
+        {/* Logged in user's followers and following*/}
         <div className={styles.follow}>
-          <div>
-            <h2>Following</h2>
-            <ul>
-              {following.map((user, index) => (
-                <li key={index}>{user}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2>Followers</h2>
-            <ul>
-              {followers.map((user, index) => (
-                <li key={index}>{user}</li>
-              ))}
-            </ul>
-          </div>
+          {following ? (
+            <div>
+              <h2>Following</h2>
+              <ul>
+                {following.map((user, index) => (
+                  <li key={index}>{user}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>No users are being followed.</p>
+          )}
+
+          {followers ? (
+            <div>
+              <h2>Followers</h2>
+              <ul>
+                {followers.map((user, index) => (
+                  <li key={index}>{user}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>No followers found.</p>
+          )}
         </div>
       </div>
+      {/* Logged in user's posts */}
       <div className={styles.posts}>
-        <div>
-          <h2>Posts</h2>
-          <ul>
-            {posts.map((post, index) => (
-              <li key={index}>
-                <p>Post: {post.PostContent}</p>
-                <p>Date: {post.Date}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {posts ? (
+          <div>
+            <h2>Posts</h2>
+            <ul>
+              {posts.map((post, index) => (
+                <li key={index}>
+                  <p>Post: {post.PostContent}</p>
+                  <p>Date: {post.Date}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p>No posts found.</p>
+        )}
       </div>
     </div>
 

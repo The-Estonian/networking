@@ -9,14 +9,23 @@ import (
 	"time"
 )
 
-func HandleUserList(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("UserList attempt!")
+func HandleNewPrivacy(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("NewPrivacy attempt!")
+
+	err := r.ParseMultipartForm(10 << 20) // 10 MB, why do I need multipart form?
+	if err != nil {
+		http.Error(w, "Error parsing form", http.StatusInternalServerError)
+		return
+	}
+
+	privacy := r.FormValue("privacy")
 
 	var callback = make(map[string]interface{})
+
 	cookie, err := r.Cookie("socialNetworkSession")
-	// if not err and cookie valid
-	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
-		// check status
+	UserID := validators.ValidateUserSession(cookie.Value)
+
+	if err != nil || UserID == "0" {
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
 			Value:    "",
@@ -40,10 +49,13 @@ func HandleUserList(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		// send user list
-		callback["userList"], callback["activeUser"] = validators.ValidateUserList(cookie.Value)
+		callback["newPrivacy"] = "accepted"
+
+		validators.ValidateSetUserPrivacy(UserID, privacy)
+		callback["SendnewPrivacy"] = validators.ValidateUserPrivacy(cookie.Value)
 	}
+
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("handleLogin", err)
+	helpers.CheckErr("HandlePrivacy", err)
 	w.Write(writeData)
 }
