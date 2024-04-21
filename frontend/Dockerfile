@@ -26,4 +26,6 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80 443 3000
 
+ENV VITE_APP_BACKEND_URL=http://backend:8080
+
 CMD ["nginx", "-g", "daemon off;"]

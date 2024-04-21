@@ -1,11 +1,13 @@
 package midware
 
 import (
+	"fmt"
 	"net/http"
 )
 
 func CorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.Header.Get("Origin"))
 		switch origin := r.Header.Get("Origin"); origin {
 		case "http://localhost:3000", "ws://localhost:3000", "http://frontend:80", "ws://frontend:80":
 			(w).Header().Set("Access-Control-Allow-Origin", origin)
