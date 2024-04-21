@@ -7,7 +7,7 @@ COPY package*.json ./
 
 RUN npm install
 
-ENV VITE_APP_BACKEND_URL=http://3.73.175.179/backend
+ENV VITE_APP_BACKEND_URL=http://3.76.113.233/backend
 
 COPY . .
 
