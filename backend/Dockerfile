@@ -6,10 +6,6 @@ FROM golang:1.22
 
 WORKDIR /social-network
 
-COPY /etc/letsencrypt/live/devpipe.ee/fullchain.pem /social-network/fullchain.pem
-
-COPY /etc/letsencrypt/live/devpipe.ee/privkey.pem /social-network/privkey.pem
-
 COPY go.mod .
 
 RUN go mod download
