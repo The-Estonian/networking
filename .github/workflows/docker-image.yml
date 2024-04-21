@@ -20,15 +20,19 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2 }} << 'ENDSSH'
           cd networking
-          sudo docker-compose down
-          sudo docker system prune -af
+          cd backend
+          sudo docker container stop backend
+          sudo docker container rm backend
+          sudo docker image rm estonian/social-network-backend:latest
+          sudo docker build -t estonian/social-network-backend:latest
           git pull
-          # Build frontend
           cd frontend
           npm install
           VITE_APP_BACKEND_URL=http://3.76.113.233/backend npm run build
           cd ..
           sudo cp -r frontend/dist/* /usr/share/nginx/html/
           sudo systemctl restart nginx
-          sudo docker-compose up -d  
+          sudo docker run -d --name backend -v certs_volume:/certs estonian/social-network-backend:latest 
+          # sudo docker cp /etc/letsencrypt/archive/devpipe.ee/fullchain1.pem backend:/certs/fullchain.pem
+          # sudo docker cp /etc/letsencrypt/archive/devpipe.ee/privkey1.pem backend:/certs/privkey.pem
           ENDSSH
