@@ -225,3 +225,20 @@ func GetUserIdIfEmailExists(email string) string {
 	defer db.Close()
 	return userId
 }
+
+func GetMessages(fromuser, touser string) []structs.ChatMessage {
+	fmt.Println(fromuser, "->", touser)
+	db := sqlite.DbConnection()
+	var UserMessages []structs.ChatMessage
+	command := "SELECT * FROM messages WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) ORDER BY id"
+	rows, err := db.Query(command, touser, fromuser, touser, fromuser)
+	defer db.Close()
+	helpers.CheckErr("GetMessage", err)
+	for rows.Next() {
+		var message structs.ChatMessage
+		rows.Scan(&message.ChatMessageId, &message.MessageSender, &message.Message, &message.MessageReceiver, &message.Date)
+		UserMessages = append(UserMessages, message)
+	}
+	defer rows.Close()
+	return UserMessages
+}

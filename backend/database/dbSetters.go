@@ -38,6 +38,14 @@ func SetNewPost(user, title, postContent, image, privacy string) {
 	defer db.Close()
 }
 
+func SetNewMessage(messageSender, message, messageReceiver string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO messages (message_sender_fk_users, message, message_receiver_fk_users, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, messageSender, message, messageReceiver)
+	helpers.CheckErr("SetNewMessage", err)
+	defer db.Close()
+}
+
 // SetUserPrivacy sets user privacy settings, it currently uses posts_privacy_table values
 // since the privacy settings values are the same for both users and posts
 // dunno, might be a bad idea

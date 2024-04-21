@@ -37,6 +37,10 @@ func ValidateSetNewPost(user, title, postContent, image, privacy string) {
 	database.SetNewPost(user, title, postContent, image, privacy)
 }
 
+func ValidateSetNewMessage(messageSender, message, messageReceiver string) {
+	database.SetNewMessage(messageSender, message, messageReceiver)
+}
+
 func ValidateSetUserPrivacy(userId, privacyNmbr string) {
 	database.SetUserPrivacy(userId, privacyNmbr)
 }
