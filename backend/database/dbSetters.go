@@ -38,6 +38,13 @@ func SetNewPost(user, title, postContent, image, privacy string) {
 	defer db.Close()
 }
 
+func SetNewComment(user, commenContent, image, postID string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO comments (user_fk_users, comment_content, comment_image, post_Id_fk_posts, date) VALUES(?, ?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, user, commenContent, image, postID)
+	helpers.CheckErr("SetNewComment", err)
+	defer db.Close()
+}
 func SetNewMessage(messageSender, message, messageReceiver string) {
 	db := sqlite.DbConnection()
 	command := "INSERT INTO messages (message_sender_fk_users, message, message_receiver_fk_users, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"

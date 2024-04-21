@@ -11,6 +11,8 @@ func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/newprivacy", HandleNewPrivacy)
 	r.HandleFunc("/posts", HandlePosts)
 	r.HandleFunc("/newpost", HandleNewPost)
+	r.HandleFunc("/comments", HandleComments)
+	r.HandleFunc("/newcomment", HandleNewComment)
 	r.HandleFunc("/websocket", HandleSocket)
 	r.HandleFunc("/userlist", HandleUserList)
 	r.HandleFunc("/messages", HandleChatMessages)
