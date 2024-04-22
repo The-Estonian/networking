@@ -13,6 +13,7 @@ func CorsMiddleware(next http.Handler) http.Handler {
 			"ws://localhost:3000",
 			"http://www.devpipe.ee",
 			"http://devpipe.ee",
+			"https://3.76.113.233",
 			"https://www.devpipe.ee",
 			"https://devpipe.ee":
 			(w).Header().Set("Access-Control-Allow-Origin", origin)
