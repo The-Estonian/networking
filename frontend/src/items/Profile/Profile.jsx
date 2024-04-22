@@ -47,7 +47,7 @@ const Profile = () => {
     const formData = new FormData();
     formData.append('privacy', privacy);
 
-    const resp = await SendNewPrivacy(formData);
+    await SendNewPrivacy(formData);
   }
 
   return (

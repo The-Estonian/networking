@@ -16,6 +16,8 @@ Place where you can create posts with categories, comment the posts, create grou
 
 ## How to Run the Project
 
+Open the project from here [LIVE](https://www.devpipe.ee)
+
 Open first terminal
 
 ```bash
@@ -34,4 +36,4 @@ npm install
 npm run dev
 ```
 
-_<sup>Author: [Jaanus Saar](https://01.kood.tech/git/jsaar)_</sup>
+_<sup>Authors: [Jaanus Saar](https://01.kood.tech/git/jsaar) [Ivar Mihhailov](https://01.kood.tech/git/imihhail) [Oliver Vilu](https://01.kood.tech/git/ovilu)_</sup>
