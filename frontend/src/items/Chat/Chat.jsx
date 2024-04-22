@@ -11,7 +11,7 @@ const Chat = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userList, setUserList] = useState([]);
   const navigate = useNavigate();
-  const [modal, sendJsonMessage, lastMessage] = useOutletContext();
+  const [modal, logout, sendJsonMessage, lastMessage] = useOutletContext();
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const Chat = () => {
           setCurrentUser(data.activeUser);
           modal(false);
         } else {
-          navigate('/');
+          logout();
         }
       }
     });
@@ -42,8 +42,6 @@ const Chat = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      console.log(messageData);
-      console.log(allUserMessages);
       if (allUserMessages?.length > 0) {
         let messageObject = {
           Date: new Date(),
