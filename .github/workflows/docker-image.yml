@@ -28,7 +28,7 @@ jobs:
           git pull
           cd frontend
           npm install
-          VITE_APP_BACKEND_URL=https://devpipe.ee/backend VITE_APP_BACKEND_PICTURE_URL=https://devpipe.ee/avatar npm run build
+          VITE_APP_BACKEND_URL=https://devpipe.ee/backend VITE_APP_BACKEND_PICTURE_URL=https://devpipe.ee npm run build
           cd ..
           sudo cp -r frontend/dist/* /usr/share/nginx/html/
           sudo systemctl restart nginx

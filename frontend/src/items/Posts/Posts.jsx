@@ -48,7 +48,7 @@ const Posts = () => {
           {eachPost.Picture ? (
             <img
               className={styles.avatarImg}
-              src={`http://localhost:8080/avatar/${eachPost.Picture}`}
+              src={`${backendUrl}/avatar/${eachPost.Picture}`}
               alt='Avatar'
             ></img>
           ) : (
