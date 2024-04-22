@@ -4,8 +4,6 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import { GetUserList } from '../../connections/userListConnection';
 import { GetMessages } from '../../connections/messagesConnection';
 
-// const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
-
 const Chat = () => {
   const [textMessage, setTextMessage] = useState('');
   const [allUserMessages, setAllUserMessages] = useState([]);

@@ -11,6 +11,7 @@ import (
 
 func HandleStatus(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Status attempt!")
+	fmt.Println(r.Header.Get("Origin"))
 
 	var callback = make(map[string]string)
 	cookie, err := r.Cookie("socialNetworkSession")

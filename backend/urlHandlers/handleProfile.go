@@ -40,6 +40,12 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
+		// get profile privacy
+		profilePrivacy := validators.ValidateUserPrivacy(cookie.Value)
+		privacyJson, err := json.Marshal(profilePrivacy)
+		helpers.CheckErr("HandleProfile json", err)
+		callback["privacy"] = string(privacyJson)
+
 		// get profile info
 		userProfile := validators.ValidateUserProfile(cookie.Value)
 		profileJson, err := json.Marshal(userProfile)
@@ -51,6 +57,7 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		postsJson, err := json.Marshal(profilePosts)
 		helpers.CheckErr("HandleProfilePosts json", err)
 		callback["posts"] = string(postsJson)
+
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleProfile", err)

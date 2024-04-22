@@ -1,8 +1,9 @@
-const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
+const backendUrl =
+  import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080';
 
 export const SetLogout = async () => {
   try {
-    const response = await fetch(`http://${backendUrl}/logout`, {
+    const response = await fetch(`${backendUrl}/logout`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',

@@ -71,9 +71,23 @@ func ValidateProfilePosts(hash string) []structs.ProfilePosts {
 	return database.GetProfilePosts(userId)
 }
 
+func ValidateComments(postID string) []structs.Comments {
+	return database.GetAllComments(postID)
+}
+
+func ValidateNewComments() structs.Comments {
+	return database.GetNewComment()
+}
 func ValidateUserMessages(hash, partnerId string) []structs.ChatMessage {
 	// get userid by hash
 	userId := database.GetUserSession(hash)
 	// get user profile posts by userid
 	return database.GetMessages(userId, partnerId)
+}
+
+func ValidateUserPrivacy(hash string) string {
+	// get userid by hash
+	userId := database.GetUserSession(hash)
+	// get user profile privacy by userid
+	return database.GetUserPrivacy(userId)
 }

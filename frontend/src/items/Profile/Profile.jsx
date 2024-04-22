@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
+const backendUrl =
+  import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
+
 import { GetProfile } from '../../connections/profileConnection.js';
+import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
 
 import styles from './Profile.module.css';
 
@@ -10,6 +14,7 @@ const Profile = () => {
   const [following, setFollowing] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [privacy, setPrivacy] = useState(''); // WIP: useState must equal to database value
   const navigate = useNavigate();
   const [modal] = useOutletContext();
   useEffect(() => {
@@ -21,7 +26,7 @@ const Profile = () => {
         // following and followers test!!!
         setFollowing(['User1', 'User2', 'User3']);
         setFollowers(['User4', 'User5']);
-        // profile related posts 
+        // profile related posts
         setPosts(JSON.parse(data.posts));
         console.log(data.posts);
         modal(false);
@@ -31,6 +36,20 @@ const Profile = () => {
     });
   }, [navigate, modal]);
 
+  const handlePrivacyChange = (e) => {
+    setPrivacy(e.target.value);
+    if (e.target.value !== '1'  && e.target.value !== '2') {
+      console.log('Do not change the value!!');
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    const formData = new FormData();
+    formData.append('privacy', privacy);
+
+    await SendNewPrivacy(formData);
+  }
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
@@ -39,13 +58,37 @@ const Profile = () => {
           {userProfile.Avatar ? (
             <img
               className={styles.avatarImg}
-              src={`http://localhost:8080/avatar/${userProfile.Avatar}`}
+              src={`${backendUrl}/avatar/${userProfile.Avatar}`}
               alt='Avatar'
             ></img>
           ) : (
             ''
           )}
         </div>
+        {/* Privacy settings */}
+        <form>
+          <label>
+            <input
+              type="radio"
+              value="1"
+              checked={privacy === '1'}
+              onChange={handlePrivacyChange}
+            />
+            Public
+          </label>
+          <label>
+            <input
+              type="radio"
+              value='2'
+              checked={privacy === '2'}
+              onChange={handlePrivacyChange}
+            />
+            Private
+          </label>
+          <button type="button" onClick={handleSaveSettings}>
+            Save Settings
+          </button>
+        </form>
         <span>Id: {userProfile.Id}</span>
         <span>Email: {userProfile.Email}</span>
         <span>First Name: {userProfile.FirstName}</span>
@@ -54,6 +97,7 @@ const Profile = () => {
         <span>
           Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
         </span>
+        {/* Logged in user's followers and following*/}
         <div className={styles.follow}>
           {following ? (
             <div>
@@ -82,6 +126,7 @@ const Profile = () => {
           )}
         </div>
       </div>
+      {/* Logged in user's posts */}
       <div className={styles.posts}>
         {posts ? (
           <div>
@@ -100,7 +145,6 @@ const Profile = () => {
         )}
       </div>
     </div>
-
   );
 };
 

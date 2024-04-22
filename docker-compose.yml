@@ -8,8 +8,6 @@ services:
     image: estonian/social-network-backend:latest
     ports:
       - '8080:8080'
-    networks:
-      - social-network
 
   frontend:
     build:
@@ -21,7 +19,3 @@ services:
       - '443:443'
     networks:
       - social-network
-
-networks:
-  social-network:
-    driver: bridge

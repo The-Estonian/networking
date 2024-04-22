@@ -1,6 +1,8 @@
 package urlHandlers
 
 import (
+	"backend/database"
+	"backend/helpers"
 	"backend/validators"
 	"encoding/json"
 	"fmt"
@@ -71,6 +73,8 @@ func HandleRegistration(w http.ResponseWriter, r *http.Request) {
 			callback["newUser"] = "created"
 		} else {
 			validators.ValidateSetToUsers(email, password, firstName, lastName, date, "defaultAvatar.jpg", username, aboutUser)
+			// set user default privacy (public), use standardize name function to get database email.
+			validators.ValidateSetUserPrivacy(database.GetUserIdIfEmailExists(helpers.StandardizeName(email)), "1")
 			callback["newUser"] = "created"
 		}
 	}

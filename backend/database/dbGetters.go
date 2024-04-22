@@ -193,6 +193,84 @@ func GetAllUsers(userId string) []structs.Profile {
 	return allUsers
 }
 
+func GetAllComments(postID string) []structs.Comments {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var allComments []structs.Comments
+
+	command := "SELECT users.username, users.avatar, comments.comment_content, comments.comment_image, comments.date FROM comments INNER JOIN users ON user_fk_users == users.id where post_Id_fk_posts = ? ORDER BY comments.date DESC"
+	rows, err := db.Query(command, postID)
+	if err != nil {
+		helpers.CheckErr("getAllComments", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var comment structs.Comments
+		err = rows.Scan(&comment.Username, &comment.Avatar, &comment.Content, &comment.Picture , &comment.Date)
+		if err != nil {
+			helpers.CheckErr("getAllComments loop: ", err)
+			continue
+		}
+		allComments = append(allComments, comment)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("getAllComments rows: ", err)
+	}
+	return allComments
+}
+
+func GetNewComment() structs.Comments {
+	db := sqlite.DbConnection()
+	var newComment structs.Comments
+
+	command := "SELECT users.username, users.avatar, comments.comment_content, comments.comment_image, comments.date FROM comments INNER JOIN users ON user_fk_users == users.id ORDER BY comments.date DESC LIMIT 1"
+	err := db.QueryRow(command).Scan(&newComment.Username, &newComment.Avatar, &newComment.Content, &newComment.Picture, &newComment.Date)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("getNewComment", err)
+		}
+		fmt.Println("Error selecting new comment")
+	}
+	defer db.Close()
+	return newComment
+}
+// Get user privacy setting
+func GetUserPrivacy(userId string) string {
+	db := sqlite.DbConnection()
+	var privacy string
+	command := "SELECT privacy_fk_users_privacy FROM user_privacy WHERE user_fk_users=?"
+	err := db.QueryRow(command, userId).Scan(&privacy)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetUserPrivacy", err)
+		}
+		return "0"
+	}
+	defer db.Close()
+	return privacy
+	// 1 = public, 2 = private, 3 = almost private
+}
+
+// get userid if email in table
+func GetUserIdIfEmailExists(email string) string {
+	db := sqlite.DbConnection()
+	var userId string
+	command := "SELECT id FROM users WHERE email=?"
+	err := db.QueryRow(command, email).Scan(&userId)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetEmailIfExists", err)
+		}
+		return "no such email"
+	}
+	defer db.Close()
+	return userId
+}
+
 func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	fmt.Println(fromuser, "->", touser)
 	db := sqlite.DbConnection()

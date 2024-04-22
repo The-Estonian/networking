@@ -5,7 +5,10 @@ import { SetLogout } from '../../connections/logoutConnection.js';
 import useWebSocket from 'react-use-websocket';
 
 const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
-const websock = `ws://${backendUrl}/websocket`;
+let websock = `ws://${backendUrl}/websocket`;
+if (backendUrl != 'localhost:8080') {
+  websock = `wss://${backendUrl}/websocket`;
+}
 
 import Menu from '../Menu/Menu';
 import Authenticate from '../../authentication/Authenticate.jsx';
