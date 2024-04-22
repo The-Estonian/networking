@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
+const backendUrl =
+  import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
+
 import { GetProfile } from '../../connections/profileConnection.js';
 
 import styles from './Profile.module.css';
@@ -21,7 +24,7 @@ const Profile = () => {
         // following and followers test!!!
         setFollowing(['User1', 'User2', 'User3']);
         setFollowers(['User4', 'User5']);
-        // profile related posts 
+        // profile related posts
         setPosts(JSON.parse(data.posts));
         console.log(data.posts);
         modal(false);
@@ -39,7 +42,7 @@ const Profile = () => {
           {userProfile.Avatar ? (
             <img
               className={styles.avatarImg}
-              src={`http://localhost:8080/avatar/${userProfile.Avatar}`}
+              src={`${backendUrl}/avatar/${userProfile.Avatar}`}
               alt='Avatar'
             ></img>
           ) : (
@@ -100,7 +103,6 @@ const Profile = () => {
         )}
       </div>
     </div>
-
   );
 };
 
