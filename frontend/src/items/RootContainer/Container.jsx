@@ -53,6 +53,7 @@ const Container = () => {
       console.log('Logout => ', data);
     });
     navigate('/');
+    setShowModal(false);
   };
   return (
     <div className={styles.container}>
@@ -62,7 +63,9 @@ const Container = () => {
       ) : (
         <Authenticate modal={setShowModal} currSession={handleActiveSession} />
       )}
-      <Outlet context={[setShowModal, sendJsonMessage, lastMessage]} />
+      <Outlet
+        context={[setShowModal, handleLogout, sendJsonMessage, lastMessage]}
+      />
     </div>
   );
 };

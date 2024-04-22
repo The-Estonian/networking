@@ -11,24 +11,30 @@ import NewComment from '../Comments/NewComment.jsx';
 
 import styles from './Posts.module.css';
 
-
-const ShowComments = (post, setAllPosts, setDisplayComments, setDisplayTitle) => {
+const ShowComments = (
+  post,
+  setAllPosts,
+  setDisplayComments,
+  setDisplayTitle
+) => {
   const formData = new FormData();
-  formData.append('postID', post.PostID)
+  formData.append('postID', post.PostID);
 
-  GetAllComments(formData).then(data => data.comments == null ? setAllPosts([]) : setAllPosts(data.comments))
-  setDisplayTitle(post.Title) 
-  setDisplayComments(true)  
+  GetAllComments(formData).then((data) =>
+    data.comments == null ? setAllPosts([]) : setAllPosts(data.comments)
+  );
+  setDisplayTitle(post.Title);
+  setDisplayComments(true);
 };
 
 const Posts = () => {
-  const [allPosts, setAllPosts] = useState([])
+  const [allPosts, setAllPosts] = useState([]);
   const [displayComments, setDisplayComments] = useState(false);
   const [displayTitle, setDisplayTitle] = useState('');
   const navigate = useNavigate();
-  const [modal] = useOutletContext();
+  const [modal, logout] = useOutletContext();
   useEffect(() => {
-    showPosts()
+    showPosts();
   }, [navigate, modal]);
 
   const showPosts = () => {
@@ -39,24 +45,38 @@ const Posts = () => {
         data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
         modal(false);
       } else {
-        navigate('/');
-        modal(false);
+        logout();
       }
     });
-    setDisplayComments(false)
-    setDisplayTitle('')
-  }
+    setDisplayComments(false);
+    setDisplayTitle('');
+  };
 
   return (
     <div className={styles.postsContainer}>
-      {displayComments ? <NewComment setAllPosts={setAllPosts}/> : <NewPost setAllPosts={setAllPosts} />}
+      {displayComments ? (
+        <NewComment setAllPosts={setAllPosts} />
+      ) : (
+        <NewPost setAllPosts={setAllPosts} />
+      )}
 
       <h1>{displayTitle}</h1>
 
       {allPosts.map((eachPost, index) => (
-        <div className={styles.post} key={index} onClick={() => ShowComments(eachPost, setAllPosts, setDisplayComments, setDisplayTitle)}>
-        <h3>{eachPost.Title}</h3>
-          <p>{eachPost.Content}</p>          
+        <div
+          className={styles.post}
+          key={index}
+          onClick={() =>
+            ShowComments(
+              eachPost,
+              setAllPosts,
+              setDisplayComments,
+              setDisplayTitle
+            )
+          }
+        >
+          <h3>{eachPost.Title}</h3>
+          <p>{eachPost.Content}</p>
           <p>{eachPost.Username}</p>
           <p>{eachPost.Privacy}</p>
           <p>{eachPost.Date}</p>
@@ -80,7 +100,11 @@ const Posts = () => {
           )}
         </div>
       ))}
-      {displayComments ? <button onClick={showPosts}>RETURN TO POSTS</button> : ''}
+      {displayComments ? (
+        <button onClick={showPosts}>RETURN TO POSTS</button>
+      ) : (
+        ''
+      )}
     </div>
   );
 };

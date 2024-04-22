@@ -16,7 +16,7 @@ const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [privacy, setPrivacy] = useState(''); // WIP: useState must equal to database value
   const navigate = useNavigate();
-  const [modal] = useOutletContext();
+  const [modal, logout] = useOutletContext();
   useEffect(() => {
     modal(true);
     GetProfile().then((data) => {
@@ -31,14 +31,14 @@ const Profile = () => {
         console.log(data.posts);
         modal(false);
       } else {
-        navigate('/');
+        logout();
       }
     });
   }, [navigate, modal]);
 
   const handlePrivacyChange = (e) => {
     setPrivacy(e.target.value);
-    if (e.target.value !== '1'  && e.target.value !== '2') {
+    if (e.target.value !== '1' && e.target.value !== '2') {
       console.log('Do not change the value!!');
     }
   };
@@ -48,7 +48,7 @@ const Profile = () => {
     formData.append('privacy', privacy);
 
     await SendNewPrivacy(formData);
-  }
+  };
 
   return (
     <div className={styles.profileContainer}>
@@ -69,8 +69,8 @@ const Profile = () => {
         <form>
           <label>
             <input
-              type="radio"
-              value="1"
+              type='radio'
+              value='1'
               checked={privacy === '1'}
               onChange={handlePrivacyChange}
             />
@@ -78,14 +78,14 @@ const Profile = () => {
           </label>
           <label>
             <input
-              type="radio"
+              type='radio'
               value='2'
               checked={privacy === '2'}
               onChange={handlePrivacyChange}
             />
             Private
           </label>
-          <button type="button" onClick={handleSaveSettings}>
+          <button type='button' onClick={handleSaveSettings}>
             Save Settings
           </button>
         </form>
