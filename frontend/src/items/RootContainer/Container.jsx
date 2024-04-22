@@ -7,7 +7,7 @@ import useWebSocket from 'react-use-websocket';
 const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
 let websock = `ws://${backendUrl}/websocket`;
 if (backendUrl != 'localhost:8080') {
-  websock = `wss://${backendUrl}/websocket`;
+  websock = `wss://${backendUrl.substring(8)}/websocket`;
 }
 
 import Menu from '../Menu/Menu';

@@ -16,7 +16,7 @@ const NewPost = ({ setAllPosts }) => {
   const [authError, setAuthError] = useState('');
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
-  const [modal, logout, sendJsonMessage, lastMessage] = useOutletContext();
+  const [, logout, ,] = useOutletContext();
 
   const navigate = useNavigate();
 
