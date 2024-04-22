@@ -14,7 +14,8 @@ func main() {
 	sqlite.Create()
 	mux := http.NewServeMux()
 	server := &http.Server{
-		Addr:    ":8080",
+		// Addr:    ":8080",
+		Addr:    ":443",
 		Handler: midware.CorsMiddleware(mux),
 	}
 	urlHandlers.StartHandlers(mux)
