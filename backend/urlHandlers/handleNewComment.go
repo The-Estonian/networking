@@ -2,6 +2,7 @@ package urlHandlers
 
 import (
 	"backend/helpers"
+	"backend/structs"
 	"backend/validators"
 	"encoding/json"
 	"fmt"
@@ -14,18 +15,16 @@ import (
 	"github.com/google/uuid"
 )
 
-func HandleNewPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("NewPost attempt!")
+func HandleNewComment(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("NewComment attempt!")
 
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		http.Error(w, "Avatar file too big", http.StatusInternalServerError)
+		http.Error(w, "Comment picture file too big", http.StatusInternalServerError)
 		return
 	}
 
-	title := r.FormValue("title")
 	content := r.FormValue("content")
-	privacy := r.FormValue("privacy")
 
 	imageName := ""
 	fileExtension := ""
@@ -33,13 +32,13 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 	if len(r.MultipartForm.File) > 0 {
 		file, fileHeader, err := r.FormFile("picture")
 		if err != nil {
-			fmt.Println("File upload error", err)
+			fmt.Println("Comment picture upload error", err)
 		}
 		defer file.Close()
 
 		fileExtension = filepath.Ext(fileHeader.Filename)
 		if fileExtension != ".jpeg" && fileExtension != ".jpg" && fileExtension != ".gif" {
-			http.Error(w, "Avatar picture can only be jpg or gif", http.StatusInternalServerError)
+			http.Error(w, "Comment picture can only be jpg or gif", http.StatusInternalServerError)
 			return
 		}
 
@@ -62,10 +61,8 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 
 	cookie, err := r.Cookie("socialNetworkSession")
 	UserID := validators.ValidateUserSession(cookie.Value)
-	// if not err and cookie valid
 
 	if err != nil || UserID == "0" {
-		// check status
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
 			Value:    "",
@@ -89,13 +86,11 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		callback["newPost"] = "accepted"
-
-		validators.ValidateSetNewPost(UserID, title, content, imageName+fileExtension, privacy)
-		callback["SendnewPost"] = validators.ValidateNewPost()
+		validators.ValidateSetNewComment(UserID, content, imageName+fileExtension, structs.PostID)
+		callback["newComment"] = "accepted"
+		callback["sendNewComment"] = validators.ValidateNewComments()
 	}
-
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("HandlePosts", err)
+	helpers.CheckErr("HandleNewComment", err)
 	w.Write(writeData)
 }

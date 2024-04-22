@@ -38,10 +38,28 @@ func SetNewPost(user, title, postContent, image, privacy string) {
 	defer db.Close()
 }
 
+func SetNewComment(user, commenContent, image, postID string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO comments (user_fk_users, comment_content, comment_image, post_Id_fk_posts, date) VALUES(?, ?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, user, commenContent, image, postID)
+	helpers.CheckErr("SetNewComment", err)
+	defer db.Close()
+}
 func SetNewMessage(messageSender, message, messageReceiver string) {
 	db := sqlite.DbConnection()
 	command := "INSERT INTO messages (message_sender_fk_users, message, message_receiver_fk_users, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
 	_, err := db.Exec(command, messageSender, message, messageReceiver)
 	helpers.CheckErr("SetNewMessage", err)
+	defer db.Close()
+}
+
+// SetUserPrivacy sets user privacy settings, it currently uses posts_privacy_table values
+// since the privacy settings values are the same for both users and posts
+// dunno, might be a bad idea
+func SetUserPrivacy(userId, privacyNmbr string) {
+	db := sqlite.DbConnection()
+	command := "INSERT OR REPLACE INTO user_privacy(user_fk_users, privacy_fk_users_privacy) VALUES(?, ?)"
+	_, err := db.Exec(command, userId, privacyNmbr)
+	helpers.CheckErr("SetUserPrivacy", err)
 	defer db.Close()
 }

@@ -25,6 +25,7 @@ jobs:
           sudo docker container rm backend
           sudo docker image rm estonian/social-network-backend:latest
           sudo docker build -t estonian/social-network-backend:latest .
+          cd ..
           git pull
           cd frontend
           npm install
