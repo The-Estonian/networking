@@ -1,15 +1,8 @@
-import { useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
 const Groups = () => {
-  const [, , sendJsonMessage] = useOutletContext();
-  useEffect(() => {
-    sendJsonMessage({
-      type: 'message',
-      Message: 'Msg from chat',
-      touser: 2,
-    });
-  });
+  const [, , , , readyState] = useOutletContext();
+  console.log(readyState);
   return <div>Groups</div>;
 };
 
