@@ -40,9 +40,12 @@ const Profile = () => {
   }, [navigate, modal, privacy]);
 
   let activebox = privacy === '2' ? styles.private : styles.public;
-  const handlePrivacyChange = (e) => {
-    const newPrivacy = e.target.value;
+
+  // Privacy settings for one div, Please create that div!!!!
+  const handlePrivacyChange = () => {
+    let newPrivacy = privacy === '1' ? '2' : '1';
     setPrivacy(newPrivacy);
+    console.log('Privacy is now ' + (newPrivacy === '1' ? 'public' : 'private'));
   
     if (newPrivacy !== '1' && newPrivacy !== '2') {
       console.log('Do not change the value!!');
@@ -70,7 +73,7 @@ const Profile = () => {
             ''
           )}
         </div>
-        {/* Privacy settings, one div */}
+        {/* Privacy settings, one div here */}
         <form> 
           <label>
             <input
