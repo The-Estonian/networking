@@ -317,3 +317,19 @@ func GetAllGroups() []structs.Groups {
 	}
 	return allGroups
 }
+
+func GetNewGroup() structs.Groups {
+	db := sqlite.DbConnection()
+	var newGroup structs.Groups
+
+	command := "SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC LIMIT 1"
+	err := db.QueryRow(command).Scan(&newGroup.Id, &newGroup.Creator, &newGroup.Title, &newGroup.Description, &newGroup.Date)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("getNewGroup", err)
+		}
+		fmt.Println("Error selecting new group")
+	}
+	defer db.Close()
+	return newGroup
+}

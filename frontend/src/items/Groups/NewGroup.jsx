@@ -6,7 +6,7 @@ import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewGroup.module.css';
 
-const NewGroup = () => {
+const NewGroup = ( {setGroups, setSelectedGroup} ) => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newGroupTitle, setNewGroupTitle] = useState('');
   const [newGroupDescription, setNewGroupDescription] = useState('');
@@ -44,8 +44,11 @@ const NewGroup = () => {
     formData.append('title', newGroupTitle)
     formData.append('description', newGroupDescription)
 
-    SendNewGroup(formData) 
-    //SendNewComment(formData).then(data => setAllPosts(prevPosts => [data.sendNewComment, ...prevPosts]))
+    //Send new group to server, then append new group to the current grouplist, then set selected group to new group.
+    SendNewGroup(formData).then((data) => {
+      setGroups(prevGroup => [data.SendNewGroup, ...prevGroup])
+      setSelectedGroup(data.SendNewGroup)
+    })
    
     setNewGroupDescription('');
     switchNewPostOpen();

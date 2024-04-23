@@ -95,3 +95,7 @@ func ValidateUserPrivacy(hash string) string {
 func ValidateGroups() []structs.Groups {
 	return database.GetAllGroups()
 }
+
+func ValidateNewGroup() structs.Groups {
+	return database.GetNewGroup()
+}
