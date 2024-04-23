@@ -13,6 +13,8 @@ func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/newpost", HandleNewPost)
 	r.HandleFunc("/comments", HandleComments)
 	r.HandleFunc("/newcomment", HandleNewComment)
+	r.HandleFunc("/groups", HandleGroups)
+	r.HandleFunc("/newgroup", HandleNewGroup)
 	r.HandleFunc("/websocket", HandleSocket)
 	r.HandleFunc("/userlist", HandleUserList)
 	r.HandleFunc("/messages", HandleChatMessages)

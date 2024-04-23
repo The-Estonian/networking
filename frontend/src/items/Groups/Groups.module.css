@@ -1,0 +1,35 @@
+.groupContainer {
+    display: flex;
+    margin: auto;
+    height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.groupList {
+    background-color: hsl(0, 0%, 70%);
+    padding: 10px;
+    height: 70vh;
+    align-self: center;
+}
+
+.groupName {
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.groupInfo {
+    display: flex;
+    flex-direction: column;
+    background-color: hsl(0, 0%, 70%);
+    margin-left: 50px;
+    margin-right: 300px;
+    padding: 10px;
+    text-align: center;
+    width: 60vw;
+}
+
+.inviteButton {
+ align-self: flex-end;
+ padding: 4px 8px;
+}
