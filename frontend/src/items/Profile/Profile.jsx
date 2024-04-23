@@ -3,6 +3,7 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { GetProfile } from '../../connections/profileConnection.js';
 import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
+import { GetNewPrivacy } from '../../connections/privacyConnection.js';
 
 import styles from './Profile.module.css';
 
@@ -32,25 +33,27 @@ const Profile = () => {
         modal(false);
       }
     });
-    SendNewPrivacy().then(data => setPrivacy(data.SendnewPrivacy));
-  }, [navigate, modal]);
+    if (privacy === '') {
+      console.log('Privacy is empty!')
+      GetNewPrivacy().then(data => setPrivacy(data.GetPrivacy));
+    }
+  }, [navigate, modal, privacy]);
 
   let activebox = privacy === '2' ? styles.private : styles.public;
-
   const handlePrivacyChange = (e) => {
-    setPrivacy(e.target.value);
-    if (e.target.value !== '1'  && e.target.value !== '2') {
+    const newPrivacy = e.target.value;
+    setPrivacy(newPrivacy);
+  
+    if (newPrivacy !== '1' && newPrivacy !== '2') {
       console.log('Do not change the value!!');
+      return;
     }
-  };
-
-  const handleSaveSettings = () => {
+  
     const formData = new FormData();
-    formData.append('privacy', privacy);
-
-    SendNewPrivacy(formData).then(data => setPrivacy(data.SendnewPrivacy)); // then error
-
-  }
+    formData.append('privacy', newPrivacy);
+  
+    SendNewPrivacy(formData).then(data => setPrivacy(data.SendNewPrivacy));
+  };
 
   return (
     <div className={styles.profileContainer}>
@@ -87,9 +90,6 @@ const Profile = () => {
             />
             Private
           </label>
-          <button type="button" onClick={handleSaveSettings}>
-            Save Settings
-          </button>
         </form>
         <span>Id: {userProfile.Id}</span>
         <span>Email: {userProfile.Email}</span>
