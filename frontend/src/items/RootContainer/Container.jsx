@@ -5,7 +5,10 @@ import { SetLogout } from '../../connections/logoutConnection.js';
 import useWebSocket from 'react-use-websocket';
 
 const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
-const websock = `ws://${backendUrl}/websocket`;
+let websock = `ws://${backendUrl}/websocket`;
+if (backendUrl != 'localhost:8080') {
+  websock = `wss://${backendUrl.substring(8)}/websocket`;
+}
 
 import Menu from '../Menu/Menu';
 import Authenticate from '../../authentication/Authenticate.jsx';
@@ -50,6 +53,7 @@ const Container = () => {
       console.log('Logout => ', data);
     });
     navigate('/');
+    setShowModal(false);
   };
   return (
     <div className={styles.container}>
@@ -59,7 +63,9 @@ const Container = () => {
       ) : (
         <Authenticate modal={setShowModal} currSession={handleActiveSession} />
       )}
-      <Outlet context={[setShowModal, sendJsonMessage, lastMessage]} />
+      <Outlet
+        context={[setShowModal, handleLogout, sendJsonMessage, lastMessage]}
+      />
     </div>
   );
 };

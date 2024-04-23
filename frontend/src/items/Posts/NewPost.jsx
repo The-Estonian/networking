@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { SendNewPost } from '../../connections/newPostConnection';
 import { GetStatus } from '../../connections/statusConnection.js';
@@ -12,17 +12,18 @@ const NewPost = ({ setAllPosts }) => {
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostPrivacy, setNewPostPrivacy] = useState('1');
   const newPostPicRef = useRef(null);
-  
+
   const [authError, setAuthError] = useState('');
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
-  
+  const [, logout, ,] = useOutletContext();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     GetStatus().then((data) => {
       if (data.login !== 'success') {
-        navigate('/');
+        logout();
       }
     });
   }, [navigate]);
@@ -63,13 +64,15 @@ const NewPost = ({ setAllPosts }) => {
       }
     }
     const formData = new FormData();
-    formData.append('title', newPostTitle)
-    formData.append('content', newPostContent)
-    formData.append('privacy', newPostPrivacy)
-    formData.append('picture', file)
+    formData.append('title', newPostTitle);
+    formData.append('content', newPostContent);
+    formData.append('privacy', newPostPrivacy);
+    formData.append('picture', file);
 
-    SendNewPost(formData).then(data => setAllPosts(prevPosts => [data.SendnewPost, ...prevPosts]))
-   
+    SendNewPost(formData).then((data) =>
+      setAllPosts((prevPosts) => [data.SendnewPost, ...prevPosts])
+    );
+
     setNewPostTitle('');
     setNewPostContent('');
     setNewPostPrivacy('1');
@@ -88,7 +91,11 @@ const NewPost = ({ setAllPosts }) => {
             id='content'
             onChange={validateNewPostContentInput}
           />
-          {inputError ? <span className={styles.errorMsg}>{inputErrorText}</span> : ''}
+          {inputError ? (
+            <span className={styles.errorMsg}>{inputErrorText}</span>
+          ) : (
+            ''
+          )}
           <div className={styles.privacySelection}>
             <div>
               <input
