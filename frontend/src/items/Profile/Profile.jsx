@@ -11,7 +11,7 @@ const Profile = () => {
   const [following, setFollowing] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [privacy, setPrivacy] = useState(''); // WIP: useState must equal to database value
+  const [privacy, setPrivacy] = useState('');
   const navigate = useNavigate();
   const [modal] = useOutletContext();
   useEffect(() => {
@@ -29,9 +29,13 @@ const Profile = () => {
         modal(false);
       } else {
         navigate('/');
+        modal(false);
       }
     });
+    SendNewPrivacy().then(data => setPrivacy(data.SendnewPrivacy));
   }, [navigate, modal]);
+
+  let activebox = privacy === '2' ? styles.private : styles.public;
 
   const handlePrivacyChange = (e) => {
     setPrivacy(e.target.value);
@@ -40,11 +44,12 @@ const Profile = () => {
     }
   };
 
-  const handleSaveSettings = async () => {
+  const handleSaveSettings = () => {
     const formData = new FormData();
     formData.append('privacy', privacy);
 
-    const resp = await SendNewPrivacy(formData);
+    SendNewPrivacy(formData).then(data => setPrivacy(data.SendnewPrivacy)); // then error
+
   }
 
   return (
@@ -62,8 +67,8 @@ const Profile = () => {
             ''
           )}
         </div>
-        {/* Privacy settings */}
-        <form>
+        {/* Privacy settings, one div */}
+        <form> 
           <label>
             <input
               type="radio"
@@ -78,7 +83,7 @@ const Profile = () => {
               type="radio"
               value='2'
               checked={privacy === '2'}
-              onChange={handlePrivacyChange}
+              onChange={handlePrivacyChange} //onclick send data
             />
             Private
           </label>
