@@ -1,0 +1,48 @@
+.groupContainer {
+    display: flex;
+    margin: auto;
+    height: 80vh;
+    width: 90%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.groupList {
+    background-color: hsl(0, 0%, 70%);
+    height: 80vh;
+    text-align: center;
+    border: solid 2px black;
+    border-right: 1px;
+}
+
+.groupName {
+    margin-bottom: 5px;
+    cursor: pointer;
+    padding: 5px 20px;
+}
+
+.groupNameSelected {
+    background-color: hsl(0, 0%, 10%);
+    color: white;
+    padding: 10px 20px;
+  }
+  
+.groupInfo {
+    display: flex;
+    flex-direction: column;
+    background-color: hsl(0, 0%, 70%);
+    border: solid 2px black;
+    padding: 10px;
+    text-align: center;
+    width: 68vw;
+}
+
+.inviteButton {
+ align-self: flex-end;
+ padding: 4px 8px;
+}
+
+.userDopDownMenu {
+    position: absolute;
+    align-self: flex-end;
+}

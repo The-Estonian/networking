@@ -1,10 +1,9 @@
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080';
 
-export const SendNewPrivacy = async (formData) => {
-    console.log('FormData: ', formData);
+export const GetAllGroups = async (formData) => {
   try {
-    const response = await fetch(`${backendUrl}/newprivacy`, {
+    const response = await fetch(`${backendUrl}/groups`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -16,7 +15,7 @@ export const SendNewPrivacy = async (formData) => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('SendNewPrivacy error');
+    console.log('Groups error');
     console.log(error);
   }
 };

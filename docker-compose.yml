@@ -8,21 +8,14 @@ services:
     image: estonian/social-network-backend:latest
     ports:
       - '8080:8080'
-    networks:
-      - social-network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        - BACKEND_IP=${BACKEND_IP}
     image: estonian/social-network-frontend:latest
     ports:
-      - '3000:3000'
+      - '80:80'
+      - '443:443'
     networks:
       - social-network
-
-networks:
-  social-network:
-    driver: bridge

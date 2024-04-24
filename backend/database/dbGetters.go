@@ -193,6 +193,52 @@ func GetAllUsers(userId string) []structs.Profile {
 	return allUsers
 }
 
+func GetAllComments(postID string) []structs.Comments {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var allComments []structs.Comments
+
+	command := "SELECT users.username, users.avatar, comments.comment_content, comments.comment_image, comments.date FROM comments INNER JOIN users ON user_fk_users == users.id where post_Id_fk_posts = ? ORDER BY comments.date DESC"
+	rows, err := db.Query(command, postID)
+	if err != nil {
+		helpers.CheckErr("getAllComments", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var comment structs.Comments
+		err = rows.Scan(&comment.Username, &comment.Avatar, &comment.Content, &comment.Picture, &comment.Date)
+		if err != nil {
+			helpers.CheckErr("getAllComments loop: ", err)
+			continue
+		}
+		allComments = append(allComments, comment)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("getAllComments rows: ", err)
+	}
+	return allComments
+}
+
+func GetNewComment() structs.Comments {
+	db := sqlite.DbConnection()
+	var newComment structs.Comments
+
+	command := "SELECT users.username, users.avatar, comments.comment_content, comments.comment_image, comments.date FROM comments INNER JOIN users ON user_fk_users == users.id ORDER BY comments.date DESC LIMIT 1"
+	err := db.QueryRow(command).Scan(&newComment.Username, &newComment.Avatar, &newComment.Content, &newComment.Picture, &newComment.Date)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("getNewComment", err)
+		}
+		fmt.Println("Error selecting new comment")
+	}
+	defer db.Close()
+	return newComment
+}
+
 // Get user privacy setting
 func GetUserPrivacy(userId string) string {
 	db := sqlite.DbConnection()
@@ -227,11 +273,13 @@ func GetUserIdIfEmailExists(email string) string {
 }
 
 func GetMessages(fromuser, touser string) []structs.ChatMessage {
-	fmt.Println(fromuser, "->", touser)
 	db := sqlite.DbConnection()
 	var UserMessages []structs.ChatMessage
 	command := "SELECT * FROM messages WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) ORDER BY id"
 	rows, err := db.Query(command, touser, fromuser, touser, fromuser)
+	if err != sql.ErrNoRows {
+		helpers.CheckErr("GetMessages", err)
+	}
 	defer db.Close()
 	helpers.CheckErr("GetMessage", err)
 	for rows.Next() {
@@ -241,4 +289,50 @@ func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	}
 	defer rows.Close()
 	return UserMessages
+}
+
+func GetAllGroups() []structs.Groups {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var allGroups []structs.Groups
+
+	command := "SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC"
+	rows, err := db.Query(command)
+	if err != nil {
+		helpers.CheckErr("Selecting getAllGroups", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var group structs.Groups
+		err = rows.Scan(&group.Id, &group.Creator, &group.Title, &group.Description, &group.Date)
+		if err != nil {
+			helpers.CheckErr("Iterating GetAllGroups", err)
+			continue
+		}
+		allGroups = append(allGroups, group)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetAllGroups rows", err)
+	}
+	return allGroups
+}
+
+func GetNewGroup() structs.Groups {
+	db := sqlite.DbConnection()
+	var newGroup structs.Groups
+
+	command := "SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC LIMIT 1"
+	err := db.QueryRow(command).Scan(&newGroup.Id, &newGroup.Creator, &newGroup.Title, &newGroup.Description, &newGroup.Date)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("getNewGroup", err)
+		}
+		fmt.Println("Error selecting new group")
+	}
+	defer db.Close()
+	return newGroup
 }

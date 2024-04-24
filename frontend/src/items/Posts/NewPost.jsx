@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { SendNewPost } from '../../connections/newPostConnection';
 import { GetStatus } from '../../connections/statusConnection.js';
@@ -12,57 +12,48 @@ const NewPost = ({ setAllPosts }) => {
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostPrivacy, setNewPostPrivacy] = useState('1');
   const newPostPicRef = useRef(null);
-  
+
   const [authError, setAuthError] = useState('');
-  const [inputError, setInputError] = useState(false);
+  const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
-  
+  const [, logout, ,] = useOutletContext();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     GetStatus().then((data) => {
       if (data.login !== 'success') {
-        navigate('/');
+        logout();
       }
     });
   }, [navigate]);
 
   const validateNewPostTitleInput = (e) => {
     setNewPostTitle(e.target.value);
-    if (e.target.value.length < 1) {
-      setInputError(true);
-      setInputErrorText('Title can not be empty!');
-    } else {
-      setInputError(false);
-    }
   };
 
   const validateNewPostContentInput = (e) => {
     setNewPostContent(e.target.value);
-    if (e.target.value.length < 1) {
-      setInputError(true);
-      setInputErrorText('Content can not be empty!');
-    } else {
-      setInputError(false);
-    }
   };
 
   const validateNewPostPrivacyInput = (e) => {
     setNewPostPrivacy(e.target.value);
-    if (e.target.value.length < 1) {
-      setInputError(true);
-      setInputErrorText('You need to select Privacy');
-    } else {
-      setInputError(false);
-    }
   };
 
   const switchNewPostOpen = () => {
     setNewPostOpen(!newPostOpen);
+    setInputErrorText('');
   };
 
-  const submitNewPost = async () => {
+  const submitNewPost = () => {
+    if (newPostContent.length < 1 || newPostTitle.length < 1) {
+      setInputError(true);
+      setInputErrorText('Title or Content can not be empty!');
+      return;
+    }
+
     console.log('Sending new post');
+
     const fileInput = newPostPicRef.current;
     const file = fileInput?.files[0];
     if (file) {
@@ -73,14 +64,15 @@ const NewPost = ({ setAllPosts }) => {
       }
     }
     const formData = new FormData();
-    formData.append('title', newPostTitle)
-    formData.append('content', newPostContent)
-    formData.append('privacy', newPostPrivacy)
-    formData.append('picture', file)
+    formData.append('title', newPostTitle);
+    formData.append('content', newPostContent);
+    formData.append('privacy', newPostPrivacy);
+    formData.append('picture', file);
 
-    const resp = await SendNewPost(formData)
-    setAllPosts(prevPosts => [resp.SendnewPost, ...prevPosts])
-    
+    SendNewPost(formData).then((data) =>
+      setAllPosts((prevPosts) => [data.SendnewPost, ...prevPosts])
+    );
+
     setNewPostTitle('');
     setNewPostContent('');
     setNewPostPrivacy('1');
@@ -99,6 +91,11 @@ const NewPost = ({ setAllPosts }) => {
             id='content'
             onChange={validateNewPostContentInput}
           />
+          {inputError ? (
+            <span className={styles.errorMsg}>{inputErrorText}</span>
+          ) : (
+            ''
+          )}
           <div className={styles.privacySelection}>
             <div>
               <input
@@ -154,7 +151,6 @@ const NewPost = ({ setAllPosts }) => {
               Cancel
             </span>
           </div>
-          {inputError ? <span>{inputErrorText}</span> : ''}
         </div>
       ) : (
         <span className={styles.closedNewPost} onClick={switchNewPostOpen}>

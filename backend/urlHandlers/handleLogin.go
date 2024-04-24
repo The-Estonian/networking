@@ -22,7 +22,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
 			Value:    userCookie,
-			Expires:  time.Now().Add(time.Minute * 10),
+			Expires:  time.Now().Add(time.Minute * 30),
 			Path:     "/",
 			HttpOnly: true,
 			SameSite: http.SameSiteNoneMode,
@@ -33,7 +33,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		authCookie := http.Cookie{
 			Name:     "socialNetworkAuth",
 			Value:    "true",
-			Expires:  time.Now().Add(time.Minute * 10),
+			Expires:  time.Now().Add(time.Minute * 30),
 			Path:     "/",
 			SameSite: http.SameSiteNoneMode,
 			Secure:   true,

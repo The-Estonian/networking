@@ -4,16 +4,23 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import { GetUserList } from '../../connections/userListConnection';
 import { GetMessages } from '../../connections/messagesConnection';
 
-// const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
-
 const Chat = () => {
   const [textMessage, setTextMessage] = useState('');
   const [allUserMessages, setAllUserMessages] = useState([]);
   const [activeChatPartner, setActiveChatPartner] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [userList, setUserList] = useState([]);
+  const [wsConnectionOpen, setWsConnectionOpen] = useState(false);
+  const [activeMessage, setActiveMessage] = useState([]);
   const navigate = useNavigate();
-  const [modal, sendJsonMessage, lastMessage] = useOutletContext();
+  const [
+    modal,
+    logout,
+    sendJsonMessage,
+    lastMessage,
+    readyState,
+    activeSession,
+  ] = useOutletContext();
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
@@ -35,7 +42,7 @@ const Chat = () => {
           setCurrentUser(data.activeUser);
           modal(false);
         } else {
-          navigate('/');
+          logout();
         }
       }
     });
@@ -44,25 +51,51 @@ const Chat = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      console.log(messageData);
-      console.log(allUserMessages);
-      if (allUserMessages?.length > 0) {
-        let messageObject = {
-          Date: new Date(),
-          Message: messageData.message,
-          MessageReceiver: messageData.touser,
-          MessageSender: activeChatPartner,
-        };
-        setAllUserMessages([...allUserMessages, messageObject]);
-        setTimeout(() => {
-          chatContainerRef.current.scrollTop =
-            chatContainerRef.current.scrollHeight;
-        }, 100);
+      if (activeChatPartner === messageData.fromuserid) {
+        if (allUserMessages?.length > 0) {
+          let messageObject = {
+            Date: new Date(),
+            Message: messageData.message,
+            MessageReceiver: messageData.touser,
+            MessageSender: messageData.fromuserid,
+          };
+          setAllUserMessages([...allUserMessages, messageObject]);
+          setTimeout(() => {
+            chatContainerRef.current.scrollTop =
+              chatContainerRef.current.scrollHeight;
+          }, 100);
+        } else {
+          setAllUserMessages([messageData]);
+        }
       } else {
-        setAllUserMessages([messageData]);
+        // set new message notification
+        if (activeMessage?.length > 0) {
+          setActiveMessage([messageData.fromuserid, ...activeMessage]);
+        } else {
+          setActiveMessage([messageData.fromuserid]);
+        }
       }
     }
   }, [lastMessage]);
+
+  useEffect(() => {
+    if (readyState === 1) {
+      setWsConnectionOpen(true);
+    } else {
+      setWsConnectionOpen(false);
+    }
+  }, [readyState]);
+
+  useEffect(() => {
+    if (!activeSession) {
+      console.log('Resetting all chat');
+      setTextMessage('');
+      setActiveChatPartner('');
+      setCurrentUser('');
+      setUserList([]);
+      setWsConnectionOpen(false);
+    }
+  }, [activeSession]);
 
   const handleText = (e) => {
     if (e.target.value.length > 0) {
@@ -74,6 +107,7 @@ const Chat = () => {
     // send to socket backend
     sendJsonMessage({
       type: 'message',
+      fromuserid: currentUser,
       message: textMessage,
       touser: activeChatPartner,
     });
@@ -85,7 +119,15 @@ const Chat = () => {
       MessageSender: currentUser,
     };
     // set new message in the array
-    setAllUserMessages([...allUserMessages, messageObject]);
+    if (allUserMessages?.length > 0) {
+      setAllUserMessages([...allUserMessages, messageObject]);
+      setTimeout(() => {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }, 100);
+    } else {
+      setAllUserMessages([messageObject]);
+    }
     // console.log(chatContainerRef.current);
     setTimeout(() => {
       chatContainerRef.current.scrollTop =
@@ -98,6 +140,7 @@ const Chat = () => {
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
+      console.log('Sending message');
       sendMessage();
     }
   };
@@ -109,7 +152,21 @@ const Chat = () => {
     formData.append('partner', id);
     GetMessages(formData).then((data) => {
       setAllUserMessages(data.messages);
+      setTimeout(() => {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }, 100);
     });
+  };
+
+  const handleUserClick = (userId) => {
+    setPartnerGetMessages(userId);
+    if (activeMessage.includes(userId)) {
+      const listUpdate = activeMessage.filter(
+        (eachMember) => eachMember !== userId
+      );
+      setActiveMessage(listUpdate);
+    }
   };
 
   return (
@@ -121,9 +178,11 @@ const Chat = () => {
             className={
               each.Id === activeChatPartner
                 ? styles.activePartner
+                : activeMessage.includes(each.Id)
+                ? styles.newMessage
                 : styles.chatuser
             }
-            onClick={() => setPartnerGetMessages(each.Id)}
+            onClick={() => handleUserClick(each.Id)}
           >
             {each.Email}
           </p>
@@ -145,20 +204,24 @@ const Chat = () => {
             );
           })}
         </div>
-        <div className={styles.inputContainer}>
-          <input
-            type='text'
-            value={textMessage}
-            onChange={handleText}
-            className={styles.chatInput}
-            name='textMessage'
-            id=''
-            onKeyDown={handleKeyPress}
-          />
-          <button type='submit' onClick={sendMessage}>
-            Send
-          </button>
-        </div>
+        {wsConnectionOpen ? (
+          <div className={styles.inputContainer}>
+            <input
+              type='text'
+              value={textMessage}
+              onChange={handleText}
+              className={styles.chatInput}
+              name='textMessage'
+              id=''
+              onKeyDown={handleKeyPress}
+            />
+            <button type='submit' onClick={sendMessage}>
+              Send
+            </button>
+          </div>
+        ) : (
+          <p className={styles.chatInput}>Connecting to backend</p>
+        )}
       </div>
     </div>
   );

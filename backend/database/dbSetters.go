@@ -38,6 +38,13 @@ func SetNewPost(user, title, postContent, image, privacy string) {
 	defer db.Close()
 }
 
+func SetNewComment(user, commenContent, image, postID string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO comments (user_fk_users, comment_content, comment_image, post_Id_fk_posts, date) VALUES(?, ?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, user, commenContent, image, postID)
+	helpers.CheckErr("SetNewComment", err)
+	defer db.Close()
+}
 func SetNewMessage(messageSender, message, messageReceiver string) {
 	db := sqlite.DbConnection()
 	command := "INSERT INTO messages (message_sender_fk_users, message, message_receiver_fk_users, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
@@ -54,5 +61,23 @@ func SetUserPrivacy(userId, privacyNmbr string) {
 	command := "INSERT OR REPLACE INTO user_privacy(user_fk_users, privacy_fk_users_privacy) VALUES(?, ?)"
 	_, err := db.Exec(command, userId, privacyNmbr)
 	helpers.CheckErr("SetUserPrivacy", err)
+	defer db.Close()
+}
+
+func SetNewGroup(user, title, description string) {
+	db := sqlite.DbConnection()
+
+	command := "INSERT INTO guilds (creator_fk_users, guild_title, guild_description, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, user, title, description)
+	helpers.CheckErr("SetNewGroup", err)
+
+	var guildID int
+	err = db.QueryRow("SELECT last_insert_rowid()").Scan(&guildID)
+	helpers.CheckErr("SetNewGroup error getting inserted guildID", err)
+
+	command = "INSERT INTO guildmembers (guild_id_fk_guilds, members_fk_users) VALUES (?, ?)"
+	_, err = db.Exec(command, guildID, user)
+	helpers.CheckErr("SetNewGroup error inserting guild creator into guildmembers table", err)
+
 	defer db.Close()
 }

@@ -13,6 +13,7 @@
   justify-content: start;
   border: 1px solid white;
   width: 15%;
+  overflow: hidden;
 }
 
 .chat {
@@ -57,10 +58,20 @@
   outline: none;
 }
 
-.messageContainer{
+.messageContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding: 0.5rem;
   border-top: 1px solid white;
+}
+
+.newMessage {
+  background: rgba(57, 181, 230, 0.507);
+
+  padding: 0.5rem;
+  border: 1px solid transparent;
+  border-bottom: 1px solid white;
+  width: 100%;
+  cursor: pointer;
 }

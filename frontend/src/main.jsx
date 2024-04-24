@@ -21,7 +21,7 @@ const router = createBrowserRouter([
         path: '/posts',
         element: <Posts />,
       },
-      {
+      { 
         path: '/groups',
         element: <Groups />,
       },
