@@ -8,8 +8,9 @@ const backendUrl =
   import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'localhost:8080';
 let websock = `ws://${backendUrl}/websocket`;
 if (backendUrl != 'localhost:8080') {
-  websock = `ws://${backendUrl.substring(8)}/websocket`;
+  websock = `wss://${backendUrl.substring(8)}/websocket`;
 }
+console.log('Websocket connection to:', websock);
 
 import Menu from '../Menu/Menu';
 import Authenticate from '../../authentication/Authenticate.jsx';
