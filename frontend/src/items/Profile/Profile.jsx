@@ -73,27 +73,24 @@ const Profile = () => {
             ''
           )}
         </div>
-        {/* Privacy settings, one div here */}
-        <form> 
-          <label>
-            <input
-              type="radio"
-              value="1"
-              checked={privacy === '1'}
-              onChange={handlePrivacyChange}
-            />
-            Public
+        {/* Privacy settings */}
+        <span>Privacy mode: </span>
+        <div className={styles.toggleSwitch}>
+          <input
+            type="checkbox"
+            id="toggle"
+            className={styles.toggleSwitchCheckbox}
+            checked={privacy === '2'}
+            onChange={handlePrivacyChange}
+          />
+          <label className={styles.toggleSwitchLabel} htmlFor="toggle">
+            <span className={styles.toggleSwitchInner} />
+            <span className={styles.toggleSwitchSwitch} />
+            <span className={privacy === '2' ? styles.toggleSwitchTextOn : styles.toggleSwitchTextOff}>
+              {privacy === '2' ? 'ON' : 'OFF'}
+            </span>
           </label>
-          <label>
-            <input
-              type="radio"
-              value='2'
-              checked={privacy === '2'}
-              onChange={handlePrivacyChange} //onclick send data
-            />
-            Private
-          </label>
-        </form>
+        </div>
         <span>Id: {userProfile.Id}</span>
         <span>Email: {userProfile.Email}</span>
         <span>First Name: {userProfile.FirstName}</span>
