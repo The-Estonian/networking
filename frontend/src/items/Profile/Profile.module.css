@@ -6,6 +6,7 @@
   height: 90%;
   border: 1px solid black;
   padding: 1rem;
+  background-color: rgba(128, 128, 128, 0.5);
 }
 
 .profile {
@@ -43,3 +44,65 @@
   max-height: 100%;
   margin: auto;
 }
+
+/* Privacy button starts here */
+.toggleSwitch {
+  position: relative;
+  width: 4rem;
+  height: 2rem;
+}
+
+.toggleSwitchCheckbox {
+  display: none;
+}
+
+.toggleSwitchLabel {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 2rem;
+}
+
+.toggleSwitchLabel:before {
+  position: absolute;
+  content: "";
+  height: 1.5rem;
+  width: 1.5rem;
+  left: 0.25rem;
+  bottom: 0.25rem;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.toggleSwitchCheckbox:checked + .toggleSwitchLabel {
+  background-color: #2196F3;
+}
+
+.toggleSwitchCheckbox:checked + .toggleSwitchLabel:before {
+  transform: translateX(2rem);
+}
+
+.toggleSwitchTextOn {
+  position: absolute;
+  top: 30%;
+  left: 20%;
+
+  font-size: 0.75rem;
+  color: white;
+}
+
+.toggleSwitchTextOff {
+  position: absolute;
+  top: 30%;
+  left: 55%;
+
+  font-size: 0.75rem;
+  color: #000000;
+}
+/* Privacy button ends here */
