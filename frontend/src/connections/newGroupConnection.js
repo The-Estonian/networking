@@ -12,11 +12,11 @@ export const SendNewGroup = async (formData) => {
       body: formData,
       credentials: 'include',
     });
-    const resp = await response.json()
-    console.log("uus grupp",resp);
-    return resp
+    const resp = await response.json();
+    console.log('uus grupp', resp);
+    return resp;
   } catch (error) {
-    console.log('SendNewGroup error')
-    console.log(error)
+    console.log('SendNewGroup error');
+    console.log(error);
   }
-}
+};

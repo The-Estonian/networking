@@ -47,8 +47,9 @@ func HandleNewGroup(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		callback["newGroup"] = "accepted"
 		validators.ValidateSetNewGroup(UserID, title, description)
+		callback["newGroup"] = "accepted"
+		callback["SendNewGroup"] = validators.ValidateNewGroup()
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleNewGroup", err)

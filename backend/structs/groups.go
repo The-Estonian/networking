@@ -6,6 +6,7 @@ type Groups struct {
 	Title       string
 	Description string
 	Date        string
+	Members     []string
 }
 
 type NewGroup struct {

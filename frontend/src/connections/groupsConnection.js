@@ -12,10 +12,10 @@ export const GetAllGroups = async (formData) => {
       body: formData,
       credentials: 'include',
     });
-    const resp = await response.json()
-    return resp
+    const resp = await response.json();
+    return resp;
   } catch (error) {
-    console.log('Groups error')
-    console.log(error)
+    console.log('Groups error');
+    console.log(error);
   }
-}
+};

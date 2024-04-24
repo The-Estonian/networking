@@ -11,8 +11,10 @@ func CorsMiddleware(next http.Handler) http.Handler {
 			"ws://localhost:3000",
 			"http://www.devpipe.ee",
 			"http://devpipe.ee",
-			"ws://www.devpipe.ee",
+			"wss://www.devpipe.ee",
 			"wss://devpipe.ee",
+			"ws://www.devpipe.ee",
+			"ws://devpipe.ee",
 			"https://www.devpipe.ee",
 			"https://devpipe.ee":
 			(w).Header().Set("Access-Control-Allow-Origin", origin)
