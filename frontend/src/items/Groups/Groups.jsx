@@ -10,7 +10,7 @@ import styles from './Groups.module.css';
 
 
 const Groups = () => {
-  const [modal, sendJsonMessage] = useOutletContext();
+  const [modal, , , ,] = useOutletContext();
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null)
   const navigate = useNavigate();

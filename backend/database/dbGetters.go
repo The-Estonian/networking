@@ -209,7 +209,7 @@ func GetAllComments(postID string) []structs.Comments {
 
 	for rows.Next() {
 		var comment structs.Comments
-		err = rows.Scan(&comment.Username, &comment.Avatar, &comment.Content, &comment.Picture , &comment.Date)
+		err = rows.Scan(&comment.Username, &comment.Avatar, &comment.Content, &comment.Picture, &comment.Date)
 		if err != nil {
 			helpers.CheckErr("getAllComments loop: ", err)
 			continue
@@ -238,6 +238,7 @@ func GetNewComment() structs.Comments {
 	defer db.Close()
 	return newComment
 }
+
 // Get user privacy setting
 func GetUserPrivacy(userId string) string {
 	db := sqlite.DbConnection()
@@ -272,11 +273,13 @@ func GetUserIdIfEmailExists(email string) string {
 }
 
 func GetMessages(fromuser, touser string) []structs.ChatMessage {
-	fmt.Println(fromuser, "->", touser)
 	db := sqlite.DbConnection()
 	var UserMessages []structs.ChatMessage
 	command := "SELECT * FROM messages WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) ORDER BY id"
 	rows, err := db.Query(command, touser, fromuser, touser, fromuser)
+	if err != sql.ErrNoRows {
+		helpers.CheckErr("GetMessages", err)
+	}
 	defer db.Close()
 	helpers.CheckErr("GetMessage", err)
 	for rows.Next() {
