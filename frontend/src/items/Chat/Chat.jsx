@@ -11,6 +11,7 @@ const Chat = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userList, setUserList] = useState([]);
   const [wsConnectionOpen, setWsConnectionOpen] = useState(false);
+  const [activeMessage, setActiveMessage] = useState([]);
   const navigate = useNavigate();
   const [
     modal,
@@ -30,7 +31,6 @@ const Chat = () => {
           setUserList(data.userList || []);
           if (data?.userList?.length > 0) {
             // set defaul chat partner and their messages on load
-            console.log('Setting chat partner to: ', data.userList[0].Id);
             setPartnerGetMessages(data.userList[0].Id);
             // scroll to bottom
             setTimeout(() => {
@@ -39,7 +39,6 @@ const Chat = () => {
             }, 100);
           }
           // set current user
-          console.log('Current main user: ', data.activeUser);
           setCurrentUser(data.activeUser);
           modal(false);
         } else {
@@ -52,20 +51,29 @@ const Chat = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      if (allUserMessages?.length > 0) {
-        let messageObject = {
-          Date: new Date(),
-          Message: messageData.message,
-          MessageReceiver: messageData.touser,
-          MessageSender: activeChatPartner,
-        };
-        setAllUserMessages([...allUserMessages, messageObject]);
-        setTimeout(() => {
-          chatContainerRef.current.scrollTop =
-            chatContainerRef.current.scrollHeight;
-        }, 100);
+      if (activeChatPartner === messageData.fromuserid) {
+        if (allUserMessages?.length > 0) {
+          let messageObject = {
+            Date: new Date(),
+            Message: messageData.message,
+            MessageReceiver: messageData.touser,
+            MessageSender: messageData.fromuserid,
+          };
+          setAllUserMessages([...allUserMessages, messageObject]);
+          setTimeout(() => {
+            chatContainerRef.current.scrollTop =
+              chatContainerRef.current.scrollHeight;
+          }, 100);
+        } else {
+          setAllUserMessages([messageData]);
+        }
       } else {
-        setAllUserMessages([messageData]);
+        // set new message notification
+        if (activeMessage?.length > 0) {
+          setActiveMessage([messageData.fromuserid, ...activeMessage]);
+        } else {
+          setActiveMessage([messageData.fromuserid]);
+        }
       }
     }
   }, [lastMessage]);
@@ -113,6 +121,10 @@ const Chat = () => {
     // set new message in the array
     if (allUserMessages?.length > 0) {
       setAllUserMessages([...allUserMessages, messageObject]);
+      setTimeout(() => {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }, 100);
     } else {
       setAllUserMessages([messageObject]);
     }
@@ -140,7 +152,21 @@ const Chat = () => {
     formData.append('partner', id);
     GetMessages(formData).then((data) => {
       setAllUserMessages(data.messages);
+      setTimeout(() => {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }, 100);
     });
+  };
+
+  const handleUserClick = (userId) => {
+    setPartnerGetMessages(userId);
+    if (activeMessage.includes(userId)) {
+      const listUpdate = activeMessage.filter(
+        (eachMember) => eachMember !== userId
+      );
+      setActiveMessage(listUpdate);
+    }
   };
 
   return (
@@ -152,9 +178,11 @@ const Chat = () => {
             className={
               each.Id === activeChatPartner
                 ? styles.activePartner
+                : activeMessage.includes(each.Id)
+                ? styles.newMessage
                 : styles.chatuser
             }
-            onClick={() => setPartnerGetMessages(each.Id)}
+            onClick={() => handleUserClick(each.Id)}
           >
             {each.Email}
           </p>
