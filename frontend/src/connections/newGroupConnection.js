@@ -1,8 +1,9 @@
-const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
+const backendUrl =
+  import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080';
 
 export const SendNewGroup = async (formData) => {
   try {
-    const response = await fetch(`http://${backendUrl}/newgroup`, {
+    const response = await fetch(`${backendUrl}/newgroup`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
