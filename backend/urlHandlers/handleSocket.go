@@ -15,18 +15,30 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
 		origin := r.Header.Get("Origin")
-		return origin == "http://localhost:3000" || origin == "http://frontend:80"
+		switch origin {
+		case "http://localhost:3000",
+			"ws://localhost:3000",
+			"http://www.devpipe.ee",
+			"http://devpipe.ee",
+			"ws://www.devpipe.ee",
+			"wss://devpipe.ee",
+			"https://www.devpipe.ee",
+			"https://devpipe.ee":
+			return true
+		}
+		return false
 	},
 }
 
-var clients = make(map[*Client]bool)
+// var clients = make(map[*Client]bool)
+var clientConnections = make(map[string]*Client)
 var broadcast = make(chan SocketMessage)
 
 type SocketMessage struct {
 	Type   string `json:"type"`
 	Status string `json:"status"`
 	// From             string   `json:"fromuser"`
-	// FromId           string   `json:"fromuserid"`
+	FromId           string   `json:"fromuserid"`
 	Message          string   `json:"message"`
 	To               string   `json:"touser"`
 	ConnectedClients []string `json:"connectedclients"`
@@ -40,57 +52,79 @@ type Client struct {
 	lastActive  time.Time
 }
 
-func periodicUserPresenceCheck() {
-	for {
-		time.Sleep(time.Minute)
-		// Iterate through clients and update their online status based on lastActive
-		currentTimestamp := time.Now()
-		for client := range clients {
-			client.mu.Lock()
-			if currentTimestamp.Sub(client.lastActive) > 3*time.Minute {
-				client.connection.Close()
-				delete(clients, client)
-			}
-			client.mu.Unlock()
-		}
-	}
-}
+// func periodicUserPresenceCheck() {
+// 	for {
+// 		time.Sleep(time.Minute)
+// 		// Iterate through clients and update their online status based on lastActive
+// 		currentTimestamp := time.Now()
+// 		if len(clientConnections) > 0 {
 
-func handleMessages(userId string) {
+// 		}
+// 		for client := range clientConnections {
+// 			clientConnections[client].mu.Lock()
+// 			if currentTimestamp.Sub(clientConnections[client].lastActive) > 3*time.Minute {
+// 				clientConnections[client].connection.Close()
+// 				delete(clientConnections, client)
+// 			} else {
+// 				clientConnections[client].mu.Unlock()
+// 			}
+// 		}
+// 	}
+// }
+
+func handleMessages() {
 	for {
 		msg := <-broadcast
 		switch msg.Type {
 		case "message":
 			// set new message into db
-			validators.ValidateSetNewMessage(userId, msg.Message, msg.To)
+			validators.ValidateSetNewMessage(msg.FromId, msg.Message, msg.To)
 			// send to user directly
-			for client := range clients {
-				if msg.To == client.connOwnerId {
-					client.mu.Lock()
-					err := client.connection.WriteJSON(msg)
+			for client := range clientConnections {
+				if msg.To == clientConnections[client].connOwnerId {
+					clientConnections[client].mu.Lock()
+					err := clientConnections[client].connection.WriteJSON(msg)
 					if err != nil {
-						fmt.Println(err)
-						client.connection.Close()
-						delete(clients, client)
+						fmt.Println("Error writing message to client:", err)
+						clientConnections[client].mu.Unlock()
+						return
 					}
-					client.mu.Unlock()
+					clientConnections[client].mu.Unlock()
 				}
 			}
 		case "onlineStatus":
 			users := []string{}
-			for key := range clients {
-				users = append(users, key.connOwnerId)
+			for client := range clientConnections {
+				users = append(users, clientConnections[client].connOwnerId)
 			}
-			allUsers := SocketMessage{
-				Type:             "onlineStatus",
-				Status:           "online",
-				ConnectedClients: users,
+			var allUsers SocketMessage
+			if msg.Message == "offline" {
+				// if client, ok := clientConnections[userId]; ok && client != nil {
+				// 	client.connection.Close()
+				// 	delete(clientConnections, userId)
+				// }
+				allUsers = SocketMessage{
+					Type:             "onlineStatus",
+					Status:           "offline",
+					ConnectedClients: users,
+				}
+			} else {
+				allUsers = SocketMessage{
+					Type:             "onlineStatus",
+					Status:           "online",
+					ConnectedClients: users,
+				}
 			}
 			// broadcast everyone that you are online/offline
-			for client := range clients {
-				client.mu.Lock()
-				client.connection.WriteJSON(allUsers)
-				client.mu.Unlock()
+			for client := range clientConnections {
+				clientConnections[client].mu.Lock()
+				err := clientConnections[client].connection.WriteJSON(allUsers)
+				if err != nil {
+					fmt.Println("Error broadcasting online status to client:", err)
+					clientConnections[client].mu.Unlock()
+					return
+				}
+				clientConnections[client].mu.Unlock()
 			}
 		}
 	}
@@ -102,6 +136,7 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("socialNetworkSession")
 	userId := validators.ValidateUserSession(cookie.Value)
 	if userId == "0" {
+		fmt.Println("User not allowed closing connection!")
 		return
 	}
 
@@ -110,6 +145,7 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	defer conn.Close()
 
 	client := &Client{
 		connection:  conn,
@@ -117,21 +153,27 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 		send:        make(chan []byte, 256),
 	}
 
-	clients[client] = true
+	// clients[client] = true
+	client.mu.Lock()
+	clientConnections[userId] = client
+	client.mu.Unlock()
 
 	defer func() {
-		client.connection.Close()
+		client.mu.Lock()
+		delete(clientConnections, userId)
+		client.mu.Unlock()
 	}()
 
-	go handleMessages(userId)
-	go periodicUserPresenceCheck()
+	go handleMessages()
+	// go periodicUserPresenceCheck()
 
 	for {
 		var msg SocketMessage
 		err := conn.ReadJSON(&msg)
 		if err != nil {
+			fmt.Println("Error in receiving message:", err)
 			client.mu.Lock()
-			delete(clients, client)
+			delete(clientConnections, userId)
 			client.mu.Unlock()
 			return
 		}

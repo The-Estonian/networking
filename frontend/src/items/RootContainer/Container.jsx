@@ -4,11 +4,12 @@ import { GetStatus } from '../../connections/statusConnection.js';
 import { SetLogout } from '../../connections/logoutConnection.js';
 import useWebSocket from 'react-use-websocket';
 
-const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
-let websock = `ws://${backendUrl}/websocket`;
-if (backendUrl != 'localhost:8080') {
-  websock = `wss://${backendUrl.substring(8)}/websocket`;
-}
+const backendUrl =
+  import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'localhost:8080';
+let websock = `ws://${backendUrl.substring(8)}/websocket`;
+// if (backendUrl != 'localhost:8080') {
+//   websock = `wss://${backendUrl.substring(8)}/websocket`;
+// }
 
 import Menu from '../Menu/Menu';
 import Authenticate from '../../authentication/Authenticate.jsx';
@@ -25,9 +26,12 @@ const Container = () => {
   const startWebSocketConnection = () => {
     setSocketUrl(websock);
   };
-  const { sendJsonMessage, lastMessage } = useWebSocket(socketUrl, {
+  const { sendJsonMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     share: true,
-    shouldReconnect: true,
+    retryOnError: true,
+    shouldReconnect: (closeEvent) => {
+      return closeEvent.code !== 1000 && closeEvent.code !== 1005;
+    },
   });
 
   useEffect(() => {
@@ -47,13 +51,15 @@ const Container = () => {
   };
 
   const handleLogout = () => {
+    navigate('/');
+    sendJsonMessage({
+      type: 'onlineStatus',
+      message: 'offline',
+    });
+    setSocketUrl(null);
     setActiveSession('false');
     document.cookie = 'socialNetworkAuth=false';
-    SetLogout().then((data) => {
-      console.log('Logout => ', data);
-    });
-    navigate('/');
-    setShowModal(false);
+    SetLogout();
   };
   return (
     <div className={styles.container}>
@@ -64,7 +70,14 @@ const Container = () => {
         <Authenticate modal={setShowModal} currSession={handleActiveSession} />
       )}
       <Outlet
-        context={[setShowModal, handleLogout, sendJsonMessage, lastMessage]}
+        context={[
+          setShowModal,
+          handleLogout,
+          sendJsonMessage,
+          lastMessage,
+          readyState,
+          activeSession,
+        ]}
       />
     </div>
   );
