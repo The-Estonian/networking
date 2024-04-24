@@ -290,3 +290,33 @@ func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	defer rows.Close()
 	return UserMessages
 }
+
+func GetAllGroups() []structs.Groups {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var allGroups []structs.Groups
+
+	command := "SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC"
+	rows, err := db.Query(command)
+	if err != nil {
+		helpers.CheckErr("Selecting getAllGroups", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var group structs.Groups
+		err = rows.Scan(&group.Id, &group.Creator, &group.Title, &group.Description, &group.Date)
+		if err != nil {
+			helpers.CheckErr("Iterating GetAllGroups", err)
+			continue
+		}
+		allGroups = append(allGroups, group)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetAllGroups rows", err)
+	}
+	return allGroups
+}

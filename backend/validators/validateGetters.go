@@ -91,3 +91,7 @@ func ValidateUserPrivacy(hash string) string {
 	// get user profile privacy by userid
 	return database.GetUserPrivacy(userId)
 }
+
+func ValidateGroups() []structs.Groups {
+	return database.GetAllGroups()
+}

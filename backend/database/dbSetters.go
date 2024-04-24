@@ -63,3 +63,21 @@ func SetUserPrivacy(userId, privacyNmbr string) {
 	helpers.CheckErr("SetUserPrivacy", err)
 	defer db.Close()
 }
+
+func SetNewGroup(user, title, description string) {
+	db := sqlite.DbConnection()
+
+	command := "INSERT INTO guilds (creator_fk_users, guild_title, guild_description, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, user, title, description)
+	helpers.CheckErr("SetNewGroup", err)
+
+	var guildID int
+	err = db.QueryRow("SELECT last_insert_rowid()").Scan(&guildID)
+	helpers.CheckErr("SetNewGroup error getting inserted guildID", err)
+
+	command = "INSERT INTO guildmembers (guild_id_fk_guilds, members_fk_users) VALUES (?, ?)"
+	_, err = db.Exec(command, guildID, user)
+	helpers.CheckErr("SetNewGroup error inserting guild creator into guildmembers table", err)
+
+	defer db.Close()
+}

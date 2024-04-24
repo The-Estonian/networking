@@ -40,7 +40,6 @@ const Posts = () => {
   const showPosts = () => {
     modal(true);
     GetPosts().then((data) => {
-      console.log('postid', data);
       if (data.login === 'success') {
         data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
         modal(false);
