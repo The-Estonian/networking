@@ -29,36 +29,26 @@ const Profile = () => {
         setFollowers(['User4', 'User5']);
         // profile related posts
         setPosts(JSON.parse(data.posts));
-        console.log(data.posts);
         modal(false);
       } else {
-        navigate('/');
-        modal(false);
+        logout();
       }
     });
     if (privacy === '') {
-      console.log('Privacy is empty!')
-      GetNewPrivacy().then(data => setPrivacy(data.GetPrivacy));
+      GetNewPrivacy().then((data) => setPrivacy(data.GetPrivacy));
     }
-  }, [navigate, modal, privacy]);
-
-  let activebox = privacy === '2' ? styles.private : styles.public;
+  }, [navigate, modal]);
 
   // Privacy settings for one div, Please create that div!!!!
   const handlePrivacyChange = () => {
     let newPrivacy = privacy === '1' ? '2' : '1';
     setPrivacy(newPrivacy);
-    console.log('Privacy is now ' + (newPrivacy === '1' ? 'public' : 'private'));
-  
     if (newPrivacy !== '1' && newPrivacy !== '2') {
-      console.log('Do not change the value!!');
       return;
     }
-  
     const formData = new FormData();
     formData.append('privacy', newPrivacy);
-  
-    SendNewPrivacy(formData).then(data => setPrivacy(data.SendNewPrivacy));
+    SendNewPrivacy(formData).then((data) => setPrivacy(data.SendNewPrivacy));
   };
 
   return (
@@ -80,16 +70,22 @@ const Profile = () => {
         <span>Privacy mode: </span>
         <div className={styles.toggleSwitch}>
           <input
-            type="checkbox"
-            id="toggle"
+            type='checkbox'
+            id='toggle'
             className={styles.toggleSwitchCheckbox}
             checked={privacy === '2'}
             onChange={handlePrivacyChange}
           />
-          <label className={styles.toggleSwitchLabel} htmlFor="toggle">
+          <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
             <span className={styles.toggleSwitchInner} />
             <span className={styles.toggleSwitchSwitch} />
-            <span className={privacy === '2' ? styles.toggleSwitchTextOn : styles.toggleSwitchTextOff}>
+            <span
+              className={
+                privacy === '2'
+                  ? styles.toggleSwitchTextOn
+                  : styles.toggleSwitchTextOff
+              }
+            >
               {privacy === '2' ? 'ON' : 'OFF'}
             </span>
           </label>
