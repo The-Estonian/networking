@@ -140,7 +140,6 @@ const Chat = () => {
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      console.log('Sending message');
       sendMessage();
     }
   };

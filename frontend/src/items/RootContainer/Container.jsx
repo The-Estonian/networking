@@ -79,7 +79,9 @@ const Container = () => {
     setSocketUrl(null);
     setActiveSession('false');
     document.cookie = 'socialNetworkAuth=false';
+    // send logout ping to backend
     SetLogout();
+    setShowModal(false);
   };
 
   return (
