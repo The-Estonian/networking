@@ -19,5 +19,6 @@ func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/websocket", HandleSocket)
 	r.HandleFunc("/userlist", HandleUserList)
 	r.HandleFunc("/messages", HandleChatMessages)
+	r.HandleFunc("/notificationresponse", HandleNotification)
 	r.Handle("/avatar/", http.StripPrefix("/avatar/", http.FileServer(http.Dir("./database/images"))))
 }

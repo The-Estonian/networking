@@ -6,6 +6,7 @@ import (
 	"backend/structs"
 	"database/sql"
 	"fmt"
+	"strings"
 )
 
 // get userid if email in table
@@ -297,7 +298,12 @@ func GetAllGroups() []structs.Groups {
 
 	var allGroups []structs.Groups
 
-	command := "SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC"
+	command := `SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date, group_concat(guildmembers.members_fk_users) as members
+				FROM guilds 
+				INNER JOIN users ON guilds.creator_fk_users == users.id 
+				LEFT JOIN guildmembers ON guilds.id == guildmembers.guild_id_fk_guilds
+				GROUP BY guilds.id
+				ORDER BY guilds.date DESC`
 	rows, err := db.Query(command)
 	if err != nil {
 		helpers.CheckErr("Selecting getAllGroups", err)
@@ -307,11 +313,13 @@ func GetAllGroups() []structs.Groups {
 
 	for rows.Next() {
 		var group structs.Groups
-		err = rows.Scan(&group.Id, &group.Creator, &group.Title, &group.Description, &group.Date)
+		var members string
+		err = rows.Scan(&group.Id, &group.Creator, &group.Title, &group.Description, &group.Date, &members)
 		if err != nil {
 			helpers.CheckErr("Iterating GetAllGroups", err)
 			continue
 		}
+		group.Members = strings.Split(members, ",")
 		allGroups = append(allGroups, group)
 	}
 
@@ -321,12 +329,12 @@ func GetAllGroups() []structs.Groups {
 	return allGroups
 }
 
-func GetNewGroup() structs.Groups {
+func GetNewGroup() structs.NewGroup {
 	db := sqlite.DbConnection()
-	var newGroup structs.Groups
+	var newGroup structs.NewGroup
 
-	command := "SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC LIMIT 1"
-	err := db.QueryRow(command).Scan(&newGroup.Id, &newGroup.Creator, &newGroup.Title, &newGroup.Description, &newGroup.Date)
+	command := "SELECT guilds.id, users.username, users.id, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC LIMIT 1"
+	err := db.QueryRow(command).Scan(&newGroup.Id, &newGroup.Creator, &newGroup.Members, &newGroup.Title, &newGroup.Description, &newGroup.Date)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			helpers.CheckErr("getNewGroup", err)
@@ -334,5 +342,6 @@ func GetNewGroup() structs.Groups {
 		fmt.Println("Error selecting new group")
 	}
 	defer db.Close()
+	fmt.Println(newGroup)
 	return newGroup
 }

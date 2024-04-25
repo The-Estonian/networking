@@ -96,6 +96,6 @@ func ValidateGroups() []structs.Groups {
 	return database.GetAllGroups()
 }
 
-func ValidateNewGroup() structs.Groups {
+func ValidateNewGroup() structs.NewGroup {
 	return database.GetNewGroup()
 }

@@ -10,11 +10,18 @@ import (
 	"time"
 )
 
-func HandleGroups(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Groups attempt!")
+func HandleNotification(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Notification attempt!")
+
+	var notificationResponse structs.Notifications
+
+	err := json.NewDecoder(r.Body).Decode(&notificationResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	var callback = make(map[string]interface{})
-	var sendGroups []structs.Groups
 
 	cookie, err := r.Cookie("socialNetworkSession")
 	// if not err and cookie valid
@@ -43,10 +50,14 @@ func HandleGroups(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		sendGroups = validators.ValidateGroups()
-		callback["groups"] = sendGroups
+
+		if notificationResponse.NotificationData.NotificationType == "groupInvatation" {
+			validators.ValidateSetNewGroupMember(notificationResponse.GroupID,
+				 								 notificationResponse.CurrentUser,
+				  								 notificationResponse.NotificationResponse)
+		}
 	}
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("HandleGroups", err)
+	helpers.CheckErr("HandlePosts", err)
 	w.Write(writeData)
 }

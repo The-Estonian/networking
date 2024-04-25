@@ -12,7 +12,7 @@ import styles from './Groups.module.css';
 const Groups = () => {
   const [
     modal,
-    ,
+    logout,
     sendJsonMessage,
     lastMessage,
     ,
@@ -24,7 +24,6 @@ const Groups = () => {
   const [notGroupMembers, setNotGroupMembers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [invatationSent, setInvatationSent] = useState(false);
-  const [groupInvNotify, setGroupInvNotify] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,23 +38,12 @@ const Groups = () => {
         })
         modal(false);
       } else {
-        navigate('/');
-        modal(false);
+        logout()
       }
     });
   }, [navigate, modal])
 
-  // Recieve last message
-  useEffect(() => {
-    if (lastMessage) {
-      const messageData = JSON.parse(lastMessage.data);
-      if (messageData.type === 'groupInvatation') {
-        setGroupInvNotify(prevNotifications => [...prevNotifications, messageData]);
-      }
-    }
-  }, [lastMessage])
-
-  function SendGroupInvite(reciever, title, groupId) {
+  const SendGroupInvite = (reciever, title, groupId) => {
     sendJsonMessage({
       type: 'groupInvatation',
       fromuserid: currentUser,
@@ -68,12 +56,6 @@ const Groups = () => {
     setTimeout(() => {
       setInvatationSent(false)
     }, 2000)
-  }
-
-  const invatationResponse = (notification, index, e) => {
-    setGroupInvNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
-    console.log("vaartus: ", e.target.value);
-    console.log("teada: ", notification);
   }
 
   const Groupinfo = (group) => setSelectedGroup(group)
@@ -93,29 +75,23 @@ const Groups = () => {
         </p>
       ))}
       </div>
-
+{console.log("sel",selectedGroup)}
       {selectedGroup && (
+
         <div className={styles.groupInfo}>
           <h1>{selectedGroup.Title}</h1>
           <h2>Description: {selectedGroup.Description}</h2>
           <h3>Created by: {selectedGroup.Creator}</h3>
+          <h4>Group members: {selectedGroup.Members}</h4>
         
           <select className={styles.userDopDownMenu} value='' onChange={(e) => SendGroupInvite(e.target.value, selectedGroup.Title, selectedGroup.Id)}>
             <option value="" disabled>Invite user</option>
-              {notGroupMembers && notGroupMembers.map((user) => (
+              {notGroupMembers && notGroupMembers.filter(user => !selectedGroup.Members.includes(user.Id)).map((user) => (
               <option key={user.Id} value={user.Id}>{user.Email}</option>
-            ))}
+              ))}
           </select>
 
           {invatationSent && <label>Group invitation sent!</label>}
-         
-          {groupInvNotify.map((notification, index) => (
-            <div key={index} className={styles.groupInvatation}>
-              <p>{notification.fromuserid} invited you to {notification.message}!</p><br></br>
-              <button value={'accept'} onClick={(e) => {invatationResponse(notification, index, e)}}>Accept</button>
-              <button value={'decline'} onClick={(e) => {invatationResponse(notification, index, e)}}>Decline</button>
-            </div>
-          ))}
     
           <button className={styles.inviteButton}>Create event</button>
           <button className={styles.inviteButton}>Join group</button>

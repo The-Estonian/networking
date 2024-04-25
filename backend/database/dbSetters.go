@@ -89,3 +89,19 @@ func SetNewGroupNotification(messageSender, groupId, messageReceiver string) {
 	helpers.CheckErr("SetNewGroupNotification", err)
 	defer db.Close()
 }
+
+func SetNewGroupMember(groupId, userId, userResponse string) {
+	if userResponse == "accept" {
+		db := sqlite.DbConnection()
+		command := "INSERT INTO guildmembers (guild_id_fk_guilds, members_fk_users) VALUES (?, ?)"
+		_, err := db.Exec(command, groupId, userId)
+		helpers.CheckErr("SetNewGroupMember", err)
+		defer db.Close()
+	}
+
+	db := sqlite.DbConnection()
+	command := "DELETE FROM guildnotifications WHERE guildid_fk_guilds=? AND reciever_fk_users=?"
+	_, err := db.Exec(command, groupId, userId)
+	helpers.CheckErr("SetNewGroupMember remove notification", err)
+	defer db.Close()
+}
