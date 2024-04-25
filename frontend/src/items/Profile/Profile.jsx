@@ -6,6 +6,7 @@ const backendUrl =
 
 import { GetProfile } from '../../connections/profileConnection.js';
 import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
+import { GetNewPrivacy } from '../../connections/privacyConnection.js';
 
 import styles from './Profile.module.css';
 
@@ -14,7 +15,7 @@ const Profile = () => {
   const [following, setFollowing] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [privacy, setPrivacy] = useState(''); // WIP: useState must equal to database value
+  const [privacy, setPrivacy] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
   useEffect(() => {
@@ -31,23 +32,33 @@ const Profile = () => {
         console.log(data.posts);
         modal(false);
       } else {
-        logout();
+        navigate('/');
+        modal(false);
       }
     });
-  }, [navigate, modal]);
-
-  const handlePrivacyChange = (e) => {
-    setPrivacy(e.target.value);
-    if (e.target.value !== '1' && e.target.value !== '2') {
-      console.log('Do not change the value!!');
+    if (privacy === '') {
+      console.log('Privacy is empty!')
+      GetNewPrivacy().then(data => setPrivacy(data.GetPrivacy));
     }
-  };
+  }, [navigate, modal, privacy]);
 
-  const handleSaveSettings = async () => {
+  let activebox = privacy === '2' ? styles.private : styles.public;
+
+  // Privacy settings for one div, Please create that div!!!!
+  const handlePrivacyChange = () => {
+    let newPrivacy = privacy === '1' ? '2' : '1';
+    setPrivacy(newPrivacy);
+    console.log('Privacy is now ' + (newPrivacy === '1' ? 'public' : 'private'));
+  
+    if (newPrivacy !== '1' && newPrivacy !== '2') {
+      console.log('Do not change the value!!');
+      return;
+    }
+  
     const formData = new FormData();
-    formData.append('privacy', privacy);
-
-    await SendNewPrivacy(formData);
+    formData.append('privacy', newPrivacy);
+  
+    SendNewPrivacy(formData).then(data => setPrivacy(data.SendNewPrivacy));
   };
 
   return (
@@ -66,29 +77,23 @@ const Profile = () => {
           )}
         </div>
         {/* Privacy settings */}
-        <form>
-          <label>
-            <input
-              type='radio'
-              value='1'
-              checked={privacy === '1'}
-              onChange={handlePrivacyChange}
-            />
-            Public
+        <span>Privacy mode: </span>
+        <div className={styles.toggleSwitch}>
+          <input
+            type="checkbox"
+            id="toggle"
+            className={styles.toggleSwitchCheckbox}
+            checked={privacy === '2'}
+            onChange={handlePrivacyChange}
+          />
+          <label className={styles.toggleSwitchLabel} htmlFor="toggle">
+            <span className={styles.toggleSwitchInner} />
+            <span className={styles.toggleSwitchSwitch} />
+            <span className={privacy === '2' ? styles.toggleSwitchTextOn : styles.toggleSwitchTextOff}>
+              {privacy === '2' ? 'ON' : 'OFF'}
+            </span>
           </label>
-          <label>
-            <input
-              type='radio'
-              value='2'
-              checked={privacy === '2'}
-              onChange={handlePrivacyChange}
-            />
-            Private
-          </label>
-          <button type='button' onClick={handleSaveSettings}>
-            Save Settings
-          </button>
-        </form>
+        </div>
         <span>Id: {userProfile.Id}</span>
         <span>Email: {userProfile.Email}</span>
         <span>First Name: {userProfile.FirstName}</span>

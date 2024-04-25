@@ -9,16 +9,8 @@ import (
 	"time"
 )
 
-func HandleNewPrivacy(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("NewPrivacy attempt!")
-
-	err := r.ParseMultipartForm(10 << 20) // 10 MB, why do I need multipart form?
-	if err != nil {
-		http.Error(w, "Error parsing form", http.StatusInternalServerError)
-		return
-	}
-
-	privacy := r.FormValue("privacy")
+func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Privacy attempt!")
 
 	var callback = make(map[string]interface{})
 
@@ -49,10 +41,8 @@ func HandleNewPrivacy(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		callback["newPrivacy"] = "accepted"
 
-		validators.ValidateSetUserPrivacy(UserID, privacy)
-		callback["SendNewPrivacy"] = validators.ValidateUserPrivacy(cookie.Value)
+		callback["GetPrivacy"] = validators.ValidateUserPrivacy(cookie.Value)
 	}
 
 	writeData, err := json.Marshal(callback)

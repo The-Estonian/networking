@@ -8,6 +8,7 @@ import Profile from './items/Profile/Profile';
 import Posts from './items/Posts/Posts';
 import Chat from './items/Chat/Chat';
 import Groups from './items/Groups/Groups';
+import Notifications from './items/Groups/Groups';
 
 import './index.css';
 
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
     element: <Container />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: '/notifications',
+        element: <Notifications />,
+      },
       {
         path: '/posts',
         element: <Posts />,

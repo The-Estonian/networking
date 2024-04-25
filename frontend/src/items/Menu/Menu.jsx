@@ -13,6 +13,9 @@ const activeClassName = ({ isActive, isPending }) =>
 const Menu = (props) => {
   return (
     <div className={styles.menu}>
+      <NavLink to={`/notifications`} className={activeClassName}>
+        Notifications
+      </NavLink>
       <NavLink to={`/posts`} className={activeClassName}>
         Posts
       </NavLink>
