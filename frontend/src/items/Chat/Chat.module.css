@@ -6,16 +6,6 @@
   height: 90vh;
 }
 
-.users {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  border: 1px solid white;
-  width: 15%;
-  overflow: hidden;
-}
-
 .chat {
   color: white;
   margin: 0.5rem;
@@ -32,46 +22,6 @@
   height: 100%;
 }
 
-.inputContainer {
-  display: flex;
-}
 
-.activePartner {
-  padding: 0.5rem;
-  background: black;
-  color: white;
-  width: 100%;
-  cursor: pointer;
-}
 
-.chatuser {
-  padding: 0.5rem;
-  border: 1px solid transparent;
-  border-bottom: 1px solid white;
-  width: 100%;
-  cursor: pointer;
-}
 
-.inputContainer .chatInput {
-  text-align: left;
-  text-decoration: none;
-  outline: none;
-}
-
-.messageContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 0.5rem;
-  border-top: 1px solid white;
-}
-
-.newMessage {
-  background: rgba(57, 181, 230, 0.507);
-
-  padding: 0.5rem;
-  border: 1px solid transparent;
-  border-bottom: 1px solid white;
-  width: 100%;
-  cursor: pointer;
-}

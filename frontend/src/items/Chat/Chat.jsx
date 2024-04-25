@@ -1,52 +1,23 @@
-import styles from './Chat.module.css';
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
-import { GetUserList } from '../../connections/userListConnection';
+import { useOutletContext } from 'react-router-dom';
+
 import { GetMessages } from '../../connections/messagesConnection';
+import Message from './Message';
+import ChatInput from './ChatInput';
+import ChatUserlist from './ChatUserlist';
+
+import styles from './Chat.module.css';
 
 const Chat = () => {
   const [textMessage, setTextMessage] = useState('');
   const [allUserMessages, setAllUserMessages] = useState([]);
   const [activeChatPartner, setActiveChatPartner] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
-  const [userList, setUserList] = useState([]);
   const [wsConnectionOpen, setWsConnectionOpen] = useState(false);
   const [activeMessage, setActiveMessage] = useState([]);
-  const navigate = useNavigate();
-  const [
-    modal,
-    logout,
-    sendJsonMessage,
-    lastMessage,
-    readyState,
-    activeSession,
-  ] = useOutletContext();
+  const [, , sendJsonMessage, lastMessage, readyState, activeSession] =
+    useOutletContext();
   const chatContainerRef = useRef(null);
-
-  useEffect(() => {
-    GetUserList().then((data) => {
-      if (data) {
-        if (data.login === 'success') {
-          // set messages
-          setUserList(data.userList || []);
-          if (data?.userList?.length > 0) {
-            // set defaul chat partner and their messages on load
-            setPartnerGetMessages(data.userList[0].Id);
-            // scroll to bottom
-            setTimeout(() => {
-              chatContainerRef.current.scrollTop =
-                chatContainerRef.current.scrollHeight;
-            }, 100);
-          }
-          // set current user
-          setCurrentUser(data.activeUser);
-          modal(false);
-        } else {
-          logout();
-        }
-      }
-    });
-  }, [navigate, modal]);
 
   useEffect(() => {
     if (lastMessage) {
@@ -88,11 +59,9 @@ const Chat = () => {
 
   useEffect(() => {
     if (!activeSession) {
-      console.log('Resetting all chat');
       setTextMessage('');
       setActiveChatPartner('');
       setCurrentUser('');
-      setUserList([]);
       setWsConnectionOpen(false);
     }
   }, [activeSession]);
@@ -170,54 +139,26 @@ const Chat = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.users}>
-        {userList.map((each, key) => (
-          <p
-            key={key}
-            className={
-              each.Id === activeChatPartner
-                ? styles.activePartner
-                : activeMessage.includes(each.Id)
-                ? styles.newMessage
-                : styles.chatuser
-            }
-            onClick={() => handleUserClick(each.Id)}
-          >
-            {each.Email}
-          </p>
-        ))}
-      </div>
+      <ChatUserlist
+        setCurrentUser={setCurrentUser}
+        setPartnerGetMessages={setPartnerGetMessages}
+        handleUserClick={handleUserClick}
+        activeChatPartner={activeChatPartner}
+        activeMessage={activeMessage}
+      />
       <div className={styles.chatContainer}>
         <div ref={chatContainerRef} className={styles.chat}>
-          {allUserMessages?.map((eachMessage, key) => {
-            const messageDate = new Date(eachMessage.Date);
-            const messageDateString = `${messageDate.getHours()}:${messageDate.getMinutes()}:${messageDate.getSeconds()} ${messageDate.getDate()}-${
-              messageDate.getMonth() + 1
-            }-${messageDate.getFullYear()}`;
-            return (
-              <div key={key} className={styles.messageContainer}>
-                <p>{eachMessage.Message}</p>
-                <p>{eachMessage.MessageSender}</p>
-                <p>{messageDateString}</p>
-              </div>
-            );
-          })}
+          {allUserMessages?.map((eachMessage, key) => (
+            <Message messageData={eachMessage} key={key} />
+          ))}
         </div>
         {wsConnectionOpen ? (
-          <div className={styles.inputContainer}>
-            <input
-              type='text'
-              value={textMessage}
-              onChange={handleText}
-              className={styles.chatInput}
-              name='textMessage'
-              id=''
-              onKeyDown={handleKeyPress}
-            />
-            <button type='submit' onClick={sendMessage}>
-              Send
-            </button>
-          </div>
+          <ChatInput
+            textMessage={textMessage}
+            handleText={handleText}
+            handleKeyPress={handleKeyPress}
+            sendMessage={sendMessage}
+          />
         ) : (
           <p className={styles.chatInput}>Connecting to backend</p>
         )}
