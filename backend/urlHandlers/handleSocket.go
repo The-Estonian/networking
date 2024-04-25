@@ -41,6 +41,7 @@ type SocketMessage struct {
 	FromId           string   `json:"fromuserid"`
 	Message          string   `json:"message"`
 	To               string   `json:"touser"`
+	GroupId          string   `json:"groupId"`
 	ConnectedClients []string `json:"connectedclients"`
 }
 
@@ -86,6 +87,20 @@ func handleMessages() {
 					err := clientConnections[client].connection.WriteJSON(msg)
 					if err != nil {
 						fmt.Println("Error writing message to client:", err)
+						clientConnections[client].mu.Unlock()
+						return
+					}
+					clientConnections[client].mu.Unlock()
+				}
+			}
+		case "groupInvatation":
+			validators.ValidateSetNewGroupNotification(msg.FromId, msg.GroupId, msg.To)
+			for client := range clientConnections {
+				if msg.To == clientConnections[client].connOwnerId {
+					clientConnections[client].mu.Lock()
+					err := clientConnections[client].connection.WriteJSON(msg)
+					if err != nil {
+						fmt.Println("Error writing gruopinvatation to client:", err)
 						clientConnections[client].mu.Unlock()
 						return
 					}

@@ -51,3 +51,7 @@ func ValidateSetUserPrivacy(userId, privacyNmbr string) {
 func ValidateSetNewGroup(user, title, description string) {
 	database.SetNewGroup(user, title, description)
 }
+
+func ValidateSetNewGroupNotification(messageSender, groupId, messageReceiver string) {
+	database.SetNewGroupNotification(messageSender, groupId, messageReceiver)
+}

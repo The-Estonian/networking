@@ -15,9 +15,6 @@ func HandleNewGroup(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	description := r.FormValue("description")
 
-	fmt.Println("Tiitlel: ", title)
-	fmt.Println("Descr: ", description)
-
 	var callback = make(map[string]interface{})
 
 	cookie, err := r.Cookie("socialNetworkSession")

@@ -81,3 +81,11 @@ func SetNewGroup(user, title, description string) {
 
 	defer db.Close()
 }
+
+func SetNewGroupNotification(messageSender, groupId, messageReceiver string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO guildnotifications (sender_fk_users, reciever_fk_users, guildid_fk_guilds, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, messageSender, messageReceiver, groupId)
+	helpers.CheckErr("SetNewGroupNotification", err)
+	defer db.Close()
+}

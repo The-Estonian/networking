@@ -12,7 +12,6 @@ export const SendNewGroup = async (formData) => {
       credentials: 'include',
     });
     const resp = await response.json()
-    console.log("uus grupp",resp);
     return resp
   } catch (error) {
     console.log('SendNewGroup error')

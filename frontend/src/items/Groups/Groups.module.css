@@ -46,3 +46,13 @@
     position: absolute;
     align-self: flex-end;
 }
+
+.groupInvatation {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    padding: 20px;
+    background-color: hsl(0, 0%, 10%);
+    color: white;
+    opacity: 0.9;
+}

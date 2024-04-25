@@ -10,11 +10,21 @@ import styles from './Groups.module.css';
 
 
 const Groups = () => {
-  const [modal, , , ,] = useOutletContext();
+  const [
+    modal,
+    ,
+    sendJsonMessage,
+    lastMessage,
+    ,
+    ,
+  ] = useOutletContext();
+
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [notGroupMembers, setNotGroupMembers] = useState([]);
-  const [inviteSent, setInviteSent] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [invatationSent, setInvatationSent] = useState(false);
+  const [groupInvNotify, setGroupInvNotify] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +33,10 @@ const Groups = () => {
       if (data.login === 'success') {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
         data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
-        GetUserList().then((data) => setNotGroupMembers(data.userList))
+        GetUserList().then((data) => {
+          setCurrentUser(data.activeUser)
+          setNotGroupMembers(data.userList)
+        })
         modal(false);
       } else {
         navigate('/');
@@ -32,20 +45,35 @@ const Groups = () => {
     });
   }, [navigate, modal])
 
+  // Recieve last message
   useEffect(() => {
-    if (inviteSent) {
-        setInviteSent(false);  
+    if (lastMessage) {
+      const messageData = JSON.parse(lastMessage.data);
+      if (messageData.type === 'groupInvatation') {
+        setGroupInvNotify(prevNotifications => [...prevNotifications, messageData]);
+      }
     }
-  }, [inviteSent]);
+  }, [lastMessage])
 
-  function SendGroupInvite(reciver, title, groupId) {
-    console.log(reciver, title, groupId)
-    setInviteSent(true);
-    const notify = document.getElementById('invatationNotify')
-    notify.style.display = 'block'
+  function SendGroupInvite(reciever, title, groupId) {
+    sendJsonMessage({
+      type: 'groupInvatation',
+      fromuserid: currentUser,
+      message: title,
+      groupId: groupId,
+      touser: reciever,
+    });
+    setInvatationSent(true)
+    
     setTimeout(() => {
-      notify.style.display = 'none'
+      setInvatationSent(false)
     }, 2000)
+  }
+
+  const invatationResponse = (notification, index, e) => {
+    setGroupInvNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
+    console.log("vaartus: ", e.target.value);
+    console.log("teada: ", notification);
   }
 
   const Groupinfo = (group) => setSelectedGroup(group)
@@ -64,7 +92,6 @@ const Groups = () => {
          {group.Title}
         </p>
       ))}
-
       </div>
 
       {selectedGroup && (
@@ -73,14 +100,23 @@ const Groups = () => {
           <h2>Description: {selectedGroup.Description}</h2>
           <h3>Created by: {selectedGroup.Creator}</h3>
         
-          <select className={styles.userDopDownMenu} value={inviteSent ? '' : undefined} onChange={(e) => SendGroupInvite(e.target.value, selectedGroup.Title, selectedGroup.Id)}>
-            <option value=''>Invite...</option>
-            {notGroupMembers && notGroupMembers.map((user) => (
+          <select className={styles.userDopDownMenu} value='' onChange={(e) => SendGroupInvite(e.target.value, selectedGroup.Title, selectedGroup.Id)}>
+            <option value="" disabled>Invite user</option>
+              {notGroupMembers && notGroupMembers.map((user) => (
               <option key={user.Id} value={user.Id}>{user.Email}</option>
             ))}
-            
           </select>
-          <label style={{ display: 'none' }} id='invatationNotify'>Group invitation sent!</label>
+
+          {invatationSent && <label>Group invitation sent!</label>}
+         
+          {groupInvNotify.map((notification, index) => (
+            <div key={index} className={styles.groupInvatation}>
+              <p>{notification.fromuserid} invited you to {notification.message}!</p><br></br>
+              <button value={'accept'} onClick={(e) => {invatationResponse(notification, index, e)}}>Accept</button>
+              <button value={'decline'} onClick={(e) => {invatationResponse(notification, index, e)}}>Decline</button>
+            </div>
+          ))}
+    
           <button className={styles.inviteButton}>Create event</button>
           <button className={styles.inviteButton}>Join group</button>
         </div>
