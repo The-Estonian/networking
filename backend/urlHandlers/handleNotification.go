@@ -50,7 +50,8 @@ func HandleNotification(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-
+		
+		// Add user to group, depending if he accepted or declined
 		if notificationResponse.NotificationData.NotificationType == "groupInvatation" {
 			validators.ValidateSetNewGroupMember(notificationResponse.GroupID,
 				 								 notificationResponse.CurrentUser,

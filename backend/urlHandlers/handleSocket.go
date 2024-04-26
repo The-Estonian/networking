@@ -96,19 +96,24 @@ func handleMessages() {
 				}
 			}
 		case "groupInvatation":
-			validators.ValidateSetNewGroupNotification(msg.FromId, msg.GroupId, msg.To)
-			for client := range clientConnections {
-				if msg.To == clientConnections[client].connOwnerId {
-					clientConnections[client].mu.Lock()
-					err := clientConnections[client].connection.WriteJSON(msg)
-					if err != nil {
-						fmt.Println("Error writing gruopinvatation to client:", err)
+			dbInserted := validators.ValidateSetNewGroupNotification(msg.FromId, msg.GroupId, msg.To)
+
+			// Send noticication to user only if db insert was succssesful
+			if dbInserted {
+				for client := range clientConnections {
+					if msg.To == clientConnections[client].connOwnerId {
+						clientConnections[client].mu.Lock()
+						err := clientConnections[client].connection.WriteJSON(msg)
+						if err != nil {
+							fmt.Println("Error writing gruopinvatation to client:", err)
+							clientConnections[client].mu.Unlock()
+							return
+						}
 						clientConnections[client].mu.Unlock()
-						return
 					}
-					clientConnections[client].mu.Unlock()
 				}
 			}
+
 		case "onlineStatus":
 			users := []string{}
 			for client := range clientConnections {
