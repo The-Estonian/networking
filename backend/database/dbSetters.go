@@ -91,14 +91,14 @@ func SetNewGroupNotification(messageSender, groupId, messageReceiver string) boo
 
 	err := db.QueryRow("SELECT COUNT(*) FROM guildnotifications WHERE reciever_fk_users = ? AND guildid_fk_guilds = ?", messageReceiver, groupId).Scan(&notificationCount)
 	if err != nil {
-		helpers.CheckErr("SetNewGroupNotification - NotificationCount", err)
+		helpers.CheckErr("SetNewGroupNotification - NotificationCount: ", err)
 		return false
 	}
 
 	// Dont insert member or notification in table if they are already in table
-	err = db.QueryRow("SELECT COUNT(*) FROM guildmembers WHERE reciever_fk_users = ? AND guildid_fk_guilds = ?", messageReceiver, groupId).Scan(&memberCount)
+	err = db.QueryRow("SELECT COUNT(*) FROM guildmembers WHERE members_fk_users = ? AND guild_id_fk_guilds = ?", messageReceiver, groupId).Scan(&memberCount)
 	if err != nil {
-		helpers.CheckErr("SetNewGroupNotification - MemberCount", err)
+		helpers.CheckErr("SetNewGroupNotification - MemberCount: ", err)
 		return false
 	}
 
@@ -108,7 +108,7 @@ func SetNewGroupNotification(messageSender, groupId, messageReceiver string) boo
 
 	command := "INSERT INTO guildnotifications (sender_fk_users, reciever_fk_users, guildid_fk_guilds, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
 	_, err = db.Exec(command, messageSender, messageReceiver, groupId)
-	helpers.CheckErr("SetNewGroupNotification - Insert", err)
+	helpers.CheckErr("SetNewGroupNotification - Insert: ", err)
 	return true
 }
 
