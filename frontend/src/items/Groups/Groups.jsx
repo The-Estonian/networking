@@ -14,7 +14,7 @@ const Groups = () => {
     modal,
     logout,
     sendJsonMessage,
-    lastMessage,
+    ,
     ,
     ,
   ] = useOutletContext();
@@ -52,7 +52,7 @@ const Groups = () => {
       touser: reciever,
     });
     setInvatationSent(true)
-    
+
     setTimeout(() => {
       setInvatationSent(false)
     }, 2000)
@@ -75,9 +75,7 @@ const Groups = () => {
         </p>
       ))}
       </div>
-{console.log("sel",selectedGroup)}
       {selectedGroup && (
-
         <div className={styles.groupInfo}>
           <h1>{selectedGroup.Title}</h1>
           <h2>Description: {selectedGroup.Description}</h2>
@@ -90,7 +88,6 @@ const Groups = () => {
               <option key={user.Id} value={user.Id}>{user.Email}</option>
               ))}
           </select>
-
           {invatationSent && <label>Group invitation sent!</label>}
     
           <button className={styles.inviteButton}>Create event</button>

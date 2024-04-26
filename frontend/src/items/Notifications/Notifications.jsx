@@ -54,7 +54,6 @@ const Notifications = () => {
       decision: e.target.value,
       notificationResponse : notification,
     }
-    console.log(formData);
     SendNotificationResponse(formData)
   }
 
@@ -72,10 +71,8 @@ const Notifications = () => {
               <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e)}}>Decline</button>    
               </div>  
             ))}
-
         </div>
       </div>
-
     </div>
   );
 };

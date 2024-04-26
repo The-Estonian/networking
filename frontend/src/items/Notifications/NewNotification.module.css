@@ -40,7 +40,7 @@
 .groupInvList {
   position: absolute;
   box-shadow: 2px 2px 5px hsla(0, 0%, 0%, 0.816);
-  background-color: hsl(0, 0%, 40%);
+  background-color: hsl(0, 0%, 45%);
   display: none;
   text-align: center;
 }
@@ -57,11 +57,11 @@
 }
 
 .groupInvList .notifyBox:hover {
-  background-color: hsl(0, 0%, 13%);
+  background-color: hsl(0, 0%, 15%);
 }
 
 .listButton {
-  background-color: hsl(0, 0%, 10%);
+  background-color: hsl(0, 0%, 0%);
   display: block;
   color: white;
   padding: 15px 25px;
@@ -71,7 +71,7 @@
 }
 
 .listButton:hover {
-  background-color: hsl(0, 0%, 15%);
+  background-color: hsl(0, 0%, 10%);
 }
 
 .listButton:hover + .groupInvList {
@@ -86,14 +86,16 @@ button {
   padding: 5px 15px;
   border: none;
   cursor: pointer;
+  border-radius: 3px; 
+  box-shadow: 0.5px 2px 5px hsla(0, 0%, 0%, 0.816);
 }
 
 .accept {
-  margin-right: 10px;
-  background-color: hsl(130, 100%, 60%);
+  margin-right: 15px;
+  background: linear-gradient(to left top, hsl(125, 100%, 60%),  hsl(125, 100%, 40%));                   
 }
 
 .decline {
-  background-color: hsl(0, 100%, 60%);
+  background-color: hsl(0, 100%, 50%);
 }
 
