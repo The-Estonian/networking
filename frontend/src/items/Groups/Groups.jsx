@@ -8,19 +8,10 @@ import NewGroup from './NewGroup.jsx';
 
 import styles from './Groups.module.css';
 
-
 const Groups = () => {
-  const [
-    modal,
-    logout,
-    sendJsonMessage,
-    ,
-    ,
-    ,
-  ] = useOutletContext();
-
+  const [modal, logout, sendJsonMessage, ,] = useOutletContext();
   const [groups, setGroups] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState(null)
+  const [selectedGroup, setSelectedGroup] = useState(null);
   const [notGroupMembers, setNotGroupMembers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [invatationSent, setInvatationSent] = useState(false);
@@ -41,7 +32,7 @@ const Groups = () => {
         logout()
       }
     });
-  }, [navigate, modal])
+  }, [navigate, modal]);
 
   const SendGroupInvite = (reciever, title, groupId) => {
     sendJsonMessage({
@@ -58,22 +49,26 @@ const Groups = () => {
     }, 2000)
   }
 
-  const Groupinfo = (group) => setSelectedGroup(group)
-  
+  const Groupinfo = (group) => setSelectedGroup(group);
+
   return (
     <div className={styles.groupContainer}>
       <NewGroup setGroups={setGroups} setSelectedGroup={setSelectedGroup} />
 
       <div className={styles.groupList}>
-      {groups.map((group) => (
-        <p
-         className={group === selectedGroup ? styles.groupNameSelected : styles.groupName} 
-         key={group.Id} 
-         onClick={() => Groupinfo(group)}
-        >
-         {group.Title}
-        </p>
-      ))}
+        {groups.map((group) => (
+          <p
+            className={
+              group === selectedGroup
+                ? styles.groupNameSelected
+                : styles.groupName
+            }
+            key={group.Id}
+            onClick={() => Groupinfo(group)}
+          >
+            {group.Title}
+          </p>
+        ))}
       </div>
       {selectedGroup && (
         <div className={styles.groupInfo}>
@@ -94,7 +89,6 @@ const Groups = () => {
           <button className={styles.inviteButton}>Join group</button>
         </div>
       )}
-      
     </div>
   );
 };

@@ -11,3 +11,5 @@ CREATE TABLE users (
 );
 
 INSERT INTO users (email, password, first_name, last_name, date_of_birth, username, about_user, avatar) VALUES ("Asd@asd.com", "$2a$14$f93Qadhf7vVe.LoebyXLvOwMcTTxlZMEcXZEnefj4KMVv6kSuYigC", "Asd", "Asd", "1990-03-01 00:00:00+00:00", "Asduser", "default user", "defaultAvatar.jpg");
+INSERT INTO users (email, password, first_name, last_name, date_of_birth, username, about_user, avatar) VALUES ("Asd1@asd.com", "$2a$14$f93Qadhf7vVe.LoebyXLvOwMcTTxlZMEcXZEnefj4KMVv6kSuYigC", "Asd", "Asd", "1990-03-01 00:00:00+00:00", "Asduser1", "default user", "defaultAvatar.jpg");
+INSERT INTO users (email, password, first_name, last_name, date_of_birth, username, about_user, avatar) VALUES ("Asd2@asd.com", "$2a$14$f93Qadhf7vVe.LoebyXLvOwMcTTxlZMEcXZEnefj4KMVv6kSuYigC", "Asd", "Asd", "1990-03-01 00:00:00+00:00", "Asduser2", "default user", "defaultAvatar.jpg");
