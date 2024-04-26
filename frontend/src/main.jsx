@@ -8,7 +8,7 @@ import Profile from './items/Profile/Profile';
 import Posts from './items/Posts/Posts';
 import Chat from './items/Chat/Chat';
 import Groups from './items/Groups/Groups';
-import Notifications from './items/Groups/Groups';
+import Notifications from './items/Notifications/Notifications.jsx';
 
 import './index.css';
 

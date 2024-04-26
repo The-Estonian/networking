@@ -9,11 +9,12 @@ import NewGroup from './NewGroup.jsx';
 import styles from './Groups.module.css';
 
 const Groups = () => {
-  const [modal, logout, , ,] = useOutletContext();
+  const [modal, logout, sendJsonMessage, ,] = useOutletContext();
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [notGroupMembers, setNotGroupMembers] = useState([]);
-  const [inviteSent, setInviteSent] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [invatationSent, setInvatationSent] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,31 +22,31 @@ const Groups = () => {
     GetAllGroups().then((data) => {
       if (data.login === 'success') {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
-        data.groups == null
-          ? setSelectedGroup('')
-          : setSelectedGroup(data.groups[0]);
-        GetUserList().then((data) => setNotGroupMembers(data.userList));
+        data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
+        GetUserList().then((data) => {
+          setCurrentUser(data.activeUser)
+          setNotGroupMembers(data.userList)
+        })
         modal(false);
       } else {
-        logout();
+        logout()
       }
     });
   }, [navigate, modal]);
 
-  useEffect(() => {
-    if (inviteSent) {
-      setInviteSent(false);
-    }
-  }, [inviteSent]);
+  const SendGroupInvite = (reciever, title, groupId) => {
+    sendJsonMessage({
+      type: 'groupInvatation',
+      fromuserid: currentUser,
+      message: title,
+      groupId: groupId,
+      touser: reciever,
+    });
+    setInvatationSent(true)
 
-  function SendGroupInvite(reciver, title, groupId) {
-    console.log(reciver, title, groupId);
-    setInviteSent(true);
-    const notify = document.getElementById('invatationNotify');
-    notify.style.display = 'block';
     setTimeout(() => {
-      notify.style.display = 'none';
-    }, 2000);
+      setInvatationSent(false)
+    }, 2000)
   }
 
   const Groupinfo = (group) => setSelectedGroup(group);
@@ -69,35 +70,21 @@ const Groups = () => {
           </p>
         ))}
       </div>
-
       {selectedGroup && (
         <div className={styles.groupInfo}>
           <h1>{selectedGroup.Title}</h1>
           <h2>Description: {selectedGroup.Description}</h2>
           <h3>Created by: {selectedGroup.Creator}</h3>
-
-          <select
-            className={styles.userDopDownMenu}
-            value={inviteSent ? '' : undefined}
-            onChange={(e) =>
-              SendGroupInvite(
-                e.target.value,
-                selectedGroup.Title,
-                selectedGroup.Id
-              )
-            }
-          >
-            <option value=''>Invite...</option>
-            {notGroupMembers &&
-              notGroupMembers.map((user) => (
-                <option key={user.Id} value={user.Id}>
-                  {user.Email}
-                </option>
+          <h4>Group members: {selectedGroup.Members}</h4>
+        
+          <select className={styles.userDopDownMenu} value='' onChange={(e) => SendGroupInvite(e.target.value, selectedGroup.Title, selectedGroup.Id)}>
+            <option value="" disabled>Invite user</option>
+              {notGroupMembers && notGroupMembers.filter(user => !selectedGroup.Members.includes(user.Id)).map((user) => (
+              <option key={user.Id} value={user.Id}>{user.Email}</option>
               ))}
           </select>
-          <label style={{ display: 'none' }} id='invatationNotify'>
-            Group invitation sent!
-          </label>
+          {invatationSent && <label>Group invitation sent!</label>}
+    
           <button className={styles.inviteButton}>Create event</button>
           <button className={styles.inviteButton}>Join group</button>
         </div>

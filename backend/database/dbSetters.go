@@ -81,3 +81,49 @@ func SetNewGroup(user, title, description string) {
 
 	defer db.Close()
 }
+
+func SetNewGroupNotification(messageSender, groupId, messageReceiver string) bool {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var notificationCount int
+	var memberCount int
+
+	err := db.QueryRow("SELECT COUNT(*) FROM guildnotifications WHERE reciever_fk_users = ? AND guildid_fk_guilds = ?", messageReceiver, groupId).Scan(&notificationCount)
+	if err != nil {
+		helpers.CheckErr("SetNewGroupNotification - NotificationCount: ", err)
+		return false
+	}
+
+	// Dont insert member or notification in table if they are already in table
+	err = db.QueryRow("SELECT COUNT(*) FROM guildmembers WHERE members_fk_users = ? AND guild_id_fk_guilds = ?", messageReceiver, groupId).Scan(&memberCount)
+	if err != nil {
+		helpers.CheckErr("SetNewGroupNotification - MemberCount: ", err)
+		return false
+	}
+
+	if memberCount > 0 || notificationCount > 0 {
+		return false
+	}
+
+	command := "INSERT INTO guildnotifications (sender_fk_users, reciever_fk_users, guildid_fk_guilds, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
+	_, err = db.Exec(command, messageSender, messageReceiver, groupId)
+	helpers.CheckErr("SetNewGroupNotification - Insert: ", err)
+	return true
+}
+
+func SetNewGroupMember(groupId, userId, userResponse string) {
+	if userResponse == "accept" {
+		db := sqlite.DbConnection()
+		command := "INSERT INTO guildmembers (guild_id_fk_guilds, members_fk_users) VALUES (?, ?)"
+		_, err := db.Exec(command, groupId, userId)
+		helpers.CheckErr("SetNewGroupMember", err)
+		defer db.Close()
+	}
+
+	db := sqlite.DbConnection()
+	command := "DELETE FROM guildnotifications WHERE guildid_fk_guilds=? AND reciever_fk_users=?"
+	_, err := db.Exec(command, groupId, userId)
+	helpers.CheckErr("SetNewGroupMember remove notification", err)
+	defer db.Close()
+}

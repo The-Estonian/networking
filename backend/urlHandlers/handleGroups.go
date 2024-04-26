@@ -44,10 +44,9 @@ func HandleGroups(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 		sendGroups = validators.ValidateGroups()
-		fmt.Println("Grupid: ", sendGroups)
 		callback["groups"] = sendGroups
 	}
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("HandlePosts", err)
+	helpers.CheckErr("HandleGroups", err)
 	w.Write(writeData)
 }

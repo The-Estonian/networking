@@ -2,6 +2,7 @@ package urlHandlers
 
 import (
 	"backend/helpers"
+	"backend/structs"
 	"backend/validators"
 	"encoding/json"
 	"fmt"
@@ -9,18 +10,23 @@ import (
 	"time"
 )
 
-func HandleNewGroup(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("New group attempt!")
+func HandleNotification(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Notification attempt!")
 
-	title := r.FormValue("title")
-	description := r.FormValue("description")
+	var notificationResponse structs.Notifications
+
+	err := json.NewDecoder(r.Body).Decode(&notificationResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	var callback = make(map[string]interface{})
 
 	cookie, err := r.Cookie("socialNetworkSession")
-	UserID := validators.ValidateUserSession(cookie.Value)
-
-	if err != nil || UserID == "0" {
+	// if not err and cookie valid
+	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
+		// check status
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
 			Value:    "",
@@ -44,11 +50,15 @@ func HandleNewGroup(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		validators.ValidateSetNewGroup(UserID, title, description)
-		callback["newGroup"] = "accepted"
-		callback["SendNewGroup"] = validators.ValidateNewGroup()
+		
+		// Add user to group, depending if he accepted or declined
+		if notificationResponse.NotificationData.NotificationType == "groupInvatation" {
+			validators.ValidateSetNewGroupMember(notificationResponse.GroupID,
+				 								 notificationResponse.CurrentUser,
+				  								 notificationResponse.NotificationResponse)
+		}
 	}
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("HandleNewGroup", err)
+	helpers.CheckErr("HandlePosts", err)
 	w.Write(writeData)
 }
