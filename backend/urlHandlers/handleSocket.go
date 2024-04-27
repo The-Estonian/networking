@@ -115,22 +115,24 @@ func handleMessages() {
 			}
 
 		case "onlineStatus":
-			users := []string{}
-			for client := range clientConnections {
-				users = append(users, clientConnections[client].connOwnerId)
-			}
 			var allUsers SocketMessage
 			if msg.Message == "offline" {
-				// if client, ok := clientConnections[userId]; ok && client != nil {
-				// 	client.connection.Close()
-				// 	delete(clientConnections, userId)
-				// }
+				users := []string{}
+				for client := range clientConnections {
+					if clientConnections[client].connOwnerId != msg.FromId {
+						users = append(users, clientConnections[client].connOwnerId)
+					}
+				}
 				allUsers = SocketMessage{
 					Type:             "onlineStatus",
 					Status:           "offline",
 					ConnectedClients: users,
 				}
 			} else {
+				users := []string{}
+				for client := range clientConnections {
+					users = append(users, clientConnections[client].connOwnerId)
+				}
 				allUsers = SocketMessage{
 					Type:             "onlineStatus",
 					Status:           "online",

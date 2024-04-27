@@ -23,6 +23,7 @@ const Container = () => {
   const [showModal, setShowModal] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationText, setNotificationText] = useState('');
+  const [userId, setUserId] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,11 +40,14 @@ const Container = () => {
 
   useEffect(() => {
     GetStatus().then((data) => {
-      if (data['login'] == 'fail') {
-        setActiveSession('false');
-      } else if (data['login'] == 'success') {
-        setActiveSession('true');
-        startWebSocketConnection();
+      if (data) {
+        if (data['login'] == 'fail') {
+          setActiveSession('false');
+        } else if (data['login'] == 'success') {
+          setUserId(data['userid']);
+          setActiveSession('true');
+          startWebSocketConnection();
+        }
       }
     });
   }, []);
@@ -61,9 +65,20 @@ const Container = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      handleNotification(`New ${messageData.type}`);
+      if (messageData.type != 'onlineStatus') {
+        handleNotification(`New ${messageData.type}`);
+      }
     }
   }, [lastMessage]);
+
+  useEffect(() => {
+    if (readyState === 1) {
+      sendJsonMessage({
+        type: 'onlineStatus',
+        message: 'online',
+      });
+    }
+  }, [readyState]);
 
   const handleActiveSession = () => {
     setActiveSession('true');
@@ -75,6 +90,7 @@ const Container = () => {
     sendJsonMessage({
       type: 'onlineStatus',
       message: 'offline',
+      fromuserid: userId,
     });
     setSocketUrl(null);
     setActiveSession('false');
@@ -95,7 +111,11 @@ const Container = () => {
       {activeSession == 'true' ? (
         <Menu token={activeSession} onLogout={handleLogout} />
       ) : (
-        <Authenticate modal={setShowModal} currSession={handleActiveSession} />
+        <Authenticate
+          modal={setShowModal}
+          currSession={handleActiveSession}
+          setUserId={setUserId}
+        />
       )}
       <Outlet
         context={[
