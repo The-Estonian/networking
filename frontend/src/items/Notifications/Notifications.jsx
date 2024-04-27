@@ -1,37 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
-import { GetUserList } from '../../connections/userListConnection';
-import { SendNotificationResponse } from '../../connections/notificationConnection';
+import { GetNotifications } from '../../connections/notificationsConnection';
+import { SendNotificationResponse } from '../../connections/notificationResponseConnection';
 
 import styles from './NewNotification.module.css';
 
 
 const Notifications = () => {
-  const [notificationList, setNotificationList] = useState([]);
-  const [userList, setUserList] = useState([]);
-  const [notGroupMembers, setNotGroupMembers] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [modal,logout, ,lastMessage, ,] = useOutletContext();
   const [groupInvNotify, setGroupInvNotify] = useState([]);
   const navigate = useNavigate();
-
-  const [
-    modal,
-    logout,
-    sendJsonMessage,
-    lastMessage,
-    readyState,
-    activeSession,
-  ] = useOutletContext();
-
+    
   useEffect(() => {
-    GetUserList().then((data) => {
+    modal(true);
+    GetNotifications().then((data) => {
+      console.log("allnotifData: ", data.sendNotifications);
+      data.sendNotifications == null ? setGroupInvNotify([]) : setGroupInvNotify(data.sendNotifications);
       if (data) {
         if (data.login === 'success') {
-          setUserList(data.userList || [])
-          setCurrentUser(data.activeUser)
           modal(false);
-
         } else {
           logout()
         }
@@ -39,6 +27,7 @@ const Notifications = () => {
     })
   }, [navigate, modal])
 
+  // Update new live notfication with websocket
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
@@ -48,6 +37,7 @@ const Notifications = () => {
     }
   }, [lastMessage]);
 
+  // Update databases after user accepts/declines notification
   const invatationResponse = (notification, index, e) => {
     setGroupInvNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
     const formData = {
@@ -71,6 +61,7 @@ const Notifications = () => {
               <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e)}}>Decline</button>    
               </div>  
             ))}
+
         </div>
       </div>
     </div>

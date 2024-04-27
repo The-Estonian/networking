@@ -52,8 +52,8 @@ func ValidateSetNewGroup(user, title, description string) {
 	database.SetNewGroup(user, title, description)
 }
 
-func ValidateSetNewGroupNotification(messageSender, groupId, messageReceiver string) bool{
-	return database.SetNewGroupNotification(messageSender, groupId, messageReceiver)
+func ValidateSetNewGroupNotification(messageSender, groupId, messageReceiver, notfType string) bool{
+	return database.SetNewGroupNotification(messageSender, groupId, messageReceiver, notfType)
 }
 
 func ValidateSetNewGroupMember(groupId, userId, userResponse string) {

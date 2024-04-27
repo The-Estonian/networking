@@ -11,3 +11,13 @@ type NotificationData struct {
 	CurrentUser      string `json:"touser"`
 	NotificationType string `json:"type"`
 }
+
+type AllNotifications struct {
+	SenderId         string
+	RecieverId       string `json:"touser"`
+	SenderEmail      string
+	Title            string `json:"message"`
+	NotificationId   string
+	GroupId          string
+	NotificationType string `json:"type"`
+}

@@ -56,6 +56,7 @@ const Groups = () => {
       <NewGroup setGroups={setGroups} setSelectedGroup={setSelectedGroup} />
 
       <div className={styles.groupList}>
+        <h3>All Groups</h3>
         {groups.map((group) => (
           <p
             className={
@@ -69,6 +70,7 @@ const Groups = () => {
             {group.Title}
           </p>
         ))}
+        <h3>Joined Groups</h3>
       </div>
       {selectedGroup && (
         <div className={styles.groupInfo}>

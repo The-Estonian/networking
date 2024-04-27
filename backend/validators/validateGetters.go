@@ -99,3 +99,8 @@ func ValidateGroups() []structs.Groups {
 func ValidateNewGroup() structs.NewGroup {
 	return database.GetNewGroup()
 }
+
+func ValidateNotifications(UserId string) []structs.AllNotifications {
+	return database.GetNotifications(UserId)
+}
+

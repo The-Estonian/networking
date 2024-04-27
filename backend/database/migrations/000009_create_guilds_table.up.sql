@@ -3,5 +3,6 @@ CREATE TABLE guilds (
     creator_fk_users INTEGER REFERENCES users(id) ON DELETE CASCADE,
     guild_title TEXT NOT NULL,
     guild_description TEXT NOT NULL,
-    date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    type TEXT
 );

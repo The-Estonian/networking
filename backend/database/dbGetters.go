@@ -345,3 +345,38 @@ func GetNewGroup() structs.NewGroup {
 	fmt.Println(newGroup)
 	return newGroup
 }
+
+func GetNotifications(currentUser string) []structs.AllNotifications {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var allNotif []structs.AllNotifications
+
+	command := `SELECT sender_fk_users, reciever_fk_users, email, guild_title, guildnotifications.id, guilds.id, notf_type FROM guildnotifications
+				INNER JOIN guilds ON guildnotifications.guildid_fk_guilds = guilds.id
+				INNER JOIN users ON guildnotifications.sender_fk_users = users.id
+				WHERE reciever_fk_users = ?`
+
+	rows, err := db.Query(command, currentUser)
+	if err != nil {
+		helpers.CheckErr("GetNotifications selecting error: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var notif structs.AllNotifications
+
+		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.Title, &notif.NotificationId, &notif.GroupId, &notif.NotificationType)
+		if err != nil {
+			helpers.CheckErr("GetNotifications Next error: ", err)
+			continue
+		}
+		allNotif = append(allNotif, notif)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetNotifications", err)
+	}
+	return allNotif
+}

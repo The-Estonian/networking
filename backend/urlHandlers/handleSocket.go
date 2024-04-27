@@ -96,7 +96,7 @@ func handleMessages() {
 				}
 			}
 		case "groupInvatation":
-			dbInserted := validators.ValidateSetNewGroupNotification(msg.FromId, msg.GroupId, msg.To)
+			dbInserted := validators.ValidateSetNewGroupNotification(msg.FromId, msg.GroupId, msg.To, msg.Type)
 
 			// Send noticication to user only if db insert was succssesful
 			if dbInserted {
