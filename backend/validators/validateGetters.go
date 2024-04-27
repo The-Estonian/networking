@@ -21,7 +21,7 @@ func ValidateUserRegistration(email, username string) (bool, bool) {
 }
 
 // check if username and password match
-func ValidateUserLogin(email, password string) (bool, string) {
+func ValidateUserLogin(email, password string) (bool, string, string) {
 	email = helpers.StandardizeName(email)
 	userId, userPsw := database.GetUserIdPswByEmail(email)
 	if userId != "0" {
@@ -29,12 +29,12 @@ func ValidateUserLogin(email, password string) (bool, string) {
 			hash := uuid.New().String()
 			// set user and UUID in DB
 			database.SetToSessions(userId, hash)
-			return true, hash
+			return true, hash, userId
 		} else {
-			return false, "Password error"
+			return false, "Password error", "0"
 		}
 	} else {
-		return false, "Email error"
+		return false, "Email error", "0"
 	}
 }
 

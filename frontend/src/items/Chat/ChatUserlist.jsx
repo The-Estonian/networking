@@ -5,13 +5,23 @@ import styles from './ChatUserlist.module.css';
 
 const ChatUserlist = (props) => {
   const [userList, setUserList] = useState([]);
-  const [modal, logout, , , , activeSession] = useOutletContext();
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [modal, logout, , lastMessage, , activeSession] = useOutletContext();
 
   useEffect(() => {
     if (!activeSession) {
       setUserList([]);
     }
   }, [activeSession]);
+
+  useEffect(() => {
+    if (lastMessage) {
+      const messageData = JSON.parse(lastMessage.data);
+      if (messageData.type == 'onlineStatus') {
+        setOnlineUsers(messageData.connectedclients);
+      }
+    }
+  }, [lastMessage]);
 
   useEffect(() => {
     GetUserList().then((data) => {
@@ -39,11 +49,13 @@ const ChatUserlist = (props) => {
         <p
           key={key}
           className={
-            each.Id === props.activeChatPartner
+            (onlineUsers.includes(each.Id) ? styles.onlineUser : '') +
+            ' ' +
+            (each.Id === props.activeChatPartner
               ? styles.activePartner
               : props.activeMessage.includes(each.Id)
               ? styles.newMessage
-              : styles.chatuser
+              : styles.chatuser)
           }
           onClick={() => props.handleUserClick(each.Id)}
         >

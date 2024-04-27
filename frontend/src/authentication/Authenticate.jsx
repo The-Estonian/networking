@@ -122,19 +122,17 @@ const Authenticate = (props) => {
       SetRegister(formData).then((data) => {
         resetInputs();
         console.log(data);
-        console.log('Forward to login');
-
         toggleRegisterOrLogin();
         props.modal(false);
       });
     } else {
       GetLogin(formData).then((data) => {
         resetInputs();
-        console.log('Response after login');
         console.log(data);
         // if valid
         if (data.login === 'success') {
           props.currSession('true');
+          props.setUserId(data['userid']);
         } else {
           setInputError(true);
           setInputErrorText(data.error);
