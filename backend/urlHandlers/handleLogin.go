@@ -16,7 +16,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	password := r.PostFormValue("password")
 
 	// check user auth
-	success, userCookie := validators.ValidateUserLogin(email, password)
+	success, userCookie, userId := validators.ValidateUserLogin(email, password)
 	var callback = make(map[string]string)
 	if success {
 		sessionCookie := http.Cookie{
@@ -40,6 +40,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		http.SetCookie(w, &authCookie)
 		callback["login"] = "success"
+		callback["userid"] = userId
 	} else {
 		callback["login"] = "fail"
 		callback["error"] = userCookie
