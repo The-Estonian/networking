@@ -83,12 +83,13 @@ input[id="avatar"] {
 .avatarContainer {
   display: flex;
   flex-direction: column;
-  padding: 0.1rem 2.2rem;
+  padding: 0.1rem;
   margin-top: 0.2rem;
   border-radius: 4px;
   background: white;
   color: black;
   cursor: pointer;
+  width: 80%;
 }
 
 .error {
@@ -104,4 +105,10 @@ input[id="avatar"] {
 
 .errorMsg {
   color: red;
+}
+
+.selectedImage{
+  border-radius: 0 0 4px 4px;
+  height: 100%;
+  width: 100%;
 }
