@@ -13,12 +13,24 @@ const Authenticate = (props) => {
   const [date, setDate] = useState('');
   const [username, setUsername] = useState('');
   const [aboutUser, setAboutUser] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
   const avatar = useRef(null);
 
   const [authError, setAuthError] = useState('');
   const [switchRegOrLogin, setSwitchRegOrLogin] = useState(false);
   const [inputError, setInputError] = useState(false);
   const [inputErrorText, setInputErrorText] = useState('');
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const toggleRegisterOrLogin = () => {
     setSwitchRegOrLogin(!switchRegOrLogin);
@@ -118,17 +130,25 @@ const Authenticate = (props) => {
       formData.append('username', username);
       formData.append('aboutUser', aboutUser);
       formData.append('avatar', file);
-      console.log(formData);
       SetRegister(formData).then((data) => {
-        resetInputs();
-        console.log(data);
-        toggleRegisterOrLogin();
+        if (data.newUser === 'created') {
+          resetInputs();
+          toggleRegisterOrLogin();
+          setInputErrorText('');
+          setInputError(false);
+        } else {
+          setInputError(true);
+          if (data?.email) {
+            setInputErrorText(data.email);
+          } else if (data?.username) {
+            setInputErrorText(data.username);
+          }
+        }
         props.modal(false);
       });
     } else {
       GetLogin(formData).then((data) => {
         resetInputs();
-        console.log(data);
         // if valid
         if (data.login === 'success') {
           props.currSession('true');
@@ -249,8 +269,10 @@ const Authenticate = (props) => {
                 id='avatar'
                 ref={avatar}
                 accept='.jpg, .jpeg, .gif'
+                onChange={handleImageChange}
               />
               Select file
+              {selectedImage && <img className={styles.selectedImage} src={selectedImage} />}
             </label>
           </div>
         ) : (

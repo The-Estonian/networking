@@ -15,40 +15,43 @@ func HandleStatus(w http.ResponseWriter, r *http.Request) {
 	var callback = make(map[string]string)
 	cookie, err := r.Cookie("socialNetworkSession")
 	// if not err and cookie valid
-	if err == nil {
-		userId := validators.ValidateUserSession(cookie.Value)
-		if userId == "0" {
-			// check status
-			sessionCookie := http.Cookie{
-				Name:     "socialNetworkSession",
-				Value:    "",
-				Expires:  time.Now(),
-				Path:     "/",
-				HttpOnly: true,
-				SameSite: http.SameSiteNoneMode,
-				Secure:   true,
-			}
-			http.SetCookie(w, &sessionCookie)
 
-			authCookie := http.Cookie{
-				Name:     "socialNetworkAuth",
-				Value:    "false",
-				Expires:  time.Now(),
-				Path:     "/",
-				SameSite: http.SameSiteNoneMode,
-				Secure:   true,
-			}
-			http.SetCookie(w, &authCookie)
+	if err != nil {
+		// if cookie doesn't exist
+		callback["login"] = "fail"
+	} else {
+		userId := validators.ValidateUserSession(cookie.Value)
+		// if user is 0
+		if userId == "0" {
 			callback["login"] = "fail"
 		} else {
+			// user is valid
 			callback["login"] = "success"
 			callback["userid"] = userId
 		}
-		writeData, err := json.Marshal(callback)
-		helpers.CheckErr("handleLogin", err)
-		w.Write(writeData)
 	}
-	callback["login"] = "fail"
+	if callback["login"] == "fail" {
+		sessionCookie := http.Cookie{
+			Name:     "socialNetworkSession",
+			Value:    "",
+			Expires:  time.Now(),
+			Path:     "/",
+			HttpOnly: true,
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
+		}
+		http.SetCookie(w, &sessionCookie)
+
+		authCookie := http.Cookie{
+			Name:     "socialNetworkAuth",
+			Value:    "false",
+			Expires:  time.Now(),
+			Path:     "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
+		}
+		http.SetCookie(w, &authCookie)
+	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("handleLogin", err)
 	w.Write(writeData)
