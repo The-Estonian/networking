@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
@@ -85,7 +85,7 @@ const Posts = () => {
         >
           <h3>{eachPost.Title}</h3>
           <p>{eachPost.Content}</p>
-          <p>{eachPost.Username}</p>
+          <Link to={`/profile/${eachPost.Username}`}>{eachPost.Username}</Link>
           <p>{eachPost.Privacy}</p>
           <p>{eachPost.Date}</p>
           {eachPost.Avatar ? (

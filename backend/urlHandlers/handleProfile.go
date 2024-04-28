@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -40,6 +41,11 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
+
+		// extract userId from URL
+		requestedUsername := strings.TrimPrefix(r.URL.Path, "/profile/")
+		fmt.Println("requestedUserId: ", requestedUsername)
+
 		// get profile privacy
 		profilePrivacy := validators.ValidateUserPrivacy(cookie.Value)
 		privacyJson, err := json.Marshal(profilePrivacy)
@@ -47,17 +53,16 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		callback["privacy"] = string(privacyJson)
 
 		// get profile info
-		userProfile := validators.ValidateUserProfile(cookie.Value)
+		userProfile := validators.ValidateUserProfile(cookie.Value, requestedUsername)
 		profileJson, err := json.Marshal(userProfile)
 		helpers.CheckErr("HandleProfile json", err)
 		callback["profile"] = string(profileJson)
 
 		// get profile posts
-		profilePosts := validators.ValidateProfilePosts(cookie.Value)
+		profilePosts := validators.ValidateProfilePosts(cookie.Value, requestedUsername)
 		postsJson, err := json.Marshal(profilePosts)
 		helpers.CheckErr("HandleProfilePosts json", err)
 		callback["posts"] = string(postsJson)
-
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleProfile", err)

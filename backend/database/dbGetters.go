@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// get userid if email in table
+// is email in table
 func GetEmailIfExists(email string) bool {
 	db := sqlite.DbConnection()
 	var userId string
@@ -25,7 +25,7 @@ func GetEmailIfExists(email string) bool {
 	return true
 }
 
-// get userid if username in table
+// is username in table
 func GetUsernameIfExists(username string) bool {
 	db := sqlite.DbConnection()
 	var userId string
@@ -56,6 +56,22 @@ func GetUserIdPswByEmail(email string) (string, string) {
 	}
 	defer db.Close()
 	return userId, userPsw
+}
+
+// get userid by username
+func GetUserIdByUsername(username string) string {
+	db := sqlite.DbConnection()
+	var userId string
+	command := "SELECT id FROM users WHERE username=?"
+	err := db.QueryRow(command, username).Scan(&userId)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetUserIdByUsername ", err)
+		}
+		return "0"
+	}
+	defer db.Close()
+	return userId
 }
 
 // get userId session by hash from session table

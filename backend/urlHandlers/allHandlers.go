@@ -7,7 +7,7 @@ func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/register", HandleRegistration)
 	r.HandleFunc("/status", HandleStatus)
 	r.HandleFunc("/logout", HandleLogout)
-	r.HandleFunc("/profile", HandleProfile)
+	r.HandleFunc("/profile/", HandleProfile)
 	r.HandleFunc("/newprivacy", HandleNewPrivacy)
 	r.HandleFunc("/getprivacy", HandlePrivacy)
 	r.HandleFunc("/posts", HandlePosts)

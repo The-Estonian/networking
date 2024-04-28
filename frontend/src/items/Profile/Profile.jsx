@@ -18,9 +18,14 @@ const Profile = () => {
   const [privacy, setPrivacy] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
+
+  //Get path username
+  const username = window.location.pathname.substring(9)
+  console.log('username from path: ', username)
+
   useEffect(() => {
     modal(true);
-    GetProfile().then((data) => {
+    GetProfile(username).then((data) => {
       if (data.login === 'success') {
         // profile info
         setUserProfile(JSON.parse(data.profile));
@@ -39,7 +44,7 @@ const Profile = () => {
     }
   }, [navigate, modal]);
 
-  // Privacy settings for one div, Please create that div!!!!
+  // Privacy settings change
   const handlePrivacyChange = () => {
     let newPrivacy = privacy === '1' ? '2' : '1';
     setPrivacy(newPrivacy);
