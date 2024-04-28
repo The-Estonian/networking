@@ -84,7 +84,7 @@ const Chat = () => {
     });
 
     let messageObject = {
-      Date: new Date(),
+      Date: new Date()+"Z",
       Message: textMessage,
       MessageReceiver: activeChatPartner,
       MessageSender: currentUser,

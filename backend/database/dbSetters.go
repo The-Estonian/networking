@@ -47,7 +47,7 @@ func SetNewComment(user, commenContent, image, postID string) {
 }
 func SetNewMessage(messageSender, message, messageReceiver string) {
 	db := sqlite.DbConnection()
-	command := "INSERT INTO messages (message_sender_fk_users, message, message_receiver_fk_users, date) VALUES(?, ?, ?, datetime('now', '+2 hours'))"
+	command := "INSERT INTO messages (message_sender_fk_users, message, message_receiver_fk_users, date) VALUES(?, ?, ?, datetime('now', '+3 hours'))"
 	_, err := db.Exec(command, messageSender, message, messageReceiver)
 	helpers.CheckErr("SetNewMessage", err)
 	defer db.Close()
