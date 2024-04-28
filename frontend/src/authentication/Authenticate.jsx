@@ -38,7 +38,7 @@ const Authenticate = (props) => {
 
   const validateEmailInput = (e) => {
     setEmail(e.target.value);
-    let mailformat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    let mailformat = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
     if (!e.target.value.match(mailformat)) {
       setInputError(true);
       setInputErrorText('Not a valid email!');

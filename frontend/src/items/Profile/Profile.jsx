@@ -137,6 +137,15 @@ const Profile = () => {
                 <li key={index}>
                   <p>Post: {post.PostContent}</p>
                   <p>Date: {post.Date}</p>
+                  {post.Picture ? (
+                    <img
+                      className={styles.profilePostImg}
+                      src={`${backendUrl}/avatar/${post.Picture}`}
+                      alt='PostPicure'
+                    ></img>
+                  ) : (
+                    ''
+                  )}
                 </li>
               ))}
             </ul>

@@ -98,7 +98,7 @@ func GetUserProfile(userId string) structs.Profile {
 func GetProfilePosts(userId string) []structs.ProfilePosts {
 	db := sqlite.DbConnection()
 	var profilePosts []structs.ProfilePosts
-	command := "SELECT id, user_fk_users, post_content, privacy_fk_posts_privacy, date FROM posts WHERE user_fk_users=?"
+	command := "SELECT id, user_fk_users, post_content, post_image, privacy_fk_posts_privacy, date FROM posts WHERE user_fk_users=?"
 	rows, err := db.Query(command, userId)
 	if err != nil {
 		helpers.CheckErr("GetProfilePosts", err)
@@ -108,6 +108,7 @@ func GetProfilePosts(userId string) []structs.ProfilePosts {
 		err = rows.Scan(&profilePost.PostId,
 			&profilePost.UserId,
 			&profilePost.PostContent,
+			&profilePost.Picture,
 			&profilePost.PostPrivacy,
 			&profilePost.Date)
 		if err != nil {
