@@ -15,14 +15,17 @@ const NewPost = ({ setAllPosts }) => {
 
   const [authError, setAuthError] = useState('');
   const [inputError, setInputError] = useState(true);
+  const [userId, setUserId] = useState('');
   const [inputErrorText, setInputErrorText] = useState('');
-  const [, logout, ,] = useOutletContext();
+  const [, logout, sendJsonMessage] = useOutletContext();
 
   const navigate = useNavigate();
 
   useEffect(() => {
     GetStatus().then((data) => {
-      if (data.login !== 'success') {
+      if (data.login == 'success') {
+        setUserId(data['userid']);
+      } else {
         logout();
       }
     });
@@ -69,9 +72,13 @@ const NewPost = ({ setAllPosts }) => {
     formData.append('privacy', newPostPrivacy);
     formData.append('picture', file);
 
-    SendNewPost(formData).then((data) =>
-      setAllPosts((prevPosts) => [data.SendnewPost, ...prevPosts])
-    );
+    SendNewPost(formData).then((data) => {
+      sendJsonMessage({
+        type: 'newPost',
+        fromuserid: userId,
+      });
+      setAllPosts((prevPosts) => [data.SendnewPost, ...prevPosts]);
+    });
 
     setNewPostTitle('');
     setNewPostContent('');

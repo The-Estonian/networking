@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { GetStatus } from '../../connections/statusConnection.js';
 import { SetLogout } from '../../connections/logoutConnection.js';
@@ -25,7 +25,6 @@ const Container = () => {
   const [notificationText, setNotificationText] = useState('');
   const [userId, setUserId] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
 
   const startWebSocketConnection = () => {
     setSocketUrl(websock);
@@ -53,13 +52,11 @@ const Container = () => {
   }, []);
 
   const handleNotification = (input) => {
-    if (location.pathname !== '/chat') {
-      setShowNotification(true);
-      setNotificationText(input);
-      setTimeout(() => {
-        setShowNotification(false);
-      }, 3000);
-    }
+    setShowNotification(true);
+    setNotificationText(input);
+    setTimeout(() => {
+      setShowNotification(false);
+    }, 5000);
   };
 
   useEffect(() => {

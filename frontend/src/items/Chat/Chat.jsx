@@ -22,28 +22,30 @@ const Chat = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      if (activeChatPartner === messageData.fromuserid) {
-        if (allUserMessages?.length > 0) {
-          let messageObject = {
-            Date: new Date(),
-            Message: messageData.message,
-            MessageReceiver: messageData.touser,
-            MessageSender: messageData.fromuserid,
-          };
-          setAllUserMessages([...allUserMessages, messageObject]);
-          setTimeout(() => {
-            chatContainerRef.current.scrollTop =
-              chatContainerRef.current.scrollHeight;
-          }, 100);
+      if (messageData.type == 'message') {
+        if (activeChatPartner === messageData.fromuserid) {
+          if (allUserMessages?.length > 0) {
+            let messageObject = {
+              Date: new Date(),
+              Message: messageData.message,
+              MessageReceiver: messageData.touser,
+              MessageSender: messageData.fromuserid,
+            };
+            setAllUserMessages([...allUserMessages, messageObject]);
+            setTimeout(() => {
+              chatContainerRef.current.scrollTop =
+                chatContainerRef.current.scrollHeight;
+            }, 100);
+          } else {
+            setAllUserMessages([messageData]);
+          }
         } else {
-          setAllUserMessages([messageData]);
-        }
-      } else {
-        // set new message notification
-        if (activeMessage?.length > 0) {
-          setActiveMessage([messageData.fromuserid, ...activeMessage]);
-        } else {
-          setActiveMessage([messageData.fromuserid]);
+          // set new message notification
+          if (activeMessage?.length > 0) {
+            setActiveMessage([messageData.fromuserid, ...activeMessage]);
+          } else {
+            setActiveMessage([messageData.fromuserid]);
+          }
         }
       }
     }

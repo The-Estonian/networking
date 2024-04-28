@@ -114,6 +114,20 @@ func handleMessages() {
 				}
 			}
 
+		case "newPost":
+			for client := range clientConnections {
+				if msg.FromId != clientConnections[client].connOwnerId {
+					clientConnections[client].mu.Lock()
+					err := clientConnections[client].connection.WriteJSON(msg)
+					if err != nil {
+						fmt.Println("Error writing gruopinvatation to client:", err)
+						clientConnections[client].mu.Unlock()
+						return
+					}
+					clientConnections[client].mu.Unlock()
+				}
+			}
+
 		case "onlineStatus":
 			var allUsers SocketMessage
 			if msg.Message == "offline" {
