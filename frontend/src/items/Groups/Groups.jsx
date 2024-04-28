@@ -5,6 +5,7 @@ import { GetAllGroups } from '../../connections/groupsConnection.js';
 import { GetUserList } from '../../connections/userListConnection.js';
 
 import NewGroup from './NewGroup.jsx';
+import NewEvent from './NewEvent.jsx';
 
 import styles from './Groups.module.css';
 
@@ -54,6 +55,7 @@ const Groups = () => {
   return (
     <div className={styles.groupContainer}>
       <NewGroup setGroups={setGroups} setSelectedGroup={setSelectedGroup} />
+      <NewEvent/>
 
       <div className={styles.groupList}>
         <h3>All Groups</h3>
@@ -87,7 +89,6 @@ const Groups = () => {
           </select>
           {invatationSent && <label>Group invitation sent!</label>}
     
-          <button className={styles.inviteButton}>Create event</button>
           <button className={styles.inviteButton}>Join group</button>
         </div>
       )}

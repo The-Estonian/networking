@@ -16,9 +16,11 @@
   
   input[id="content"]{
       margin: 0.5rem;
+      width: 11rem;
+      text-align: center;
   }
   
-  .closedNewPost {
+  .closedNewPost, .closedNewEvent {
     position: absolute;
     background: black;
     color: white;
@@ -32,6 +34,11 @@
     border-radius: 4px;
     bottom: 2rem;
     right: 2rem;
+    
+  }
+
+  .closedNewEvent {
+    bottom: 5.23rem;
   }
   
   .openNewPostOptions{

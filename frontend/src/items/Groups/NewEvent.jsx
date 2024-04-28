@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
-import { SendNewGroup } from '../../connections/newGroupConnection.js';
 import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewGroup.module.css';
 
 const NewEvent = () => {
+  const [modal, logout, sendJsonMessage, ,] = useOutletContext();
   const [events, setEvents] = useState([]);
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [eventTitle, setEventTitle] = useState('');
@@ -17,15 +17,9 @@ const NewEvent = () => {
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
   
-  const navigate = useNavigate();
+  const today = new Date();
+  const formattedToday = today.toISOString().substring(0, 16);
 
-  useEffect(() => {
-    GetStatus().then((data) => {
-      if (data.login !== 'success') {
-        navigate('/');
-      }
-    });
-  }, [navigate]);
 
   const validateEventTitleInput = (e) => setEventTitle(e.target.value)
   const validateEventInputDescrInput = (e) => setEventDescription(e.target.value)
@@ -38,21 +32,23 @@ const NewEvent = () => {
   };
 
   const createNewEvent = () => {
-    if (eventTitle.length < 1 || eventDescription.length < 1) {
+    if (eventTitle.length < 1 || eventDescription.length < 1 || eventTime < 1) {
       setInputError(true);
       setInputErrorText('Title or description can not be empty!');
       return;
     }
 
-    const formData = new FormData()
-    formData.append('title', eventTitle)
-    formData.append('description', eventDescription)
-    formData.append('eventtime', eventTime)
-    formData.append('attendEvent', eventDescription)
+    sendJsonMessage({
+      type: 'event',
+      message: eventTitle,
+      description : eventDescription,
+      eventtime : eventTime,
+      participation : attendEvent,
+    });
 
-    SendNewEvent(formData).then((data) => {
-      setEvents(prevEvent => [data.SendNewEvent, ...prevEvent])
-    })
+    // SendNewEvent(formData).then((data) => {
+    //   setEvents(prevEvent => [data.SendNewEvent, ...prevEvent])
+    // })
    
     switchNewPostOpen();
   }
@@ -62,17 +58,46 @@ return (
       {newPostOpen ? (
         <div className={styles.openNewPost}>
           <span>Title</span>
-          <input type='text' id='title' onChange={validateNewGroupTitleInput} />
+          <input type='text' id='content' onChange={validateEventTitleInput}/>
           <span>Description</span>
           <input
             type='text'                                                                   
             id='content'                          
-            onChange={validateNewGroupDescriptionInput}
+            onChange={validateEventInputDescrInput}
           />
+            <span className={styles.required}>Event date</span>
+            <input
+              className={styles.userInput}
+              min={formattedToday}
+              type='datetime-local'
+              name='date'          
+              id='content'
+              onChange={validateEventDateInput}
+            />
+             <div className={styles.privacySelection}>
+            <div>
+              <input
+                type='radio'
+                value='1'
+                checked={attendEvent === '1'}
+                onChange={validateAttendEventInput}
+              />
+              <span>Going</span>
+            </div>
+            <div>
+              <input
+                type='radio'
+                value='2'
+                checked={attendEvent === '2'}
+                onChange={validateAttendEventInput}
+              />
+              <span>Not going!</span>
+            </div>
+            </div>
           {inputError ? <span className={styles.errorMsg}>{inputErrorText}</span> : ''}
          
           <div className={styles.openNewPostOptions}>
-            <span className={styles.openNewPostSubmit} onClick={createNewGroup}>
+            <span className={styles.openNewPostSubmit} onClick={createNewEvent}>
               Submit
             </span>
             <span
@@ -84,11 +109,11 @@ return (
           </div>
         </div>
       ) : (
-        <span className={styles.closedNewPost} onClick={switchNewPostOpen}>
-          Create Group
+        <span className={styles.closedNewEvent} onClick={switchNewPostOpen}>
+          Create Event
         </span>
       )}
     </div>
   );
 }
-export default NewGroup;
+export default NewEvent;      
