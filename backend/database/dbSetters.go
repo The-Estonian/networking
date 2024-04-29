@@ -127,3 +127,11 @@ func SetNewGroupMember(groupId, userId, userResponse string) {
 	helpers.CheckErr("SetNewGroupMember remove notification", err)
 	defer db.Close()
 }
+
+func SetNewEvent(groupId, title, description, eventTime string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO events (guildid_fk_guilds, event_title, event_description, event_time) VALUES (?, ?, ?, ?)"
+	_, err := db.Exec(command, groupId, title, description, eventTime)
+	helpers.CheckErr("SetNewEvent", err)
+	defer db.Close()
+}

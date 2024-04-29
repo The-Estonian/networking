@@ -55,7 +55,7 @@ const Groups = () => {
   return (
     <div className={styles.groupContainer}>
       <NewGroup setGroups={setGroups} setSelectedGroup={setSelectedGroup} />
-      <NewEvent/>
+      <NewEvent members={selectedGroup && selectedGroup.Members} groupId={selectedGroup && selectedGroup.Id}/>
 
       <div className={styles.groupList}>
         <h3>All Groups</h3>

@@ -5,7 +5,7 @@ import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewGroup.module.css';
 
-const NewEvent = () => {
+const NewEvent =  ({ members, groupId }) => {
   const [modal, logout, sendJsonMessage, ,] = useOutletContext();
   const [events, setEvents] = useState([]);
   const [newPostOpen, setNewPostOpen] = useState(false);
@@ -40,16 +40,18 @@ const NewEvent = () => {
 
     sendJsonMessage({
       type: 'event',
+      groupId : groupId,
       message: eventTitle,
       description : eventDescription,
       eventtime : eventTime,
       participation : attendEvent,
+      groupmembers: members,
     });
+    console.log("liikmed: ",members);
 
     // SendNewEvent(formData).then((data) => {
     //   setEvents(prevEvent => [data.SendNewEvent, ...prevEvent])
     // })
-   
     switchNewPostOpen();
   }
 

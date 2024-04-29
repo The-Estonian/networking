@@ -42,10 +42,12 @@ type SocketMessage struct {
 	// From             string   `json:"fromuser"`
 	FromId           string   `json:"fromuserid"`
 	Message          string   `json:"message"`
+	Description      string   `json:"description"`
 	To               string   `json:"touser"`
 	GroupId          string   `json:"groupId"`
 	EventTime        string   `json:"eventtime"`
 	GroupMembers     []string `json:"groupmembers"`
+	Participation    string   `json:"participation"`
 	ConnectedClients []string `json:"connectedclients"`
 }
 
@@ -116,17 +118,20 @@ func handleMessages() {
 				}
 			}
 		case "event":
-			fmt.Println("msg from event", msg)
+			validators.ValidateSetNewEvent(msg.GroupId, msg.Message, msg.Description, msg.EventTime)
+
 			for client := range clientConnections {
-				if msg.To == clientConnections[client].connOwnerId {
-					clientConnections[client].mu.Lock()
-					err := clientConnections[client].connection.WriteJSON(msg)
-					if err != nil {
-						fmt.Println("Error writing message to client:", err)
+				for _, groupMember := range msg.GroupMembers {
+					if groupMember == clientConnections[client].connOwnerId {
+						clientConnections[client].mu.Lock()
+						err := clientConnections[client].connection.WriteJSON(msg)
+						if err != nil {
+							fmt.Println("Error writing message to client:", err)
+							clientConnections[client].mu.Unlock()
+							return
+						}
 						clientConnections[client].mu.Unlock()
-						return
 					}
-					clientConnections[client].mu.Unlock()
 				}
 			}
 

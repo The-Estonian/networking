@@ -37,12 +37,16 @@
   overflow-x: hidden;
 }
 
-.groupInvList {
+.groupInvList[id="grInv"], .groupInvList[id="event"] {
   position: absolute;
-  box-shadow: 2px 2px 5px hsla(0, 0%, 0%, 0.816);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 10px 15px;
   background-color: hsl(0, 0%, 45%);
   display: none;
   text-align: center;
+}
+
+.groupInvList[id="event"] {
+  margin: 50px 220px;
 }
 
 .groupInvList p {
@@ -63,6 +67,7 @@
 .listButton {
   background-color: hsl(0, 0%, 0%);
   display: block;
+  height: 50px;
   color: white;
   padding: 15px 25px;
   cursor: pointer;
@@ -74,7 +79,11 @@
   background-color: hsl(0, 0%, 10%);
 }
 
-.listButton:hover + .groupInvList {
+.listButton[id="grInv"]:hover + .groupInvList[id="grInv"] {
+  display: block;
+}
+
+.listButton[id="event"]:hover + .groupInvList[id="event"] {
   display: block;
 }
 
