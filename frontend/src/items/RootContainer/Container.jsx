@@ -21,6 +21,7 @@ const Container = () => {
   const [activeSession, setActiveSession] = useState('false');
   const [socketUrl, setSocketUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [glow, setGlow] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationText, setNotificationText] = useState('');
   const [userId, setUserId] = useState('');
@@ -51,6 +52,10 @@ const Container = () => {
     });
   }, []);
 
+  const handleGlowTrigger = () => {
+    setGlow(false);
+  };
+
   const handleNotification = (input) => {
     setShowNotification(true);
     setNotificationText(input);
@@ -64,6 +69,7 @@ const Container = () => {
       const messageData = JSON.parse(lastMessage.data);
       if (messageData.type != 'onlineStatus') {
         handleNotification(`New ${messageData.type}`);
+        setGlow(true);
       }
     }
   }, [lastMessage]);
@@ -106,7 +112,7 @@ const Container = () => {
       )}
       {showModal ? <Modal /> : ''}
       {activeSession == 'true' ? (
-        <Menu token={activeSession} onLogout={handleLogout} />
+        <Menu glow={glow} handleGlow={handleGlowTrigger} onLogout={handleLogout} />
       ) : (
         <Authenticate
           modal={setShowModal}
