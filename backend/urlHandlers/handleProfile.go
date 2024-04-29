@@ -42,7 +42,7 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 
-		// extract userId from URL
+		// extract userEmail from URL
 		requestedEmail := strings.TrimPrefix(r.URL.Path, "/profile/")
 		fmt.Println("requestedEmail: ", requestedEmail)
 

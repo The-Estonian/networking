@@ -58,7 +58,7 @@ func GetUserIdPswByEmail(email string) (string, string) {
 	return userId, userPsw
 }
 
-// get userid by username
+// get userid by email
 func GetUserIdByEmail(email string) string {
 	db := sqlite.DbConnection()
 	var userId string
