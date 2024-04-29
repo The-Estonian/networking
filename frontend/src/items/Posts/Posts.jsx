@@ -85,7 +85,8 @@ const Posts = () => {
         >
           <h3>{eachPost.Title}</h3>
           <p>{eachPost.Content}</p>
-          <Link to={`/profile/${eachPost.Username}`}>{eachPost.Username}</Link>
+          <Link to={`/profile/${eachPost.Email}`}>{eachPost.Email}</Link>
+          <p>{eachPost.Username}</p>
           <p>{eachPost.Privacy}</p>
           <p>{eachPost.Date}</p>
           {eachPost.Avatar ? (

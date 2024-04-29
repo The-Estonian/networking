@@ -28,12 +28,12 @@ const Profile = () => {
     GetProfile(username).then((data) => {
       if (data.login === 'success') {
         // profile info
-        setUserProfile(JSON.parse(data.profile));
+        setUserProfile(data.profile);
         // following and followers test!!!
         setFollowing(['User1', 'User2', 'User3']);
         setFollowers(['User4', 'User5']);
         // profile related posts
-        setPosts(JSON.parse(data.posts));
+        setPosts(data.posts);
         modal(false);
       } else {
         logout();

@@ -1,9 +1,9 @@
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080';
 
-export const GetProfile = async (userId = '') => {
+export const GetProfile = async (userEmail = '') => {
   try {
-    const response = await fetch(`${backendUrl}/profile/${encodeURIComponent(userId)}`, {
+    const response = await fetch(`${backendUrl}/profile/${encodeURIComponent(userEmail)}`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',

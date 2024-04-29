@@ -44,13 +44,13 @@ func ValidateUserSession(cookie string) string {
 }
 
 // provide user profile from db
-func ValidateUserProfile(hash, requestedUsername string) structs.Profile {
+func ValidateUserProfile(hash, requestedEmail string) structs.Profile {
 	var userId string
-	if requestedUsername == "" {
+	if requestedEmail == "" {
 		// get userid by hash
 		userId = database.GetUserSession(hash)
 	} else { // if request is made for another profile
-		userId = database.GetUserIdByUsername(requestedUsername)
+		userId = database.GetUserIdByEmail(requestedEmail)
 	}
 	// get user profile by userid
 	return database.GetUserProfile(userId)
@@ -69,13 +69,13 @@ func ValidateUserList(hash string) ([]structs.Profile, string) {
 }
 
 // provide user profile posts from db
-func ValidateProfilePosts(hash, requestedUsername string) []structs.ProfilePosts {
+func ValidateProfilePosts(hash, requestedEmail string) []structs.ProfilePosts {
 	var userId string
-	if requestedUsername == "" {
+	if requestedEmail == "" {
 		// get userid by hash
 		userId = database.GetUserSession(hash)
 	} else { // if request is made for another profile
-		userId = database.GetUserIdByUsername(requestedUsername)
+		userId = database.GetUserIdByEmail(requestedEmail)
 	}
 	// get user profile posts by userid
 	return database.GetProfilePosts(userId)

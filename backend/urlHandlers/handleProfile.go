@@ -13,7 +13,7 @@ import (
 func HandleProfile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Profile attempt!")
 
-	var callback = make(map[string]string)
+	var callback = make(map[string]interface{})
 	cookie, err := r.Cookie("socialNetworkSession")
 	// if not err and cookie valid
 	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
@@ -43,26 +43,20 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "success"
 
 		// extract userId from URL
-		requestedUsername := strings.TrimPrefix(r.URL.Path, "/profile/")
-		fmt.Println("requestedUserId: ", requestedUsername)
+		requestedEmail := strings.TrimPrefix(r.URL.Path, "/profile/")
+		fmt.Println("requestedEmail: ", requestedEmail)
 
 		// get profile privacy
 		profilePrivacy := validators.ValidateUserPrivacy(cookie.Value)
-		privacyJson, err := json.Marshal(profilePrivacy)
-		helpers.CheckErr("HandleProfile json", err)
-		callback["privacy"] = string(privacyJson)
+		callback["privacy"] = profilePrivacy
 
 		// get profile info
-		userProfile := validators.ValidateUserProfile(cookie.Value, requestedUsername)
-		profileJson, err := json.Marshal(userProfile)
-		helpers.CheckErr("HandleProfile json", err)
-		callback["profile"] = string(profileJson)
+		userProfile := validators.ValidateUserProfile(cookie.Value, requestedEmail)
+		callback["profile"] = userProfile
 
 		// get profile posts
-		profilePosts := validators.ValidateProfilePosts(cookie.Value, requestedUsername)
-		postsJson, err := json.Marshal(profilePosts)
-		helpers.CheckErr("HandleProfilePosts json", err)
-		callback["posts"] = string(postsJson)
+		profilePosts := validators.ValidateProfilePosts(cookie.Value, requestedEmail)
+		callback["posts"] = profilePosts
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleProfile", err)
