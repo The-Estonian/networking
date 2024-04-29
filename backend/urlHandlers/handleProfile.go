@@ -45,18 +45,27 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		// extract userEmail from URL
 		requestedEmail := strings.TrimPrefix(r.URL.Path, "/profile/")
 		fmt.Println("requestedEmail: ", requestedEmail)
+		// get email from session
+		sessionEmail := validators.ValidateEmailFromSession(cookie.Value)
+		fmt.Println("sessionEmail: ", sessionEmail)
 
-		// get profile privacy
-		profilePrivacy := validators.ValidateUserPrivacy(cookie.Value)
-		callback["privacy"] = profilePrivacy
+		// compare emails
+		if requestedEmail == sessionEmail {
+			// get profile privacy
+			profilePrivacy := validators.ValidateUserPrivacyHash(cookie.Value)
+			callback["privacy"] = profilePrivacy
 
-		// get profile info
-		userProfile := validators.ValidateUserProfile(cookie.Value, requestedEmail)
-		callback["profile"] = userProfile
+			// get profile info
+			userProfile := validators.ValidateUserProfile(requestedEmail)
+			callback["profile"] = userProfile
 
-		// get profile posts
-		profilePosts := validators.ValidateProfilePosts(cookie.Value, requestedEmail)
-		callback["posts"] = profilePosts
+			// get profile posts
+			profilePosts := validators.ValidateProfilePosts(requestedEmail)
+			callback["posts"] = profilePosts
+		} else {
+			// get requestedEmail profile privacy, to see if it is public or private
+			//..............................
+		}
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleProfile", err)

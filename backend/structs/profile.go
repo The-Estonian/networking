@@ -10,4 +10,5 @@ type Profile struct {
 	Username    string
 	AboutUser   string
 	Avatar      string
+	Privacy     string
 }

@@ -39,6 +39,7 @@ const Profile = () => {
         logout();
       }
     });
+    // Get privacy settings
     if (privacy === '') {
       GetNewPrivacy().then((data) => setPrivacy(data.GetPrivacy));
     }

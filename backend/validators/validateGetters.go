@@ -43,15 +43,11 @@ func ValidateUserSession(cookie string) string {
 	return database.GetUserSession(cookie)
 }
 
-// provide user profile from db
-func ValidateUserProfile(hash, requestedEmail string) structs.Profile {
+// provide user profile from db by email
+func ValidateUserProfile(requestedEmail string) structs.Profile {
 	var userId string
-	if requestedEmail == "" {
-		// get userid by hash
-		userId = database.GetUserSession(hash)
-	} else { // if request is made for another profile
-		userId = database.GetUserIdByEmail(requestedEmail)
-	}
+	userId = database.GetUserIdByEmail(requestedEmail)
+
 	// get user profile by userid
 	return database.GetUserProfile(userId)
 }
@@ -68,15 +64,11 @@ func ValidateUserList(hash string) ([]structs.Profile, string) {
 	return database.GetAllUsers(userId), userId
 }
 
-// provide user profile posts from db
-func ValidateProfilePosts(hash, requestedEmail string) []structs.ProfilePosts {
+// provide user profile posts from db by email
+func ValidateProfilePosts(requestedEmail string) []structs.ProfilePosts {
 	var userId string
-	if requestedEmail == "" {
-		// get userid by hash
-		userId = database.GetUserSession(hash)
-	} else { // if request is made for another profile
-		userId = database.GetUserIdByEmail(requestedEmail)
-	}
+	userId = database.GetUserIdByEmail(requestedEmail)
+
 	// get user profile posts by userid
 	return database.GetProfilePosts(userId)
 }
@@ -95,9 +87,14 @@ func ValidateUserMessages(hash, partnerId string) []structs.ChatMessage {
 	return database.GetMessages(userId, partnerId)
 }
 
-func ValidateUserPrivacy(hash string) string {
+func ValidateUserPrivacyHash(hash string) string {
 	// get userid by hash
 	userId := database.GetUserSession(hash)
+	// get user profile privacy by userid
+	return database.GetUserPrivacy(userId)
+}
+
+func ValidateUserPrivacyID(userId string) string {
 	// get user profile privacy by userid
 	return database.GetUserPrivacy(userId)
 }
@@ -108,4 +105,10 @@ func ValidateGroups() []structs.Groups {
 
 func ValidateNewGroup() structs.NewGroup {
 	return database.GetNewGroup()
+}
+
+func ValidateEmailFromSession(session string) string {
+	// get email by sessionID
+	email := database.GetEmailFromSession(session)
+	return email
 }
