@@ -1,6 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { GetProfile } from '../../connections/profileConnection.js';
 
 
 import styles from './Menu.module.css';

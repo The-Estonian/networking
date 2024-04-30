@@ -112,29 +112,33 @@ const Profile = () => {
               )}
             </div>
             {/* Privacy settings */}
-            <span>Privacy mode: </span>
-            <div className={styles.toggleSwitch}>
-              <input
-                type='checkbox'
-                id='toggle'
-                className={styles.toggleSwitchCheckbox}
-                checked={privacy === '2'}
-                onChange={handlePrivacyChange}
-              />
-              <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
-                <span className={styles.toggleSwitchInner} />
-                <span className={styles.toggleSwitchSwitch} />
-                <span
-                  className={
-                    privacy === '2'
-                      ? styles.toggleSwitchTextOn
-                      : styles.toggleSwitchTextOff
-                  }
-                >
-                  {privacy === '2' ? 'ON' : 'OFF'}
-                </span>
-              </label>
-            </div>
+            {privacy !== '-1' && (
+              <div>
+                <span>Privacy mode: </span>
+                <div className={styles.toggleSwitch}>
+                  <input
+                    type='checkbox'
+                    id='toggle'
+                    className={styles.toggleSwitchCheckbox}
+                    checked={privacy === '2'}
+                    onChange={handlePrivacyChange}
+                  />
+                  <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
+                    <span className={styles.toggleSwitchInner} />
+                    <span className={styles.toggleSwitchSwitch} />
+                    <span
+                      className={
+                        privacy === '2'
+                          ? styles.toggleSwitchTextOn
+                          : styles.toggleSwitchTextOff
+                      }
+                    >
+                      {privacy === '2' ? 'ON' : 'OFF'}
+                    </span>
+                  </label>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <p>This user is private, please send a follow request</p>
