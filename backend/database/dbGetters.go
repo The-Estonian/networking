@@ -271,7 +271,7 @@ func GetUserPrivacy(userId string) string {
 	}
 	defer db.Close()
 	return privacy
-	// 1 = public, 2 = private, 3 = almost private
+	// 1 = public, 2 = private, (3 = almost private)???
 }
 
 // get userid if email in table
@@ -367,11 +367,12 @@ func GetNewGroup() structs.NewGroup {
 // is looking at their own profile or someone else's
 // I compare session owner email to /profile/ path
 func GetEmailFromSession(session string) string {
+	fmt.Println("Session original: ", session)
 	db := sqlite.DbConnection()
 	defer db.Close()
 
 	var email string
-	err := db.QueryRow("SELECT users.email FROM sessions INNER JOIN users ON sessions.user_fk_users = users.id WHERE sessions.id = ?", session).Scan(&email)
+	err := db.QueryRow("SELECT users.email FROM session INNER JOIN users ON session.user_fk_users = users.id WHERE session.hash = ?", session).Scan(&email)
 	if err != nil {
 		helpers.CheckErr("GetEmailFromSession", err)
 		return ""

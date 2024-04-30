@@ -42,7 +42,7 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 
-		callback["GetPrivacy"] = validators.ValidateUserPrivacy(cookie.Value)
+		callback["GetPrivacy"] = validators.ValidateUserPrivacyHash(cookie.Value)
 	}
 
 	writeData, err := json.Marshal(callback)

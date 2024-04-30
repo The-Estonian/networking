@@ -20,12 +20,13 @@ const Profile = () => {
   const [modal, logout] = useOutletContext();
 
   //Get path username
-  const username = window.location.pathname.substring(9)
-  console.log('username from path: ', username)
+  const userEmail = window.location.pathname.substring(9)
+  console.log('username from path: ', userEmail)
 
   useEffect(() => {
+    
     modal(true);
-    GetProfile(username).then((data) => {
+    GetProfile(userEmail).then((data) => {
       if (data.login === 'success') {
         // profile info
         setUserProfile(data.profile);
@@ -56,86 +57,92 @@ const Profile = () => {
     formData.append('privacy', newPrivacy);
     SendNewPrivacy(formData).then((data) => setPrivacy(data.SendNewPrivacy));
   };
-
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
-        <span>SOMEONE STYLE THIS PLEASE!</span>
-        <div className={styles.avatar}>
-          {userProfile.Avatar ? (
-            <img
-              className={styles.avatarImg}
-              src={`${backendUrl}/avatar/${userProfile.Avatar}`}
-              alt='Avatar'
-            ></img>
-          ) : (
-            ''
-          )}
-        </div>
-        {/* Privacy settings */}
-        <span>Privacy mode: </span>
-        <div className={styles.toggleSwitch}>
-          <input
-            type='checkbox'
-            id='toggle'
-            className={styles.toggleSwitchCheckbox}
-            checked={privacy === '2'}
-            onChange={handlePrivacyChange}
-          />
-          <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
-            <span className={styles.toggleSwitchInner} />
-            <span className={styles.toggleSwitchSwitch} />
-            <span
-              className={
-                privacy === '2'
-                  ? styles.toggleSwitchTextOn
-                  : styles.toggleSwitchTextOff
-              }
-            >
-              {privacy === '2' ? 'ON' : 'OFF'}
-            </span>
-          </label>
-        </div>
-        <span>Id: {userProfile.Id}</span>
-        <span>Email: {userProfile.Email}</span>
-        <span>First Name: {userProfile.FirstName}</span>
-        <span>Last Name: {userProfile.LastName}</span>
-        <span>Username: {userProfile.Username}</span>
-        <span>
-          Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
-        </span>
-        {/* Logged in user's followers and following*/}
-        <div className={styles.follow}>
-          {following ? (
-            <div>
-              <h2>Following</h2>
-              <ul>
-                {following.map((user, index) => (
-                  <li key={index}>{user}</li>
-                ))}
-              </ul>
+        {userProfile && Object.keys(userProfile).length > 0 ? (
+          <>
+            <span>SOMEONE STYLE THIS PLEASE!</span>
+            <div className={styles.avatar}>
+              {userProfile.Avatar ? (
+                <img
+                  className={styles.avatarImg}
+                  src={`${backendUrl}/avatar/${userProfile.Avatar}`}
+                  alt='Avatar'
+                ></img>
+              ) : (
+                ''
+              )}
             </div>
-          ) : (
-            <p>No users are being followed.</p>
-          )}
 
-          {followers ? (
-            <div>
-              <h2>Followers</h2>
-              <ul>
-                {followers.map((user, index) => (
-                  <li key={index}>{user}</li>
-                ))}
-              </ul>
+            <span>Id: {userProfile.Id}</span>
+            <span>Email: {userProfile.Email}</span>
+            <span>First Name: {userProfile.FirstName}</span>
+            <span>Last Name: {userProfile.LastName}</span>
+            <span>Username: {userProfile.Username}</span>
+            <span>
+              Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
+            </span>
+            {/* Logged in user's followers and following*/}
+            <div className={styles.follow}>
+              {following ? (
+                <div>
+                  <h2>Following</h2>
+                  <ul>
+                    {following.map((user, index) => (
+                      <li key={index}>{user}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p>No users are being followed.</p>
+              )}
+
+              {followers ? (
+                <div>
+                  <h2>Followers</h2>
+                  <ul>
+                    {followers.map((user, index) => (
+                      <li key={index}>{user}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p>No followers found.</p>
+              )}
             </div>
-          ) : (
-            <p>No followers found.</p>
-          )}
-        </div>
+            {/* Privacy settings */}
+            <span>Privacy mode: </span>
+            <div className={styles.toggleSwitch}>
+              <input
+                type='checkbox'
+                id='toggle'
+                className={styles.toggleSwitchCheckbox}
+                checked={privacy === '2'}
+                onChange={handlePrivacyChange}
+              />
+              <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
+                <span className={styles.toggleSwitchInner} />
+                <span className={styles.toggleSwitchSwitch} />
+                <span
+                  className={
+                    privacy === '2'
+                      ? styles.toggleSwitchTextOn
+                      : styles.toggleSwitchTextOff
+                  }
+                >
+                  {privacy === '2' ? 'ON' : 'OFF'}
+                </span>
+              </label>
+            </div>
+          </>
+        ) : (
+          <p>This user is private, please send a follow request</p>
+        )}
       </div>
       {/* Logged in user's posts */}
       <div className={styles.posts}>
-        {posts ? (
+        {posts && posts.length > 0 ? (
           <div>
             <h2>Posts</h2>
             <ul>
@@ -157,7 +164,7 @@ const Profile = () => {
             </ul>
           </div>
         ) : (
-          <p>No posts found.</p>
+          <p>No posts to show.</p>
         )}
       </div>
     </div>

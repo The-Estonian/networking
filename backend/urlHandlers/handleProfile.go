@@ -49,7 +49,7 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		sessionEmail := validators.ValidateEmailFromSession(cookie.Value)
 		fmt.Println("sessionEmail: ", sessionEmail)
 
-		// compare emails
+		// check if user wants to see won profile
 		if requestedEmail == sessionEmail {
 			// get profile privacy
 			profilePrivacy := validators.ValidateUserPrivacyHash(cookie.Value)
@@ -62,9 +62,28 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 			// get profile posts
 			profilePosts := validators.ValidateProfilePosts(requestedEmail)
 			callback["posts"] = profilePosts
-		} else {
+		} else { // requested profile is not the same as session profile
 			// get requestedEmail profile privacy, to see if it is public or private
-			//..............................
+			privacyValue := validators.ValidateUserPrivacyEmail(requestedEmail)
+			if privacyValue == "1" {
+				callback["privacy"] = privacyValue
+				// get profile info
+				userProfile := validators.ValidateUserProfile(requestedEmail)
+				callback["profile"] = userProfile
+				fmt.Println("profile: ", userProfile)
+
+				// get profile posts
+				profilePosts := validators.ValidateProfilePosts(requestedEmail)
+				callback["posts"] = profilePosts
+			} else { // privacy value is "2"
+				// add user profile details that are visible from private profile
+				callback["privacy"] = privacyValue
+				// get profile info
+				callback["profile"] = []string{}
+
+				// get profile posts
+				callback["posts"] = []string{}
+			}
 		}
 	}
 	writeData, err := json.Marshal(callback)

@@ -94,7 +94,9 @@ func ValidateUserPrivacyHash(hash string) string {
 	return database.GetUserPrivacy(userId)
 }
 
-func ValidateUserPrivacyID(userId string) string {
+func ValidateUserPrivacyEmail(email string) string {
+	// get userid by email
+	userId := database.GetUserIdIfEmailExists(email)
 	// get user profile privacy by userid
 	return database.GetUserPrivacy(userId)
 }
