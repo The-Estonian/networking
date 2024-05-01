@@ -26,7 +26,7 @@ const Chat = () => {
         if (activeChatPartner === messageData.fromuserid) {
           if (allUserMessages?.length > 0) {
             let messageObject = {
-              Date: new Date(),
+              Date: new Date() + 'Z',
               Message: messageData.message,
               MessageReceiver: messageData.touser,
               MessageSender: messageData.fromuserid,
@@ -84,7 +84,7 @@ const Chat = () => {
     });
 
     let messageObject = {
-      Date: new Date()+"Z",
+      Date: new Date() + 'Z',
       Message: textMessage,
       MessageReceiver: activeChatPartner,
       MessageSender: currentUser,

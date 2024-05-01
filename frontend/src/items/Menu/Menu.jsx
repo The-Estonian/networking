@@ -1,20 +1,30 @@
 import { NavLink } from 'react-router-dom';
 
-
 import styles from './Menu.module.css';
 
-const activeClassName = ({ isActive, isPending }) =>
-  [isPending ? styles.transition : '', isActive ? styles.active : ''].join(
-    ' '
-  ) +
-  ' ' +
-  styles.linkButton;
-
 const Menu = (props) => {
+  const activeClassName = ({ isActive, isPending }) =>
+    [isPending ? styles.transition : '', isActive ? styles.active : ''].join(
+      ' '
+    ) +
+    ' ' +
+    styles.linkButton;
 
+  const activeNotificationClassName = ({ isActive, isPending }) =>
+    [
+      isPending ? styles.transition : '',
+      isActive ? styles.active : '',
+      props.glow ? styles.glowing : '',
+    ].join(' ') +
+    ' ' +
+    styles.linkButton;
   return (
     <div className={styles.menu}>
-      <NavLink to={`/notifications`} className={activeClassName}>
+      <NavLink
+        to={`/notifications`}
+        onClick={props.handleGlow}
+        className={activeNotificationClassName}
+      >
         Notifications
       </NavLink>
       <NavLink to={`/posts`} className={activeClassName}>
@@ -32,13 +42,9 @@ const Menu = (props) => {
       <NavLink to={`/profile/`} className={activeClassName}>
         Profile
       </NavLink>
-      {/* {props.token ? ( */}
-        <a onClick={props.onLogout} className={styles.linkButton}>
-          Logout
-        </a>
-      {/* // ) : (
-      //   <Login />
-      // )} */}
+      <a onClick={props.onLogout} className={styles.linkButton}>
+        Logout
+      </a>
     </div>
   );
 };
