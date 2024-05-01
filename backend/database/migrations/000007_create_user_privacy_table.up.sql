@@ -5,3 +5,5 @@ CREATE TABLE user_privacy (
 );
 
 INSERT INTO user_privacy (user_fk_users, privacy_fk_users_privacy) VALUES ("1", "1");
+INSERT INTO user_privacy (user_fk_users, privacy_fk_users_privacy) VALUES ("2", "2");
+INSERT INTO user_privacy (user_fk_users, privacy_fk_users_privacy) VALUES ("3", "1");

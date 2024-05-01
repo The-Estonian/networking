@@ -6,7 +6,7 @@ const backendUrl =
 
 import { GetProfile } from '../../connections/profileConnection.js';
 import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
-import { GetNewPrivacy } from '../../connections/privacyConnection.js';
+import { GetPrivacy } from '../../connections/privacyConnection.js';
 
 import styles from './Profile.module.css';
 
@@ -16,30 +16,40 @@ const Profile = () => {
   const [followers, setFollowers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [privacy, setPrivacy] = useState('');
+  const [privacyButton, setPrivacyButton] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
+
+  //Get path username
+  const userEmail = window.location.pathname.substring(9)
+  // console.log('username from path: ', userEmail)
+
   useEffect(() => {
     modal(true);
-    GetProfile().then((data) => {
+    GetProfile(userEmail).then((data) => {
       if (data.login === 'success') {
         // profile info
-        setUserProfile(JSON.parse(data.profile));
+        setUserProfile(data.profile);
         // following and followers test!!!
         setFollowing(['User1', 'User2', 'User3']);
         setFollowers(['User4', 'User5']);
         // profile related posts
-        setPosts(JSON.parse(data.posts));
+        setPosts(data.posts);
         modal(false);
       } else {
         logout();
       }
     });
+    // Get privacy settings
     if (privacy === '') {
-      GetNewPrivacy().then((data) => setPrivacy(data.GetPrivacy));
+      GetPrivacy(userEmail).then((data) => {
+        setPrivacy(data.GetPrivacy);
+        setPrivacyButton(data.ButtonVisible);
+      });
     }
   }, [navigate, modal]);
 
-  // Privacy settings for one div, Please create that div!!!!
+  // Privacy settings change
   const handlePrivacyChange = () => {
     let newPrivacy = privacy === '1' ? '2' : '1';
     setPrivacy(newPrivacy);
@@ -50,86 +60,97 @@ const Profile = () => {
     formData.append('privacy', newPrivacy);
     SendNewPrivacy(formData).then((data) => setPrivacy(data.SendNewPrivacy));
   };
-
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
-        <span>SOMEONE STYLE THIS PLEASE!</span>
-        <div className={styles.avatar}>
-          {userProfile.Avatar ? (
-            <img
-              className={styles.avatarImg}
-              src={`${backendUrl}/avatar/${userProfile.Avatar}`}
-              alt='Avatar'
-            ></img>
-          ) : (
-            ''
-          )}
-        </div>
-        {/* Privacy settings */}
-        <span>Privacy mode: </span>
-        <div className={styles.toggleSwitch}>
-          <input
-            type='checkbox'
-            id='toggle'
-            className={styles.toggleSwitchCheckbox}
-            checked={privacy === '2'}
-            onChange={handlePrivacyChange}
-          />
-          <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
-            <span className={styles.toggleSwitchInner} />
-            <span className={styles.toggleSwitchSwitch} />
-            <span
-              className={
-                privacy === '2'
-                  ? styles.toggleSwitchTextOn
-                  : styles.toggleSwitchTextOff
-              }
-            >
-              {privacy === '2' ? 'ON' : 'OFF'}
-            </span>
-          </label>
-        </div>
-        <span>Id: {userProfile.Id}</span>
-        <span>Email: {userProfile.Email}</span>
-        <span>First Name: {userProfile.FirstName}</span>
-        <span>Last Name: {userProfile.LastName}</span>
-        <span>Username: {userProfile.Username}</span>
-        <span>
-          Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
-        </span>
-        {/* Logged in user's followers and following*/}
-        <div className={styles.follow}>
-          {following ? (
-            <div>
-              <h2>Following</h2>
-              <ul>
-                {following.map((user, index) => (
-                  <li key={index}>{user}</li>
-                ))}
-              </ul>
+        {userProfile && Object.keys(userProfile).length > 0 ? (
+          <>
+            <span>SOMEONE STYLE THIS PLEASE!</span>
+            <div className={styles.avatar}>
+              {userProfile.Avatar ? (
+                <img
+                  className={styles.avatarImg}
+                  src={`${backendUrl}/avatar/${userProfile.Avatar}`}
+                  alt='Avatar'
+                ></img>
+              ) : (
+                ''
+              )}
             </div>
-          ) : (
-            <p>No users are being followed.</p>
-          )}
 
-          {followers ? (
-            <div>
-              <h2>Followers</h2>
-              <ul>
-                {followers.map((user, index) => (
-                  <li key={index}>{user}</li>
-                ))}
-              </ul>
+            <span>Id: {userProfile.Id}</span>
+            <span>Email: {userProfile.Email}</span>
+            <span>First Name: {userProfile.FirstName}</span>
+            <span>Last Name: {userProfile.LastName}</span>
+            <span>Username: {userProfile.Username}</span>
+            <span>
+              Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
+            </span>
+            {/* Logged in user's followers and following*/}
+            <div className={styles.follow}>
+              {following ? (
+                <div>
+                  <h2>Following</h2>
+                  <ul>
+                    {following.map((user, index) => (
+                      <li key={index}>{user}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p>No users are being followed.</p>
+              )}
+
+              {followers ? (
+                <div>
+                  <h2>Followers</h2>
+                  <ul>
+                    {followers.map((user, index) => (
+                      <li key={index}>{user}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p>No followers found.</p>
+              )}
             </div>
-          ) : (
-            <p>No followers found.</p>
-          )}
-        </div>
+          </>
+        ) : (
+          <p>This user is private, please send a follow request</p>
+        )}
+        {/* Privacy settings */}
+        {privacyButton === '1' && (
+          <div>
+            <span>Privacy mode: </span>
+            <div className={styles.toggleSwitch}>
+              <input
+                type='checkbox'
+                id='toggle'
+                className={styles.toggleSwitchCheckbox}
+                checked={privacy === '2'}
+                onChange={handlePrivacyChange}
+              />
+              <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
+                <span className={styles.toggleSwitchInner} />
+                <span className={styles.toggleSwitchSwitch} />
+                <span
+                  className={
+                    privacy === '2'
+                      ? styles.toggleSwitchTextOn
+                      : styles.toggleSwitchTextOff
+                  }
+                >
+                  {privacy === '2' ? 'ON' : 'OFF'}
+                </span>
+              </label>
+            </div>
+          </div>
+        )}
       </div>
+
       {/* Logged in user's posts */}
       <div className={styles.posts}>
-        {posts ? (
+        {posts && posts.length > 0 ? (
           <div>
             <h2>Posts</h2>
             <ul>
@@ -151,7 +172,7 @@ const Profile = () => {
             </ul>
           </div>
         ) : (
-          <p>No posts found.</p>
+          <p>No posts to show.</p>
         )}
       </div>
     </div>
