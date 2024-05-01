@@ -51,10 +51,6 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 
 		// check if user wants to see own profile
 		if requestedEmail == sessionEmail {
-			// get profile privacy
-			profilePrivacy := validators.ValidateUserPrivacyHash(cookie.Value)
-			callback["privacy"] = profilePrivacy
-
 			// get profile info
 			userProfile := validators.ValidateUserProfile(requestedEmail)
 			callback["profile"] = userProfile
@@ -66,7 +62,6 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 			// get requestedEmail profile privacy, to see if it is public or private
 			privacyValue := validators.ValidateUserPrivacyEmail(requestedEmail)
 			if privacyValue == "1" {
-				callback["privacy"] = "-1"
 				// get profile info
 				userProfile := validators.ValidateUserProfile(requestedEmail)
 				callback["profile"] = userProfile
@@ -77,11 +72,8 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 				callback["posts"] = profilePosts
 			} else { // privacy value is "2"
 				// add user profile details that are visible from private profile
-				callback["privacy"] = privacyValue
-				// get profile info
-				callback["profile"] = []string{}
 
-				// get profile posts
+				callback["profile"] = []string{}
 				callback["posts"] = []string{}
 			}
 		}

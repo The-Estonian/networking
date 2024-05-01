@@ -11,7 +11,7 @@ export const GetProfile = async (userEmail) => {
       redirect: 'follow',
       credentials: 'include',
     });
-    console.log('Profile response: ', response);
+    // console.log('Profile response: ', response);
     const resp = await response.json();
     return resp;
   } catch (error) {
