@@ -16,7 +16,8 @@ const Notifications = () => {
   useEffect(() => {
     modal(true);
     GetNotifications().then((data) => {
-      data.sendNotifications == null ? setGroupInvNotify([]) : setGroupInvNotify(data.sendNotifications);
+      data.groupInvNotifications == null ? setGroupInvNotify([]) : setGroupInvNotify(data.groupInvNotifications);
+      data.eventNotifications == null ? setEventNotify([]) : setEventNotify(data.eventNotifications);
       if (data) {
         if (data.login === 'success') {
           modal(false);
@@ -59,7 +60,8 @@ const Notifications = () => {
 
             {groupInvNotify.map((notification, index) => (
               <div className={styles.notifyBox} key={index}>
-              <p>{notification.message}</p>
+              <p>Group name: {notification.message}</p>
+              <p>Sender: {notification.SenderEmail}</p>
               <button className={styles.accept} value={'accept'} onClick={(e) => {invatationResponse(notification, index, e)}}>Accept</button>
               <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e)}}>Decline</button>    
               </div>  
@@ -72,7 +74,12 @@ const Notifications = () => {
 
             {eventNotify.map((notification, index) => (
               <div className={styles.notifyBox} key={index}>
-              <p>{notification.message}</p>
+              <p>Sender email: {notification.SenderEmail}</p>
+              <p>E title: {notification.EventTitle}</p>
+              <p>E Descr: {notification.EventDescription}</p>
+              <p>E Time: {notification.EventTime}</p>
+              <p>Gr Title: {notification.GroupTitle}</p>
+              
               <button className={styles.accept} value={'accept'} onClick={(e) => {invatationResponse(notification, index, e)}}>Going</button>
               <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e)}}>Not going</button>    
               </div>  

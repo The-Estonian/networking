@@ -98,7 +98,7 @@ func GetUserProfile(userId string) structs.Profile {
 func GetProfilePosts(userId string) []structs.ProfilePosts {
 	db := sqlite.DbConnection()
 	var profilePosts []structs.ProfilePosts
-	command := "SELECT id, user_fk_users, post_content, privacy_fk_posts_privacy, date FROM posts WHERE user_fk_users=?"
+	command := "SELECT id, user_fk_users, post_content, post_image, privacy_fk_posts_privacy, date FROM posts WHERE user_fk_users=?"
 	rows, err := db.Query(command, userId)
 	if err != nil {
 		helpers.CheckErr("GetProfilePosts", err)
@@ -108,6 +108,7 @@ func GetProfilePosts(userId string) []structs.ProfilePosts {
 		err = rows.Scan(&profilePost.PostId,
 			&profilePost.UserId,
 			&profilePost.PostContent,
+			&profilePost.Picture,
 			&profilePost.PostPrivacy,
 			&profilePost.Date)
 		if err != nil {
@@ -342,15 +343,14 @@ func GetNewGroup() structs.NewGroup {
 		fmt.Println("Error selecting new group")
 	}
 	defer db.Close()
-	fmt.Println(newGroup)
 	return newGroup
 }
 
-func GetNotifications(currentUser string) []structs.AllNotifications {
+func GetNotifications(currentUser string) []structs.GrInvNotificationData {
 	db := sqlite.DbConnection()
 	defer db.Close()
 
-	var allNotif []structs.AllNotifications
+	var allNotif []structs.GrInvNotificationData 
 
 	command := `SELECT sender_fk_users, reciever_fk_users, email, guild_title, guildnotifications.id, guilds.id, notf_type FROM guildnotifications
 				INNER JOIN guilds ON guildnotifications.guildid_fk_guilds = guilds.id
@@ -365,9 +365,9 @@ func GetNotifications(currentUser string) []structs.AllNotifications {
 	defer rows.Close()
 
 	for rows.Next() {
-		var notif structs.AllNotifications
+		var notif structs.GrInvNotificationData
 
-		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.Title, &notif.NotificationId, &notif.GroupId, &notif.NotificationType)
+		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.GroupTitle, &notif.NotificationId, &notif.GroupId, &notif.NotificationType)
 		if err != nil {
 			helpers.CheckErr("GetNotifications Next error: ", err)
 			continue
@@ -379,4 +379,70 @@ func GetNotifications(currentUser string) []structs.AllNotifications {
 		helpers.CheckErr("GetNotifications", err)
 	}
 	return allNotif
+}
+
+func GetEventNotifications(currentUser string) []structs.EventNotifications {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var allNotif []structs.EventNotifications
+
+	command := `SELECT sender_fk_users, reciever_fk_users, email, event_title, event_description, event_time, events.id, guild_id_fk_guilds, guild_title 
+				FROM event_notifications
+				INNER JOIN events ON event_notifications.event_id_fk_events = events.id
+				INNER JOIN users ON event_notifications.sender_fk_users = users.id
+				INNER JOIN guilds ON event_notifications.guild_id_fk_guilds = guilds.id
+				WHERE reciever_fk_users = ?`
+
+	rows, err := db.Query(command, currentUser)
+	if err != nil {
+		helpers.CheckErr("GetEventNotifications selecting error: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var notif structs.EventNotifications
+
+		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.EventTitle, &notif.EventDescription, &notif.EventTime, &notif.EventId, &notif.GroupId, &notif.GroupTitle)
+		if err != nil {
+			helpers.CheckErr("GetEventNotifications Next error: ", err)
+			continue
+		}
+		allNotif = append(allNotif, notif)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetEventNotifications", err)
+	}
+	return allNotif
+}
+
+func GetGroupMembers(groupId string) []string {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var groupMembers []string
+	command := "SELECT members_fk_users FROM guildmembers WHERE guild_id_fk_guilds = ?"
+	rows, err := db.Query(command, groupId)
+	if err != nil {
+		helpers.CheckErr("GetGroupMembers selecting error: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var member string
+		err = rows.Scan(&member)
+		if err != nil {
+			helpers.CheckErr("GetGroupMembers Next error: ", err)
+			continue
+		}
+		groupMembers = append(groupMembers, member)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetGroupMembers", err)
+	}
+	return groupMembers
 }

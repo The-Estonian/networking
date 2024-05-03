@@ -5,7 +5,7 @@ import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewGroup.module.css';
 
-const NewEvent =  ({ members, groupId }) => {
+const NewEvent =  ({ groupId, setUpdateGroups, currentUser, groupTitle }) => {
   const [modal, logout, sendJsonMessage, ,] = useOutletContext();
   const [events, setEvents] = useState([]);
   const [newPostOpen, setNewPostOpen] = useState(false);
@@ -13,7 +13,6 @@ const NewEvent =  ({ members, groupId }) => {
   const [eventDescription, setEventDescription] = useState('');
   const [eventTime, setEventTime] = useState('');
   const [attendEvent, setAttendEvent] = useState('1');
-
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
   
@@ -31,7 +30,7 @@ const NewEvent =  ({ members, groupId }) => {
     setInputErrorText('');
   };
 
-  const createNewEvent = () => {
+  const CreateNewEvent = () => {
     if (eventTitle.length < 1 || eventDescription.length < 1 || eventTime < 1) {
       setInputError(true);
       setInputErrorText('Title or description can not be empty!');
@@ -40,14 +39,14 @@ const NewEvent =  ({ members, groupId }) => {
 
     sendJsonMessage({
       type: 'event',
-      groupId : groupId,
-      message: eventTitle,
-      description : eventDescription,
+      GroupId : groupId,
+      EventTitle: eventTitle,
+      EventDescription : eventDescription,
       eventtime : eventTime,
       participation : attendEvent,
-      groupmembers: members,
+      fromuserid : currentUser,
+      GroupTitle : groupTitle,
     });
-    console.log("liikmed: ",members);
 
     // SendNewEvent(formData).then((data) => {
     //   setEvents(prevEvent => [data.SendNewEvent, ...prevEvent])
@@ -99,7 +98,7 @@ return (
           {inputError ? <span className={styles.errorMsg}>{inputErrorText}</span> : ''}
          
           <div className={styles.openNewPostOptions}>
-            <span className={styles.openNewPostSubmit} onClick={createNewEvent}>
+            <span className={styles.openNewPostSubmit} onClick={CreateNewEvent}>
               Submit
             </span>
             <span
@@ -111,7 +110,10 @@ return (
           </div>
         </div>
       ) : (
-        <span className={styles.closedNewEvent} onClick={switchNewPostOpen}>
+        <span className={styles.closedNewEvent} onClick={() => {
+          switchNewPostOpen();
+          setUpdateGroups(true);
+        }}>
           Create Event
         </span>
       )}

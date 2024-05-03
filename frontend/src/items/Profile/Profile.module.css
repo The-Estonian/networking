@@ -105,4 +105,9 @@
   font-size: 0.75rem;
   color: #000000;
 }
+
+.profilePostImg{
+  height: 100%;
+  width: 6rem;
+}
 /* Privacy button ends here */

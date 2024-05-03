@@ -60,6 +60,10 @@ func ValidateSetNewGroupMember(groupId, userId, userResponse string) {
 	database.SetNewGroupMember(groupId, userId, userResponse)
 }
 
-func ValidateSetNewEvent(groupId, title, description, eventTime string) {
-	database.SetNewEvent(groupId, title, description, eventTime)
+func ValidateSetNewEvent(groupId, title, description, eventTime string) string{
+	return database.SetNewEvent(groupId, title, description, eventTime)
+}
+
+func ValidateSetNewEventNotification(fromId, groupId, eventID, eventReciever string) {
+	database.SetNewEventNotification(fromId, groupId, eventID, eventReciever)
 }

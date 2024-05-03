@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { GetStatus } from '../../connections/statusConnection.js';
 import { SetLogout } from '../../connections/logoutConnection.js';
@@ -21,11 +21,11 @@ const Container = () => {
   const [activeSession, setActiveSession] = useState('false');
   const [socketUrl, setSocketUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [glow, setGlow] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationText, setNotificationText] = useState('');
   const [userId, setUserId] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
 
   const startWebSocketConnection = () => {
     setSocketUrl(websock);
@@ -52,14 +52,16 @@ const Container = () => {
     });
   }, []);
 
+  const handleGlowTrigger = () => {
+    setGlow(false);
+  };
+
   const handleNotification = (input) => {
-    if (location.pathname !== '/chat') {
-      setShowNotification(true);
-      setNotificationText(input);
-      setTimeout(() => {
-        setShowNotification(false);
-      }, 3000);
-    }
+    setShowNotification(true);
+    setNotificationText(input);
+    setTimeout(() => {
+      setShowNotification(false);
+    }, 5000);
   };
 
   useEffect(() => {
@@ -67,6 +69,7 @@ const Container = () => {
       const messageData = JSON.parse(lastMessage.data);
       if (messageData.type != 'onlineStatus') {
         handleNotification(`New ${messageData.type}`);
+        setGlow(true);
       }
     }
   }, [lastMessage]);
@@ -109,7 +112,7 @@ const Container = () => {
       )}
       {showModal ? <Modal /> : ''}
       {activeSession == 'true' ? (
-        <Menu token={activeSession} onLogout={handleLogout} />
+        <Menu glow={glow} handleGlow={handleGlowTrigger} onLogout={handleLogout} />
       ) : (
         <Authenticate
           modal={setShowModal}

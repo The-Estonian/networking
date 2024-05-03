@@ -16,6 +16,7 @@ const Groups = () => {
   const [notGroupMembers, setNotGroupMembers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [invatationSent, setInvatationSent] = useState(false);
+  const [updateGroups, setUpdateGroups] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,9 +26,11 @@ const Groups = () => {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
         data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
         GetUserList().then((data) => {
+          console.log("usrtlist: ", data);
           setCurrentUser(data.activeUser)
           setNotGroupMembers(data.userList)
         })
+        setUpdateGroups(false)
         modal(false);
       } else {
         logout()
@@ -35,12 +38,14 @@ const Groups = () => {
     });
   }, [navigate, modal]);
 
+  const Groupinfo = (group) => setSelectedGroup(group);
+
   const SendGroupInvite = (reciever, title, groupId) => {
     sendJsonMessage({
       type: 'groupInvatation',
       fromuserid: currentUser,
       message: title,
-      groupId: groupId,
+      GroupId: groupId,
       touser: reciever,
     });
     setInvatationSent(true)
@@ -50,12 +55,10 @@ const Groups = () => {
     }, 2000)
   }
 
-  const Groupinfo = (group) => setSelectedGroup(group);
-
   return (
     <div className={styles.groupContainer}>
       <NewGroup setGroups={setGroups} setSelectedGroup={setSelectedGroup} />
-      <NewEvent members={selectedGroup && selectedGroup.Members} groupId={selectedGroup && selectedGroup.Id}/>
+      <NewEvent groupId={selectedGroup && selectedGroup.Id} setUpdateGroups={setUpdateGroups} currentUser={currentUser} groupTitle={selectedGroup && selectedGroup.Title} />
 
       <div className={styles.groupList}>
         <h3>All Groups</h3>
@@ -87,8 +90,9 @@ const Groups = () => {
               <option key={user.Id} value={user.Id}>{user.Email}</option>
               ))}
           </select>
+
           {invatationSent && <label>Group invitation sent!</label>}
-    
+          
           <button className={styles.inviteButton}>Join group</button>
         </div>
       )}

@@ -14,7 +14,6 @@ func HandleNotifications(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Notifications attempt!")
 
 	var callback = make(map[string]interface{})
-	var sendNotifications []structs.AllNotifications
 
 	cookie, err := r.Cookie("socialNetworkSession")
 	UserID := validators.ValidateUserSession(cookie.Value)
@@ -44,8 +43,14 @@ func HandleNotifications(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
+
+		var sendNotifications []structs.GrInvNotificationData 
+		var sendEventNotifications []structs.EventNotifications
+
 		sendNotifications = validators.ValidateNotifications(UserID)
-		callback["sendNotifications"] = sendNotifications
+		sendEventNotifications = validators.ValidateEventNotifications(UserID)
+		callback["groupInvNotifications"] = sendNotifications
+		callback["eventNotifications"] = sendEventNotifications
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleNotificatons", err)

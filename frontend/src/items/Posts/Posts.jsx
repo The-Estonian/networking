@@ -17,10 +17,19 @@ const Posts = () => {
   const [displayComments, setDisplayComments] = useState(false);
   const [displayTitle, setDisplayTitle] = useState('');
   const navigate = useNavigate();
-  const [modal, logout] = useOutletContext();
+  const [modal, logout, , lastMessage] = useOutletContext();
   useEffect(() => {
     showPosts();
   }, [navigate, modal]);
+
+  useEffect(() => {
+    if (lastMessage) {
+      const messageData = JSON.parse(lastMessage.data);
+      if (messageData.type == 'newPost') {
+        showPosts();
+      }
+    }
+  }, [lastMessage]);
 
   const showPosts = () => {
     modal(true);

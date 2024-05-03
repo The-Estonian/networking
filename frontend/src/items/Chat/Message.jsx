@@ -2,7 +2,7 @@
 import styles from './Message.module.css';
 
 const Message = (props) => {
-    const messageDate = new Date(props.messageData.Date);
+    const messageDate = new Date(props.messageData.Date.slice(0, -1));
     const messageDateString = `${messageDate.getHours()}:${messageDate.getMinutes()}:${messageDate.getSeconds()} ${messageDate.getDate()}-${
       messageDate.getMonth() + 1
     }-${messageDate.getFullYear()}`;

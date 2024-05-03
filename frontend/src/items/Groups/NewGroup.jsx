@@ -10,8 +10,6 @@ const NewGroup = ( {setGroups, setSelectedGroup} ) => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newGroupTitle, setNewGroupTitle] = useState('');
   const [newGroupDescription, setNewGroupDescription] = useState('');
-  
- // const [authError, setAuthError] = useState('');
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
   

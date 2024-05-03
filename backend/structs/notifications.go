@@ -1,23 +1,28 @@
 package structs
 
-type Notifications struct {
-	NotificationResponse string `json:"decision"`
-	NotificationData     `json:"notificationResponse"`
+type GrInvNotifications struct {
+	NotificationResponse  string `json:"decision"`
+	GrInvNotificationData `json:"notificationResponse"`
 }
 
-type NotificationData struct {
-	GroupID          string `json:"groupId"`
-	GroupTitle       string `json:"message"`
-	CurrentUser      string `json:"touser"`
-	NotificationType string `json:"type"`
-}
-
-type AllNotifications struct {
+type GrInvNotificationData struct {
 	SenderId         string
-	RecieverId       string `json:"touser"`
 	SenderEmail      string
-	Title            string `json:"message"`
-	NotificationId   string
-	GroupId          string
+	GroupId          string `json:"GroupId"`
+	GroupTitle       string `json:"message"`
+	RecieverId       string `json:"touser"`
 	NotificationType string `json:"type"`
+	NotificationId   string
+}
+
+type EventNotifications struct {
+	SenderId         string `json:"fromuserid"`
+	RecieverId       string
+	SenderEmail      string `json:"SenderEmail"`
+	EventTitle       string `json:"EventTitle"`
+	EventDescription string
+	EventTime        string `json:"EventTime"`
+	EventId          string `json:"EventId"`
+	GroupId          string `json:"GroupId"`
+	GroupTitle       string `json:"GroupTitle"`
 }

@@ -44,11 +44,15 @@ type SocketMessage struct {
 	Message          string   `json:"message"`
 	Description      string   `json:"description"`
 	To               string   `json:"touser"`
-	GroupId          string   `json:"groupId"`
-	EventTime        string   `json:"eventtime"`
-	GroupMembers     []string `json:"groupmembers"`
 	Participation    string   `json:"participation"`
 	ConnectedClients []string `json:"connectedclients"`
+	SenderEmail      string   `json:"SenderEmail"` //events
+	EventTitle       string   `json:"EventTitle"`
+	EventDescription string   `json:"EventDescription"`
+	EventTime        string   `json:"EventTime"`
+	EventId          string   `json:"EventId"`
+	GroupId          string   `json:"GroupId"`
+	GroupTitle       string   `json:"GroupTitle"`
 }
 
 type Client struct {
@@ -82,6 +86,7 @@ type Client struct {
 func handleMessages() {
 	for {
 		msg := <-broadcast
+
 		switch msg.Type {
 		case "message":
 			// set new message into db
@@ -117,12 +122,21 @@ func handleMessages() {
 					}
 				}
 			}
+
 		case "event":
-			validators.ValidateSetNewEvent(msg.GroupId, msg.Message, msg.Description, msg.EventTime)
+			//Insert new event into DB, then get all groupmembers from DB and send notification to all groupmembers
+			EventId := validators.ValidateSetNewEvent(msg.GroupId, msg.EventTitle, msg.EventDescription, msg.EventTime)
+			groupMembers := validators.ValidateGetGroupMembers(msg.GroupId)
+
+			msg.EventId = EventId
 
 			for client := range clientConnections {
-				for _, groupMember := range msg.GroupMembers {
-					if groupMember == clientConnections[client].connOwnerId {
+				if client == msg.FromId {
+					continue
+				}
+				for _, eventReciever := range groupMembers {
+					if eventReciever == clientConnections[client].connOwnerId {
+						validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever)
 						clientConnections[client].mu.Lock()
 						err := clientConnections[client].connection.WriteJSON(msg)
 						if err != nil {
@@ -132,6 +146,20 @@ func handleMessages() {
 						}
 						clientConnections[client].mu.Unlock()
 					}
+				}
+			}
+
+		case "newPost":
+			for client := range clientConnections {
+				if msg.FromId != clientConnections[client].connOwnerId {
+					clientConnections[client].mu.Lock()
+					err := clientConnections[client].connection.WriteJSON(msg)
+					if err != nil {
+						fmt.Println("Error writing gruopinvatation to client:", err)
+						clientConnections[client].mu.Unlock()
+						return
+					}
+					clientConnections[client].mu.Unlock()
 				}
 			}
 
@@ -179,6 +207,7 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Websocket attempt!")
 
 	cookie, err := r.Cookie("socialNetworkSession")
+
 	userId := validators.ValidateUserSession(cookie.Value)
 	if userId == "0" {
 		fmt.Println("User not allowed closing connection!")
@@ -222,6 +251,7 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 			client.mu.Unlock()
 			return
 		}
+
 		client.mu.Lock()
 		client.lastActive = time.Now()
 		client.mu.Unlock()
