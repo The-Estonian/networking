@@ -5,6 +5,7 @@ import { GetAllGroups } from '../../connections/groupsConnection.js';
 import { GetUserList } from '../../connections/userListConnection.js';
 
 import NewGroup from './NewGroup.jsx';
+import NewEvent from './NewEvent.jsx';
 
 import styles from './Groups.module.css';
 
@@ -15,6 +16,7 @@ const Groups = () => {
   const [notGroupMembers, setNotGroupMembers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [invatationSent, setInvatationSent] = useState(false);
+  const [updateGroups, setUpdateGroups] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +29,7 @@ const Groups = () => {
           setCurrentUser(data.activeUser)
           setNotGroupMembers(data.userList)
         })
+        setUpdateGroups(false)
         modal(false);
       } else {
         logout()
@@ -34,12 +37,14 @@ const Groups = () => {
     });
   }, [navigate, modal]);
 
+  const Groupinfo = (group) => setSelectedGroup(group);
+
   const SendGroupInvite = (reciever, title, groupId) => {
     sendJsonMessage({
       type: 'groupInvatation',
       fromuserid: currentUser,
       message: title,
-      groupId: groupId,
+      GroupId: groupId,
       touser: reciever,
     });
     setInvatationSent(true)
@@ -49,13 +54,13 @@ const Groups = () => {
     }, 2000)
   }
 
-  const Groupinfo = (group) => setSelectedGroup(group);
-
   return (
     <div className={styles.groupContainer}>
       <NewGroup setGroups={setGroups} setSelectedGroup={setSelectedGroup} />
+      <NewEvent groupId={selectedGroup && selectedGroup.Id} setUpdateGroups={setUpdateGroups} currentUser={currentUser} groupTitle={selectedGroup && selectedGroup.Title} />
 
       <div className={styles.groupList}>
+        <h3>All Groups</h3>
         {groups.map((group) => (
           <p
             className={
@@ -69,6 +74,7 @@ const Groups = () => {
             {group.Title}
           </p>
         ))}
+        <h3>Joined Groups</h3>
       </div>
       {selectedGroup && (
         <div className={styles.groupInfo}>
@@ -83,9 +89,9 @@ const Groups = () => {
               <option key={user.Id} value={user.Id}>{user.Email}</option>
               ))}
           </select>
+
           {invatationSent && <label>Group invitation sent!</label>}
-    
-          <button className={styles.inviteButton}>Create event</button>
+          
           <button className={styles.inviteButton}>Join group</button>
         </div>
       )}

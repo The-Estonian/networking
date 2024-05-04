@@ -11,21 +11,6 @@ import NewComment from '../Comments/NewComment.jsx';
 
 import styles from './Posts.module.css';
 
-const ShowComments = (
-  post,
-  setAllPosts,
-  setDisplayComments,
-  setDisplayTitle
-) => {
-  const formData = new FormData();
-  formData.append('postID', post.PostID);
-
-  GetAllComments(formData).then((data) =>
-    data.comments == null ? setAllPosts([]) : setAllPosts(data.comments)
-  );
-  setDisplayTitle(post.Title);
-  setDisplayComments(true);
-};
 
 const Posts = () => {
   const [allPosts, setAllPosts] = useState([]);
@@ -58,6 +43,22 @@ const Posts = () => {
     });
     setDisplayComments(false);
     setDisplayTitle('');
+  };
+
+  const ShowComments = (
+    post,
+    setAllPosts,
+    setDisplayComments,
+    setDisplayTitle
+  ) => {
+    const formData = new FormData();
+    formData.append('postID', post.PostID);
+  
+    GetAllComments(formData).then((data) =>
+      data.comments == null ? setAllPosts([]) : setAllPosts(data.comments)
+    );
+    setDisplayTitle(post.Title);
+    setDisplayComments(true);
   };
 
   return (

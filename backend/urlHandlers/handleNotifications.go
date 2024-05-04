@@ -10,22 +10,15 @@ import (
 	"time"
 )
 
-func HandleNotification(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Notification attempt!")
-
-	var notificationResponse structs.Notifications
-
-	err := json.NewDecoder(r.Body).Decode(&notificationResponse)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+func HandleNotifications(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Notifications attempt!")
 
 	var callback = make(map[string]interface{})
 
 	cookie, err := r.Cookie("socialNetworkSession")
+	UserID := validators.ValidateUserSession(cookie.Value)
 	// if not err and cookie valid
-	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
+	if err != nil || UserID == "0" {
 		// check status
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
@@ -50,15 +43,17 @@ func HandleNotification(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		
-		// Add user to group, depending if he accepted or declined
-		if notificationResponse.NotificationData.NotificationType == "groupInvatation" {
-			validators.ValidateSetNewGroupMember(notificationResponse.GroupID,
-				 								 notificationResponse.CurrentUser,
-				  								 notificationResponse.NotificationResponse)
-		}
+
+		var sendNotifications []structs.GrInvNotifications
+		var sendEventNotifications []structs.EventNotifications
+
+		sendNotifications = validators.ValidateNotifications(UserID)
+		sendEventNotifications = validators.ValidateEventNotifications(UserID)
+
+		callback["groupInvNotifications"] = sendNotifications
+		callback["eventNotifications"] = sendEventNotifications
 	}
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("HandlePosts", err)
+	helpers.CheckErr("HandleNotificatons", err)
 	w.Write(writeData)
 }

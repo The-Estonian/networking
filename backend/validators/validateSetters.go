@@ -52,10 +52,22 @@ func ValidateSetNewGroup(user, title, description string) {
 	database.SetNewGroup(user, title, description)
 }
 
-func ValidateSetNewGroupNotification(messageSender, groupId, messageReceiver string) bool{
+func ValidateSetNewGroupNotification(messageSender, groupId, messageReceiver string) (string, string){
 	return database.SetNewGroupNotification(messageSender, groupId, messageReceiver)
 }
 
 func ValidateSetNewGroupMember(groupId, userId, userResponse string) {
 	database.SetNewGroupMember(groupId, userId, userResponse)
+}
+
+func ValidateSetNewEvent(groupId, eventCreatorId, title, description, eventTime, participation string) (string, string){
+	return database.SetNewEvent(groupId, eventCreatorId, title, description, eventTime, participation)
+}
+
+func ValidateSetNewEventNotification(fromId, groupId, eventID, eventReciever string) string{
+	return database.SetNewEventNotification(fromId, groupId, eventID, eventReciever)
+}
+
+func ValidateSetNewEventParticipant(groupId, eventId, notificationId, userId, userResponse string) {
+	database.SetNewEventParticipant(groupId, eventId, notificationId, userId, userResponse)
 }

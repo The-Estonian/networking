@@ -109,6 +109,18 @@ func ValidateNewGroup() structs.NewGroup {
 	return database.GetNewGroup()
 }
 
+func ValidateNotifications(UserId string) []structs.GrInvNotifications {
+	return database.GetNotifications(UserId)
+}
+
+func ValidateEventNotifications(UserId string) []structs.EventNotifications {
+	return database.GetEventNotifications(UserId)
+}
+
+func ValidateGetGroupMembers(groupId string) []string {
+	return database.GetGroupMembers(groupId)
+}
+
 func ValidateEmailFromSession(session string) string {
 	// get email by sessionID
 	email := database.GetEmailFromSession(session)
