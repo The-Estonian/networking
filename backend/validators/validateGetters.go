@@ -100,7 +100,7 @@ func ValidateNewGroup() structs.NewGroup {
 	return database.GetNewGroup()
 }
 
-func ValidateNotifications(UserId string) []structs.GrInvNotificationData {
+func ValidateNotifications(UserId string) []structs.GrInvNotifications {
 	return database.GetNotifications(UserId)
 }
 

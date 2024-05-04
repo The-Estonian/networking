@@ -46,7 +46,8 @@ type SocketMessage struct {
 	To               string   `json:"touser"`
 	Participation    string   `json:"participation"`
 	ConnectedClients []string `json:"connectedclients"`
-	SenderEmail      string   `json:"SenderEmail"` //events
+	NotificationId   string   `json:"NotificationId"`
+	SenderEmail      string   `json:"SenderEmail"`
 	EventTitle       string   `json:"EventTitle"`
 	EventDescription string   `json:"EventDescription"`
 	EventTime        string   `json:"EventTime"`
@@ -105,10 +106,12 @@ func handleMessages() {
 				}
 			}
 		case "groupInvatation":
-			dbInserted := validators.ValidateSetNewGroupNotification(msg.FromId, msg.GroupId, msg.To, msg.Type)
-
+			returnedEmail, id := validators.ValidateSetNewGroupNotification(msg.FromId, msg.GroupId, msg.To)
+			msg.NotificationId = id
 			// Send noticication to user only if db insert was succssesful
-			if dbInserted {
+			if returnedEmail != "" {
+				msg.SenderEmail = returnedEmail
+
 				for client := range clientConnections {
 					if msg.To == clientConnections[client].connOwnerId {
 						clientConnections[client].mu.Lock()
@@ -125,18 +128,20 @@ func handleMessages() {
 
 		case "event":
 			//Insert new event into DB, then get all groupmembers from DB and send notification to all groupmembers
-			EventId := validators.ValidateSetNewEvent(msg.GroupId, msg.EventTitle, msg.EventDescription, msg.EventTime)
+			EventId, returnedEmail := validators.ValidateSetNewEvent(msg.GroupId, msg.FromId, msg.EventTitle, msg.EventDescription, msg.EventTime, msg.Participation)
 			groupMembers := validators.ValidateGetGroupMembers(msg.GroupId)
 
 			msg.EventId = EventId
-
+			msg.SenderEmail = returnedEmail
+			
 			for client := range clientConnections {
 				if client == msg.FromId {
 					continue
 				}
 				for _, eventReciever := range groupMembers {
 					if eventReciever == clientConnections[client].connOwnerId {
-						validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever)
+						eventNotificationId := validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever)
+						msg.NotificationId = eventNotificationId
 						clientConnections[client].mu.Lock()
 						err := clientConnections[client].connection.WriteJSON(msg)
 						if err != nil {

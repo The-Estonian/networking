@@ -44,11 +44,12 @@ func HandleNotifications(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 
-		var sendNotifications []structs.GrInvNotificationData 
+		var sendNotifications []structs.GrInvNotifications
 		var sendEventNotifications []structs.EventNotifications
 
 		sendNotifications = validators.ValidateNotifications(UserID)
 		sendEventNotifications = validators.ValidateEventNotifications(UserID)
+
 		callback["groupInvNotifications"] = sendNotifications
 		callback["eventNotifications"] = sendEventNotifications
 	}

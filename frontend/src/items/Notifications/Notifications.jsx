@@ -42,14 +42,19 @@ const Notifications = () => {
   }, [lastMessage]);
 
   // Update databases after user accepts/declines notification
-  const invatationResponse = (notification, index, e) => {
-    setGroupInvNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
+  const invatationResponse = (notification, index, e, type) => {
+    type == 'groupInvatation' && setGroupInvNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
+    type == 'event' && setEventNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
+
     const formData = {
       decision: e.target.value,
-      notificationResponse : notification,
+      type: type,
+      GroupId: notification.GroupId,
+      EventId: notification.EventId,
+      NotificationId: notification.NotificationId
     }
     SendNotificationResponse(formData)
-  }
+}
 
   return (
     <div className={styles.groupContainer}>
@@ -62,8 +67,8 @@ const Notifications = () => {
               <div className={styles.notifyBox} key={index}>
               <p>Group name: {notification.message}</p>
               <p>Sender: {notification.SenderEmail}</p>
-              <button className={styles.accept} value={'accept'} onClick={(e) => {invatationResponse(notification, index, e)}}>Accept</button>
-              <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e)}}>Decline</button>    
+              <button className={styles.accept} value={'accept'} onClick={(e) => {invatationResponse(notification, index, e, 'groupInvatation')}}>Accept</button>
+              <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e, 'groupInvatation')}}>Decline</button>    
               </div>  
             ))}
 
@@ -79,9 +84,11 @@ const Notifications = () => {
               <p>E Descr: {notification.EventDescription}</p>
               <p>E Time: {notification.EventTime}</p>
               <p>Gr Title: {notification.GroupTitle}</p>
+              <p>Notf ID: {notification.NotificationId}</p>
+              <p>Event ID: {notification.EventId}</p>
               
-              <button className={styles.accept} value={'accept'} onClick={(e) => {invatationResponse(notification, index, e)}}>Going</button>
-              <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e)}}>Not going</button>    
+              <button className={styles.accept} value={'accept'} onClick={(e) => {invatationResponse(notification, index, e, 'event')}}>Going</button>
+              <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e, 'event')}}>Not going</button>    
               </div>  
             ))}
 

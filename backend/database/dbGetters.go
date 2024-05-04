@@ -305,6 +305,7 @@ func GetAllGroups() []structs.Groups {
 				LEFT JOIN guildmembers ON guilds.id == guildmembers.guild_id_fk_guilds
 				GROUP BY guilds.id
 				ORDER BY guilds.date DESC`
+
 	rows, err := db.Query(command)
 	if err != nil {
 		helpers.CheckErr("Selecting getAllGroups", err)
@@ -346,13 +347,13 @@ func GetNewGroup() structs.NewGroup {
 	return newGroup
 }
 
-func GetNotifications(currentUser string) []structs.GrInvNotificationData {
+func GetNotifications(currentUser string) []structs.GrInvNotifications {
 	db := sqlite.DbConnection()
 	defer db.Close()
 
-	var allNotif []structs.GrInvNotificationData 
+	var allNotif []structs.GrInvNotifications
 
-	command := `SELECT sender_fk_users, reciever_fk_users, email, guild_title, guildnotifications.id, guilds.id, notf_type FROM guildnotifications
+	command := `SELECT sender_fk_users, reciever_fk_users, email, guild_title, guildnotifications.id, guilds.id FROM guildnotifications
 				INNER JOIN guilds ON guildnotifications.guildid_fk_guilds = guilds.id
 				INNER JOIN users ON guildnotifications.sender_fk_users = users.id
 				WHERE reciever_fk_users = ?`
@@ -365,9 +366,9 @@ func GetNotifications(currentUser string) []structs.GrInvNotificationData {
 	defer rows.Close()
 
 	for rows.Next() {
-		var notif structs.GrInvNotificationData
+		var notif structs.GrInvNotifications
 
-		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.GroupTitle, &notif.NotificationId, &notif.GroupId, &notif.NotificationType)
+		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.GroupTitle, &notif.NotificationId, &notif.GroupId)
 		if err != nil {
 			helpers.CheckErr("GetNotifications Next error: ", err)
 			continue
@@ -387,7 +388,7 @@ func GetEventNotifications(currentUser string) []structs.EventNotifications {
 
 	var allNotif []structs.EventNotifications
 
-	command := `SELECT sender_fk_users, reciever_fk_users, email, event_title, event_description, event_time, events.id, guild_id_fk_guilds, guild_title 
+	command := `SELECT event_notifications.id, sender_fk_users, reciever_fk_users, email, event_title, event_description, event_time, events.id, guild_id_fk_guilds, guild_title 
 				FROM event_notifications
 				INNER JOIN events ON event_notifications.event_id_fk_events = events.id
 				INNER JOIN users ON event_notifications.sender_fk_users = users.id
@@ -404,7 +405,7 @@ func GetEventNotifications(currentUser string) []structs.EventNotifications {
 	for rows.Next() {
 		var notif structs.EventNotifications
 
-		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.EventTitle, &notif.EventDescription, &notif.EventTime, &notif.EventId, &notif.GroupId, &notif.GroupTitle)
+		err = rows.Scan(&notif.NotificationId, &notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.EventTitle, &notif.EventDescription, &notif.EventTime, &notif.EventId, &notif.GroupId, &notif.GroupTitle)
 		if err != nil {
 			helpers.CheckErr("GetEventNotifications Next error: ", err)
 			continue

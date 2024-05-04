@@ -26,7 +26,6 @@ const Groups = () => {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
         data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
         GetUserList().then((data) => {
-          console.log("usrtlist: ", data);
           setCurrentUser(data.activeUser)
           setNotGroupMembers(data.userList)
         })

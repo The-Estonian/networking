@@ -3,7 +3,6 @@ package database
 import (
 	"backend/database/sqlite"
 	"backend/helpers"
-	"fmt"
 	"time"
 )
 
@@ -83,7 +82,7 @@ func SetNewGroup(user, title, description string) {
 	defer db.Close()
 }
 
-func SetNewGroupNotification(messageSender, groupId, messageReceiver, notfType string) bool {
+func SetNewGroupNotification(messageSender, groupId, messageReceiver string) (string, string) {
 	db := sqlite.DbConnection()
 	defer db.Close()
 
@@ -93,32 +92,33 @@ func SetNewGroupNotification(messageSender, groupId, messageReceiver, notfType s
 	err := db.QueryRow("SELECT COUNT(*) FROM guildnotifications WHERE reciever_fk_users = ? AND guildid_fk_guilds = ?", messageReceiver, groupId).Scan(&notificationCount)
 	if err != nil {
 		helpers.CheckErr("SetNewGroupNotification - NotificationCount: ", err)
-		return false
+		return "", ""
 	}
 
 	// Dont insert member or notification in table if they are already in table
 	err = db.QueryRow("SELECT COUNT(*) FROM guildmembers WHERE members_fk_users = ? AND guild_id_fk_guilds = ?", messageReceiver, groupId).Scan(&memberCount)
 	if err != nil {
 		helpers.CheckErr("SetNewGroupNotification - MemberCount: ", err)
-		return false
+		return "", ""
 	}
 
 	if memberCount > 0 || notificationCount > 0 {
-		return false
+		return "", ""
 	}
 
-	command := "INSERT INTO guildnotifications (sender_fk_users, reciever_fk_users, guildid_fk_guilds, notf_type, date) VALUES(?, ?, ?, ?, datetime('now', '+2 hours'))"
-	_, err = db.Exec(command, messageSender, messageReceiver, groupId, notfType)
+	var id string
+	command := "INSERT INTO guildnotifications (sender_fk_users, reciever_fk_users, guildid_fk_guilds, date) VALUES(?, ?, ?, datetime('now', '+2 hours')) returning id"
+	err = db.QueryRow(command, messageSender, messageReceiver, groupId).Scan(&id)
 	helpers.CheckErr("SetNewGroupNotification - Insert: ", err)
 
 	command = "SELECT email FROM users WHERE id = ?"
 	row := db.QueryRow(command, messageSender)
+
 	var email string
 	err = row.Scan(&email)
 	helpers.CheckErr("GetEmail - Scan: ", err)
-	fmt.Println("email: ", email)
 
-	return true
+	return email, id
 }
 
 func SetNewGroupMember(groupId, userId, userResponse string) {
@@ -137,24 +137,58 @@ func SetNewGroupMember(groupId, userId, userResponse string) {
 	defer db.Close()
 }
 
-func SetNewEvent(groupId, title, description, eventTime string) string {
+func SetNewEventParticipant(groupId, eventId, notificationId, userId, userResponse string) {
+	if userResponse == "accept" {
+		db := sqlite.DbConnection()
+		command := "INSERT INTO event_participants (guild_id_fk_guilds, event_id_fk_events, participant_fk_users) VALUES (?, ?, ?)"
+		_, err := db.Exec(command, groupId, eventId, userId)
+		helpers.CheckErr("SetNewEventParticipant insert: ", err)
+		defer db.Close()
+	}
+
+	db := sqlite.DbConnection()
+	command := "DELETE FROM event_notifications WHERE id = ?"
+	_, err := db.Exec(command, notificationId)
+	helpers.CheckErr("SetNewEventParticipant remove notification: ", err)
+	defer db.Close()
+}
+
+func SetNewEvent(groupId, eventCreatorId, title, description, eventTime, participation string) (string, string) {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var id, email string
+	command := "INSERT INTO events (guildid_fk_guilds, creator_fk_users, event_title, event_description, event_time) VALUES (?, ?, ?, ?, ?) returning id"
+	err := db.QueryRow(command, groupId, eventCreatorId, title, description, eventTime).Scan(&id)
+	if err != nil {
+		helpers.CheckErr("SetNewEvent", err)
+	}
+
+	// Add eventcreator to eventparticipationlist if he chose 'Going'
+	if participation == "1" {
+		db := sqlite.DbConnection()
+		command := "INSERT INTO event_participants (guild_id_fk_guilds, event_id_fk_events, participant_fk_users) VALUES (?, ?, ?)"
+		_, err := db.Exec(command, groupId, id, eventCreatorId)
+		helpers.CheckErr("SetNewEvent creator to event_participants insert: ", err)
+		defer db.Close()
+	}
+
+	command = "SELECT email FROM users WHERE id = ?"
+	row := db.QueryRow(command, eventCreatorId)
+
+	err = row.Scan(&email)
+	helpers.CheckErr("GetEmail - Scan: ", err)
+	return id, email
+}
+
+func SetNewEventNotification(fromId, groupId, eventID, eventReciever string) string {
 	db := sqlite.DbConnection()
 	defer db.Close()
 
 	var id string
-	command := "INSERT INTO events (guildid_fk_guilds, event_title, event_description, event_time) VALUES (?, ?, ?, ?) returning id"
-	err := db.QueryRow(command, groupId, title, description, eventTime).Scan(&id)
-	if err != nil {
-		helpers.CheckErr("SetNewEvent", err)
-	}
-	return id
-}
-
-func SetNewEventNotification(fromId, groupId, eventID, eventReciever string) {
-	db := sqlite.DbConnection()
-	defer db.Close()
-
-	command := "INSERT INTO event_notifications (sender_fk_users, guild_id_fk_guilds, event_id_fk_events, reciever_fk_users) VALUES(?, ?, ?, ?)"
-	_, err := db.Exec(command, fromId, groupId, eventID, eventReciever)
+	command := "INSERT INTO event_notifications (sender_fk_users, guild_id_fk_guilds, event_id_fk_events, reciever_fk_users) VALUES(?, ?, ?, ?) returning id"
+	err := db.QueryRow(command, fromId, groupId, eventID, eventReciever).Scan(&id)
 	helpers.CheckErr("SetNewGroupNotification - Insert: ", err)
+
+	return id
 }

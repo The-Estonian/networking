@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { GetStatus } from '../../connections/statusConnection.js';
@@ -18,7 +18,6 @@ const NewEvent =  ({ groupId, setUpdateGroups, currentUser, groupTitle }) => {
   
   const today = new Date();
   const formattedToday = today.toISOString().substring(0, 16);
-
 
   const validateEventTitleInput = (e) => setEventTitle(e.target.value)
   const validateEventInputDescrInput = (e) => setEventDescription(e.target.value)
@@ -92,7 +91,7 @@ return (
                 checked={attendEvent === '2'}
                 onChange={validateAttendEventInput}
               />
-              <span>Not going!</span>
+              <span>Not going</span>
             </div>
             </div>
           {inputError ? <span className={styles.errorMsg}>{inputErrorText}</span> : ''}
