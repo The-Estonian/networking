@@ -6,13 +6,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
 func HandleProfile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Profile attempt!")
 
-	var callback = make(map[string]string)
+	var callback = make(map[string]interface{})
 	cookie, err := r.Cookie("socialNetworkSession")
 	// if not err and cookie valid
 	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
@@ -40,24 +41,42 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		// get profile privacy
-		profilePrivacy := validators.ValidateUserPrivacy(cookie.Value)
-		privacyJson, err := json.Marshal(profilePrivacy)
-		helpers.CheckErr("HandleProfile json", err)
-		callback["privacy"] = string(privacyJson)
 
-		// get profile info
-		userProfile := validators.ValidateUserProfile(cookie.Value)
-		profileJson, err := json.Marshal(userProfile)
-		helpers.CheckErr("HandleProfile json", err)
-		callback["profile"] = string(profileJson)
+		// extract userEmail from URL
+		requestedEmail := strings.TrimPrefix(r.URL.Path, "/profile/")
+		fmt.Println("requestedEmail: ", requestedEmail)
+		// get email from session
+		sessionEmail := validators.ValidateEmailFromSession(cookie.Value)
+		fmt.Println("sessionEmail: ", sessionEmail)
 
-		// get profile posts
-		profilePosts := validators.ValidateProfilePosts(cookie.Value)
-		postsJson, err := json.Marshal(profilePosts)
-		helpers.CheckErr("HandleProfilePosts json", err)
-		callback["posts"] = string(postsJson)
+		// check if user wants to see own profile
+		if requestedEmail == sessionEmail {
+			// get profile info
+			userProfile := validators.ValidateUserProfile(requestedEmail)
+			callback["profile"] = userProfile
 
+			// get profile posts
+			profilePosts := validators.ValidateProfilePosts(requestedEmail)
+			callback["posts"] = profilePosts
+		} else { // requested profile is not the same as session profile
+			// get requestedEmail profile privacy, to see if it is public or private
+			privacyValue := validators.ValidateUserPrivacyEmail(requestedEmail)
+			if privacyValue == "1" {
+				// get profile info
+				userProfile := validators.ValidateUserProfile(requestedEmail)
+				callback["profile"] = userProfile
+				fmt.Println("profile: ", userProfile)
+
+				// get profile posts
+				profilePosts := validators.ValidateProfilePosts(requestedEmail)
+				callback["posts"] = profilePosts
+			} else { // privacy value is "2"
+				// add user profile details that are visible from private profile
+
+				callback["profile"] = []string{}
+				callback["posts"] = []string{}
+			}
+		}
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleProfile", err)

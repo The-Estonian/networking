@@ -43,10 +43,11 @@ func ValidateUserSession(cookie string) string {
 	return database.GetUserSession(cookie)
 }
 
-// provide user profile from db
-func ValidateUserProfile(hash string) structs.Profile {
-	// get userid by hash
-	userId := database.GetUserSession(hash)
+// provide user profile from db by email
+func ValidateUserProfile(requestedEmail string) structs.Profile {
+	var userId string
+	userId = database.GetUserIdByEmail(requestedEmail)
+
 	// get user profile by userid
 	return database.GetUserProfile(userId)
 }
@@ -63,10 +64,11 @@ func ValidateUserList(hash string) ([]structs.Profile, string) {
 	return database.GetAllUsers(userId), userId
 }
 
-// provide user profile posts from db
-func ValidateProfilePosts(hash string) []structs.ProfilePosts {
-	// get userid by hash
-	userId := database.GetUserSession(hash)
+// provide user profile posts from db by email
+func ValidateProfilePosts(requestedEmail string) []structs.ProfilePosts {
+	var userId string
+	userId = database.GetUserIdByEmail(requestedEmail)
+
 	// get user profile posts by userid
 	return database.GetProfilePosts(userId)
 }
@@ -85,9 +87,16 @@ func ValidateUserMessages(hash, partnerId string) []structs.ChatMessage {
 	return database.GetMessages(userId, partnerId)
 }
 
-func ValidateUserPrivacy(hash string) string {
+func ValidateUserPrivacyHash(hash string) string {
 	// get userid by hash
 	userId := database.GetUserSession(hash)
+	// get user profile privacy by userid
+	return database.GetUserPrivacy(userId)
+}
+
+func ValidateUserPrivacyEmail(email string) string {
+	// get userid by email
+	userId := database.GetUserIdIfEmailExists(email)
 	// get user profile privacy by userid
 	return database.GetUserPrivacy(userId)
 }
@@ -110,4 +119,10 @@ func ValidateEventNotifications(UserId string) []structs.EventNotifications {
 
 func ValidateGetGroupMembers(groupId string) []string {
 	return database.GetGroupMembers(groupId)
+}
+
+func ValidateEmailFromSession(session string) string {
+	// get email by sessionID
+	email := database.GetEmailFromSession(session)
+	return email
 }

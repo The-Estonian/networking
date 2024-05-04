@@ -9,6 +9,7 @@ type Posts struct {
 	Picture  string
 	Privacy  string
 	Date     string
+	Email    string
 }
 
 type NewPost struct {

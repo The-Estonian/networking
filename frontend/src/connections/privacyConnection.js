@@ -1,9 +1,9 @@
 const backendUrl = import.meta.env.VITE_APP_BACKEND_URL || 'localhost:8080';
 
-export const GetNewPrivacy = async () => {
+export const GetPrivacy = async (userEmail) => {
   try {
-    const response = await fetch(`http://${backendUrl}/getprivacy`, {
-      method: 'POST',
+    const response = await fetch(`http://${backendUrl}/getprivacy/${encodeURIComponent(userEmail)}`, {
+      method: 'GET',
       mode: 'cors',
       cache: 'no-cache',
       referrerPolicy: 'no-referrer',

@@ -52,7 +52,7 @@ func HandleNewPrivacy(w http.ResponseWriter, r *http.Request) {
 		callback["newPrivacy"] = "accepted"
 
 		validators.ValidateSetUserPrivacy(UserID, privacy)
-		callback["SendNewPrivacy"] = validators.ValidateUserPrivacy(cookie.Value)
+		callback["SendNewPrivacy"] = validators.ValidateUserPrivacyHash(cookie.Value)
 	}
 
 	writeData, err := json.Marshal(callback)
