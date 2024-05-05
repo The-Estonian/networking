@@ -19,14 +19,16 @@ const Profile = () => {
   const [privacyButton, setPrivacyButton] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
-
-  //Get path username
-  const userEmail = window.location.pathname.substring(9)
-  // console.log('username from path: ', userEmail)
+  const userId ='5'
 
   useEffect(() => {
     modal(true);
-    GetProfile(userEmail).then((data) => {
+
+    // UserId FormData
+    const formData = new FormData();
+    formData.append('userId', userId);
+
+    GetProfile(formData).then((data) => {
       if (data.login === 'success') {
         // profile info
         setUserProfile(data.profile);
@@ -42,13 +44,13 @@ const Profile = () => {
     });
     // Get privacy settings
     if (privacy === '') {
-      GetPrivacy(userEmail).then((data) => {
+      GetPrivacy(formData).then((data) => {
         setPrivacy(data.GetPrivacy);
         setPrivacyButton(data.ButtonVisible);
       });
     }
   }, [navigate, modal]);
-
+  console.log(userProfile);
   // Privacy settings change
   const handlePrivacyChange = () => {
     let newPrivacy = privacy === '1' ? '2' : '1';
@@ -63,7 +65,9 @@ const Profile = () => {
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
-        {userProfile && Object.keys(userProfile).length > 0 ? (
+        {userProfile && userProfile.Privacy === "-1" ? (
+          <p>This user is private, please send a follow request</p>
+        ) : (
           <>
             <span>SOMEONE STYLE THIS PLEASE!</span>
             <div className={styles.avatar}>
@@ -115,8 +119,6 @@ const Profile = () => {
               )}
             </div>
           </>
-        ) : (
-          <p>This user is private, please send a follow request</p>
         )}
         {/* Privacy settings */}
         {privacyButton === '1' && (

@@ -94,9 +94,7 @@ func ValidateUserPrivacyHash(hash string) string {
 	return database.GetUserPrivacy(userId)
 }
 
-func ValidateUserPrivacyEmail(email string) string {
-	// get userid by email
-	userId := database.GetUserIdIfEmailExists(email)
+func ValidateUserPrivacyId(userId string) string {
 	// get user profile privacy by userid
 	return database.GetUserPrivacy(userId)
 }
@@ -121,8 +119,6 @@ func ValidateGetGroupMembers(groupId string) []string {
 	return database.GetGroupMembers(groupId)
 }
 
-func ValidateEmailFromSession(session string) string {
-	// get email by sessionID
-	email := database.GetEmailFromSession(session)
-	return email
+func ValidateUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
+	return database.GetUserProfileInfo(currentUserId, targetUserId)
 }

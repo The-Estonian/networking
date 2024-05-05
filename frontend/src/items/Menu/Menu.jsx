@@ -39,7 +39,7 @@ const Menu = (props) => {
       <NavLink to={`/followers`} className={activeClassName}>
         Followers
       </NavLink>
-      <NavLink to={`/profile/`} className={activeClassName}>
+      <NavLink to={`/profile`} className={activeClassName}>
         Profile
       </NavLink>
       <a onClick={props.onLogout} className={styles.linkButton}>

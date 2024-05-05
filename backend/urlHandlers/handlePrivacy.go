@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -15,7 +14,7 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 
 	var callback = make(map[string]interface{})
 	cookie, err := r.Cookie("socialNetworkSession")
-	fmt.Println("r value: ", r.URL.Path)
+
 	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
@@ -40,22 +39,31 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		// extract userEmail from URL
-		requestedEmail := strings.TrimPrefix(r.URL.Path, "/getprivacy/")
-		fmt.Println("requestedEmail: ", requestedEmail)
-		// get email from session
-		sessionEmail := validators.ValidateEmailFromSession(cookie.Value)
-		fmt.Println("sessionEmail: ", sessionEmail)
+
+		// parse form
+		err := r.ParseMultipartForm(10 << 20) // 10 MB
+		if err != nil {
+			http.Error(w, "HandlePrivacy; Error parsing form ", http.StatusInternalServerError)
+			return
+		}
+
+		// Get the userId from the FormData
+		requestedId := r.FormValue("userId")
+		fmt.Println("userId: ", requestedId)
+
+		// get session owner userId from session
+		sessionId := validators.ValidateUserSession(cookie.Value)
+		fmt.Println("sessionId: ", sessionId)
 
 		// check if user wants to see own profile
-		if requestedEmail == sessionEmail {
+		if requestedId == sessionId {
 			// get logged in user privacy
 			callback["GetPrivacy"] = validators.ValidateUserPrivacyHash(cookie.Value)
 			fmt.Println("GetPrivacy if user wants to see own profile: ", callback["GetPrivacy"])
 			callback["ButtonVisible"] = "1"
 		} else { // requested profile is not the same as session profile
 			// get requestedEmail profile privacy, to see if it is public or private
-			privacyValue := validators.ValidateUserPrivacyEmail(requestedEmail)
+			privacyValue := validators.ValidateUserPrivacyId(requestedId)
 			callback["ButtonVisible"] = "2"
 			if privacyValue == "1" { //profile is public
 				callback["GetPrivacy"] = "1"

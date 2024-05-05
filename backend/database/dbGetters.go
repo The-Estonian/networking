@@ -464,20 +464,36 @@ func GetGroupMembers(groupId string) []string {
 	return groupMembers
 }
 
-// this is for finding out if a logged in user
-// is looking at their own profile or someone else's
-// I compare session owner email to /profile/ path
-func GetEmailFromSession(session string) string {
-	fmt.Println("Session original: ", session)
+func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
+	fmt.Println("currentUserId: ", currentUserId)
+	fmt.Println("targetUserId: ", targetUserId)
 	db := sqlite.DbConnection()
-	defer db.Close()
+	var userProfile structs.Profile
 
-	var email string
-	err := db.QueryRow("SELECT users.email FROM session INNER JOIN users ON session.user_fk_users = users.id WHERE session.hash = ?", session).Scan(&email)
+	command := `
+    SELECT u.id, u.email, u.first_name, u.last_name, u.date_of_birth, u.username, u.about_user, u.avatar
+    FROM users u
+    INNER JOIN user_privacy up ON u.id = up.user_fk_users
+    WHERE (up.privacy_fk_users_privacy = 1 AND u.id = ?)
+        OR (u.id = ? AND u.id = ?)
+`
+	err := db.QueryRow(command, targetUserId, currentUserId, targetUserId).Scan(
+		&userProfile.Id,
+		&userProfile.Email,
+		&userProfile.FirstName,
+		&userProfile.LastName,
+		&userProfile.DateOfBirth,
+		&userProfile.Username,
+		&userProfile.AboutUser,
+		&userProfile.Avatar)
 	if err != nil {
-		helpers.CheckErr("GetEmailFromSession", err)
-		return ""
+		if err == sql.ErrNoRows {
+			// No user with the given ID was found, or their privacy settings do not allow the current user to view their profile
+			return structs.Profile{Privacy: "-1"}, nil
+		}
+		helpers.CheckErr("GetUserProfileInfo: ", err)
+		return structs.Profile{}, err
 	}
-
-	return email
+	defer db.Close()
+	return userProfile, nil
 }
