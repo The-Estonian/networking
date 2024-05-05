@@ -20,4 +20,9 @@ type NewGroup struct {
 	Members     string
 }
 
+type GroupMember struct {
+	Id    string
+	Email string
+}
+
 var GroupID string

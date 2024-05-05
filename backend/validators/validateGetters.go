@@ -117,7 +117,7 @@ func ValidateEventNotifications(UserId string) []structs.EventNotifications {
 	return database.GetEventNotifications(UserId)
 }
 
-func ValidateGetGroupMembers(groupId string) []string {
+func ValidateGetGroupMembers(groupId string) []structs.GroupMember {
 	return database.GetGroupMembers(groupId)
 }
 
@@ -125,4 +125,8 @@ func ValidateEmailFromSession(session string) string {
 	// get email by sessionID
 	email := database.GetEmailFromSession(session)
 	return email
+}
+
+func ValidateGroupEvents(groupId string) []structs.Events {
+	return database.GetGroupEvents(groupId)
 }

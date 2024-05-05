@@ -21,5 +21,6 @@ func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/messages", HandleChatMessages)
 	r.HandleFunc("/notificationresponse", HandleNotificationResponse)
 	r.HandleFunc("/notifications", HandleNotifications)
+	r.HandleFunc("/groupcontent", HandleGroupContent)
 	r.Handle("/avatar/", http.StripPrefix("/avatar/", http.FileServer(http.Dir("./database/images"))))
 }
