@@ -139,8 +139,8 @@ func handleMessages() {
 					continue
 				}
 				for _, eventReciever := range groupMembers {
-					if eventReciever == clientConnections[client].connOwnerId {
-						eventNotificationId := validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever)
+					if eventReciever.Id == clientConnections[client].connOwnerId {
+						eventNotificationId := validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever.Id)
 						msg.NotificationId = eventNotificationId
 						clientConnections[client].mu.Lock()
 						err := clientConnections[client].connection.WriteJSON(msg)

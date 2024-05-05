@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { GetAllGroups } from '../../connections/groupsConnection.js';
+import { GetGroupContent } from '../../connections/groupContentConnection.js';
 import { GetUserList } from '../../connections/userListConnection.js';
 
 import NewGroup from './NewGroup.jsx';
@@ -14,9 +15,11 @@ const Groups = () => {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [notGroupMembers, setNotGroupMembers] = useState([]);
+  const [groupMembers, setGroupMembers] = useState([]);
+  const [events, setEvents] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [invatationSent, setInvatationSent] = useState(false);
-  const [updateGroups, setUpdateGroups] = useState(false);
+  const [isGroupMember, setIsGroupMember] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,12 +27,11 @@ const Groups = () => {
     GetAllGroups().then((data) => {
       if (data.login === 'success') {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
-        data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
+        //data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
         GetUserList().then((data) => {
           setCurrentUser(data.activeUser)
           setNotGroupMembers(data.userList)
         })
-        setUpdateGroups(false)
         modal(false);
       } else {
         logout()
@@ -37,7 +39,19 @@ const Groups = () => {
     });
   }, [navigate, modal]);
 
-  const Groupinfo = (group) => setSelectedGroup(group);
+  const Groupinfo = (group) => {
+    setSelectedGroup(group);
+
+    const formData = new FormData()
+    formData.append('GroupId', group.Id)
+
+    GetGroupContent(formData).then((data => {
+      console.log("data: ", data.events);
+      setGroupMembers(data.groupMembers)
+      setEvents(data.events)
+      data.isGroupMember == false ? setIsGroupMember(false) : setIsGroupMember(true)
+    }))
+  }
 
   const SendGroupInvite = (reciever, title, groupId) => {
     sendJsonMessage({
@@ -57,7 +71,7 @@ const Groups = () => {
   return (
     <div className={styles.groupContainer}>
       <NewGroup setGroups={setGroups} setSelectedGroup={setSelectedGroup} />
-      <NewEvent groupId={selectedGroup && selectedGroup.Id} setUpdateGroups={setUpdateGroups} currentUser={currentUser} groupTitle={selectedGroup && selectedGroup.Title} />
+      {isGroupMember && <NewEvent groupId={selectedGroup && selectedGroup.Id} currentUser={currentUser} groupTitle={selectedGroup && selectedGroup.Title} />}
 
       <div className={styles.groupList}>
         <h3>All Groups</h3>
@@ -81,18 +95,38 @@ const Groups = () => {
           <h1>{selectedGroup.Title}</h1>
           <h2>Description: {selectedGroup.Description}</h2>
           <h3>Created by: {selectedGroup.Creator}</h3>
-          <h4>Group members: {selectedGroup.Members}</h4>
+          <h4>Group Members:</h4>
+
+          {groupMembers && groupMembers.map((member => (
+            <p key={member.Id}>{member.Email}</p>
+          )))}
+
+          <h4>Group events:</h4>
+          {events && events.map((event => (
+            <div key={event.EventId} className={styles.eventInfo}>
+              <p>{event.EventTitle}</p>
+              <p>{event.EventDescription}</p>
+              <p>{event.CreatorEmail}</p>
+              <p>{event.EventTime}</p>
+
+                {event.Participants.map((participant => (
+                <p key={participant.ParticipantId}>{participant.ParticipantEmail}</p>
+                )))}
+
+            </div>
+          )))}
+
         
-          <select className={styles.userDopDownMenu} value='' onChange={(e) => SendGroupInvite(e.target.value, selectedGroup.Title, selectedGroup.Id)}>
+          {isGroupMember &&  <select className={styles.userDopDownMenu} value='' onChange={(e) => SendGroupInvite(e.target.value, selectedGroup.Title, selectedGroup.Id)}>
             <option value="" disabled>Invite user</option>
-              {notGroupMembers && notGroupMembers.filter(user => !selectedGroup.Members.includes(user.Id)).map((user) => (
+              {notGroupMembers && notGroupMembers.map((user) => (
               <option key={user.Id} value={user.Id}>{user.Email}</option>
               ))}
-          </select>
+          </select>}
 
           {invatationSent && <label>Group invitation sent!</label>}
           
-          <button className={styles.inviteButton}>Join group</button>
+          {!isGroupMember && <button className={styles.inviteButton}>Request to join</button>}
         </div>
       )}
     </div>

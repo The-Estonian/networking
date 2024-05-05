@@ -6,7 +6,6 @@ import (
 	"backend/structs"
 	"database/sql"
 	"fmt"
-	"strings"
 )
 
 // is email in table
@@ -315,10 +314,9 @@ func GetAllGroups() []structs.Groups {
 
 	var allGroups []structs.Groups
 
-	command := `SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date, group_concat(guildmembers.members_fk_users) as members
+	command := `SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date
 				FROM guilds 
 				INNER JOIN users ON guilds.creator_fk_users == users.id 
-				LEFT JOIN guildmembers ON guilds.id == guildmembers.guild_id_fk_guilds
 				GROUP BY guilds.id
 				ORDER BY guilds.date DESC`
 
@@ -331,13 +329,11 @@ func GetAllGroups() []structs.Groups {
 
 	for rows.Next() {
 		var group structs.Groups
-		var members string
-		err = rows.Scan(&group.Id, &group.Creator, &group.Title, &group.Description, &group.Date, &members)
+		err = rows.Scan(&group.Id, &group.Creator, &group.Title, &group.Description, &group.Date)
 		if err != nil {
 			helpers.CheckErr("Iterating GetAllGroups", err)
 			continue
 		}
-		group.Members = strings.Split(members, ",")
 		allGroups = append(allGroups, group)
 	}
 
@@ -435,12 +431,13 @@ func GetEventNotifications(currentUser string) []structs.EventNotifications {
 	return allNotif
 }
 
-func GetGroupMembers(groupId string) []string {
+func GetGroupMembers(groupId string) []structs.GroupMember {
 	db := sqlite.DbConnection()
 	defer db.Close()
 
-	var groupMembers []string
-	command := "SELECT members_fk_users FROM guildmembers WHERE guild_id_fk_guilds = ?"
+	var groupMembers []structs.GroupMember
+
+	command := "SELECT members_fk_users, users.email FROM guildmembers INNER JOIN users ON members_fk_users  = users.id  WHERE guild_id_fk_guilds = ?"
 	rows, err := db.Query(command, groupId)
 	if err != nil {
 		helpers.CheckErr("GetGroupMembers selecting error: ", err)
@@ -449,8 +446,9 @@ func GetGroupMembers(groupId string) []string {
 	defer rows.Close()
 
 	for rows.Next() {
-		var member string
-		err = rows.Scan(&member)
+		var member structs.GroupMember
+
+		err = rows.Scan(&member.Id, &member.Email)
 		if err != nil {
 			helpers.CheckErr("GetGroupMembers Next error: ", err)
 			continue
@@ -462,6 +460,60 @@ func GetGroupMembers(groupId string) []string {
 		helpers.CheckErr("GetGroupMembers", err)
 	}
 	return groupMembers
+}
+
+func GetGroupEvents(groupId string) []structs.Events {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var groupEvents []structs.Events
+
+	command := `SELECT events.*, users.email 
+				FROM events 
+				INNER JOIN users ON events.creator_fk_users = users.id  
+				WHERE guildid_fk_guilds = ?`
+
+	rows, err := db.Query(command, groupId)
+	if err != nil {
+		helpers.CheckErr("GetGroupEvents select: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var event structs.Events
+
+		err = rows.Scan(&event.EventId, &event.EventCreatorId, &event.GroupId, &event.EventTitle, &event.EventDescription, &event.EventTime, &event.CreatorEmail)
+		if err != nil {
+			helpers.CheckErr("GetGroupEvents loop: ", err)
+			continue
+		}
+
+		command := `SELECT participant_fk_users, users.email FROM event_participants INNER JOIN users ON event_participants.participant_fk_users = users.id WHERE event_participants.event_id_fk_events = ?`
+		rows, err := db.Query(command, event.EventId)
+		if err != nil {
+			helpers.CheckErr("GetGroupEvents selecting participants: ", err)
+			return nil
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var participant structs.EventParticipant
+
+			err = rows.Scan(&participant.ParticipantId, &participant.ParticipantEmail)
+			if err != nil {
+				helpers.CheckErr("GetGroupEvents participants loop: ", err)
+				continue
+			}
+			event.Participants = append(event.Participants, participant)
+		}
+		groupEvents = append(groupEvents, event)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetGroupEvents rows: ", err)
+	}
+	return groupEvents
 }
 
 // this is for finding out if a logged in user
