@@ -70,7 +70,7 @@ const Groups = () => {
 
   return (
     <div className={styles.groupContainer}>
-      <NewGroup setGroups={setGroups} setSelectedGroup={setSelectedGroup} />
+      <NewGroup setGroups={setGroups} /> 
       {isGroupMember && <NewEvent groupId={selectedGroup && selectedGroup.Id} currentUser={currentUser} groupTitle={selectedGroup && selectedGroup.Title} />}
 
       <div className={styles.groupList}>
