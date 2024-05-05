@@ -49,11 +49,11 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 
 		// Get the userId from the FormData
 		requestedId := r.FormValue("userId")
-		fmt.Println("userId: ", requestedId)
+		fmt.Println("privacy requestedId: ", requestedId)
 
 		// get session owner userId from session
 		sessionId := validators.ValidateUserSession(cookie.Value)
-		fmt.Println("sessionId: ", sessionId)
+		fmt.Println("privacy sessionId: ", sessionId)
 
 		// check if user wants to see own profile
 		if requestedId == sessionId {
@@ -73,7 +73,7 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("GetPrivacy if user wants to see other profile: ", callback["GetPrivacy"])
 		}
 	}
-
+	fmt.Println("callback: ", callback)
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandlePrivacy", err)
 	w.Write(writeData)

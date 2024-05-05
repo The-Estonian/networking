@@ -19,7 +19,7 @@ const Profile = () => {
   const [privacyButton, setPrivacyButton] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
-  const userId ='5'
+  const userId =''
 
   useEffect(() => {
     modal(true);
@@ -42,13 +42,12 @@ const Profile = () => {
         logout();
       }
     });
-    // Get privacy settings
-    if (privacy === '') {
-      GetPrivacy(formData).then((data) => {
-        setPrivacy(data.GetPrivacy);
-        setPrivacyButton(data.ButtonVisible);
-      });
-    }
+    // Get privacy settings ITS aBROKEN
+    GetPrivacy(userProfile.Id).then((data) => {
+      console.log('GetPrivacy data: ', userProfile.Id)
+      setPrivacy(data.GetPrivacy);
+      setPrivacyButton(data.ButtonVisible);
+    });
   }, [navigate, modal]);
   console.log(userProfile);
   // Privacy settings change

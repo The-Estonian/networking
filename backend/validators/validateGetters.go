@@ -120,5 +120,8 @@ func ValidateGetGroupMembers(groupId string) []string {
 }
 
 func ValidateUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
+	if targetUserId == "" {
+		targetUserId = currentUserId
+	}
 	return database.GetUserProfileInfo(currentUserId, targetUserId)
 }

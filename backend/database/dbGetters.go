@@ -465,13 +465,11 @@ func GetGroupMembers(groupId string) []string {
 }
 
 func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
-	fmt.Println("currentUserId: ", currentUserId)
-	fmt.Println("targetUserId: ", targetUserId)
 	db := sqlite.DbConnection()
 	var userProfile structs.Profile
 
 	command := `
-    SELECT u.id, u.email, u.first_name, u.last_name, u.date_of_birth, u.username, u.about_user, u.avatar
+    SELECT u.id, u.email, u.first_name, u.last_name, u.date_of_birth, u.username, u.about_user, u.avatar, up.privacy_fk_users_privacy
     FROM users u
     INNER JOIN user_privacy up ON u.id = up.user_fk_users
     WHERE (up.privacy_fk_users_privacy = 1 AND u.id = ?)
@@ -485,7 +483,8 @@ func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, er
 		&userProfile.DateOfBirth,
 		&userProfile.Username,
 		&userProfile.AboutUser,
-		&userProfile.Avatar)
+		&userProfile.Avatar,
+		&userProfile.Privacy)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// No user with the given ID was found, or their privacy settings do not allow the current user to view their profile
@@ -496,4 +495,40 @@ func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, er
 	}
 	defer db.Close()
 	return userProfile, nil
+}
+
+func GetUserProfilePosts(currentUserId, targetUserId string) ([]structs.Posts, error) {
+	db := sqlite.DbConnection()
+	var posts []structs.Posts
+
+	command := `
+    SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
+    FROM posts p
+    INNER JOIN users u ON p.user_fk_users = u.id
+    INNER JOIN user_privacy up ON u.id = up.user_fk_users
+    WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1 AND u.id = ?)
+        OR (u.id = ? AND u.id = ?))
+`
+	rows, err := db.Query(command, targetUserId, currentUserId, targetUserId)
+	if err != nil {
+		helpers.CheckErr("GetUserProfilePosts Query error: ", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post structs.Posts
+		err = rows.Scan(&post.PostID, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date)
+		if err != nil {
+			helpers.CheckErr("GetUserProfilePosts Next error: ", err)
+			continue
+		}
+		posts = append(posts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetUserProfilePosts", err)
+	}
+	defer db.Close()
+	return posts, nil
 }
