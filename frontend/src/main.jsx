@@ -39,6 +39,10 @@ const router = createBrowserRouter([
         element: <div>FOLLOWERS GO HERE TO-DO</div>,
       },
       {
+        path: '/profile/:id',
+        element: <Profile />,
+      },
+      {
         path: '/profile',
         element: <Profile />,
       },

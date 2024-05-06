@@ -50,6 +50,7 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 
 		// Get the userId from the FormData
 		requestedId := r.FormValue("userId")
+		fmt.Println("requestedId: ", requestedId)
 		// get session owner userId from session
 		sessionId := validators.ValidateUserSession(cookie.Value)
 

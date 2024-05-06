@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, useLocation, useParams } from 'react-router-dom';
 
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
@@ -19,7 +19,16 @@ const Profile = () => {
   const [privacyButton, setPrivacyButton] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
-  const userId ='1'
+  // const userId ='1'
+  const { id } = useParams();
+  const [userId, setUserId] = useState(id || ''); // replace '' with the id of the logged-in user
+
+  useEffect(() => {
+    if (id === '' || id) {
+      setUserId(id);
+    }
+  }, [id]);
+
 
   useEffect(() => {
     modal(true);
