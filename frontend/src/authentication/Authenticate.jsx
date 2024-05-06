@@ -153,10 +153,10 @@ const Authenticate = (props) => {
         if (data.login === 'success') {
           props.currSession('true');
           props.setUserId(data['userid']);
+          props.setUserAvatar(data['useravatar']);
         } else {
           setInputError(true);
           setInputErrorText(data.error);
-          console.log(data.error);
         }
         props.modal(false);
       });
@@ -272,7 +272,9 @@ const Authenticate = (props) => {
                 onChange={handleImageChange}
               />
               Select file
-              {selectedImage && <img className={styles.selectedImage} src={selectedImage} />}
+              {selectedImage && (
+                <img className={styles.selectedImage} src={selectedImage} />
+              )}
             </label>
           </div>
         ) : (
