@@ -19,7 +19,7 @@ const Profile = () => {
   const [privacyButton, setPrivacyButton] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
-  const userId =''
+  const userId ='1'
 
   useEffect(() => {
     modal(true);
@@ -37,6 +37,7 @@ const Profile = () => {
         setFollowers(['User4', 'User5']);
         // profile related posts
         setPosts(data.posts);
+        console.log('GetProfile posts: ', data.posts);
         modal(false);
       } else {
         logout();
@@ -49,7 +50,6 @@ const Profile = () => {
       setPrivacyButton(data.ButtonVisible);
     });
   }, [navigate, modal]);
-  console.log(userProfile);
   // Privacy settings change
   const handlePrivacyChange = () => {
     let newPrivacy = privacy === '1' ? '2' : '1';
@@ -157,8 +157,11 @@ const Profile = () => {
             <ul>
               {posts.map((post, index) => (
                 <li key={index}>
-                  <p>Post: {post.PostContent}</p>
+                  <p>Id: {post.PostID}</p>
+                  <p>Title: {post.Title}</p>
+                  <p>Post: {post.Content}</p>
                   <p>Date: {post.Date}</p>
+                  <p>Privacy: {post.Privacy}</p>
                   {post.Picture ? (
                     <img
                       className={styles.profilePostImg}

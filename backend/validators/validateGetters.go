@@ -119,9 +119,16 @@ func ValidateGetGroupMembers(groupId string) []string {
 	return database.GetGroupMembers(groupId)
 }
 
-func ValidateUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
+func ValidateUserProfileInfo(sessionId, targetUserId string) (structs.Profile, error) {
 	if targetUserId == "" {
-		targetUserId = currentUserId
+		targetUserId = sessionId
 	}
-	return database.GetUserProfileInfo(currentUserId, targetUserId)
+	return database.GetUserProfileInfo(sessionId, targetUserId)
+}
+
+func ValidateUserProfilePosts(sessionId, targetUserId string) ([]structs.Posts, error) {
+	if targetUserId == "" {
+		targetUserId = sessionId
+	}
+	return database.GetUserProfilePosts(sessionId, targetUserId)
 }

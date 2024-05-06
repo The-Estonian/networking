@@ -50,12 +50,8 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 
 		// Get the userId from the FormData
 		requestedId := r.FormValue("userId")
-
 		// get session owner userId from session
 		sessionId := validators.ValidateUserSession(cookie.Value)
-
-		// +++ TEST +++
-		// requestedId = "1"
 
 		// get profile info
 		userProfile, err := validators.ValidateUserProfileInfo(sessionId, requestedId)
@@ -64,39 +60,15 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		callback["profile"] = userProfile
-		fmt.Println("profile: ", userProfile)
+		fmt.Println("profile info: ", userProfile)
 
-		callback["posts"] = validators.ValidateUserProfilePosts(sessionId, requestedId)
-		fmt.Println("profile: ", userProfile)
-
-		// // check if user wants to see own profile
-		// if requestedId == sessionId || requestedId == "" {
-		// 	// get logged in user profile info
-		// 	userProfile := validators.ValidateUserProfile(requestedId)
-		// 	callback["profile"] = userProfile
-
-		// 	// get logged in user profile posts
-		// 	profilePosts := validators.ValidateProfilePosts(requestedId)
-		// 	callback["posts"] = profilePosts
-		// } else { // requested profile is not the same as session profile
-		// 	// get requestedEmail profile privacy, to see if it is public or private
-		// 	privacyValue := validators.ValidateUserPrivacyId(requestedId)
-		// 	if privacyValue == "1" {
-		// 		// get profile info
-		// 		userProfile := validators.ValidateUserProfile(requestedId)
-		// 		callback["profile"] = userProfile
-		// 		fmt.Println("profile: ", userProfile)
-
-		// 		// get profile posts
-		// 		profilePosts := validators.ValidateProfilePosts(requestedId)
-		// 		callback["posts"] = profilePosts
-		// 	} else { // privacy value is "2"
-		// 		// add user profile details that are visible from private profile
-
-		// 		callback["profile"] = []string{}
-		// 		callback["posts"] = []string{}
-		// 	}
-		// }
+		userProfilePosts, err := validators.ValidateUserProfilePosts(sessionId, requestedId)
+		if err != nil {
+			callback["posts"] = err.Error()
+			return
+		}
+		callback["posts"] = userProfilePosts
+		fmt.Println("profile posts: ", userProfilePosts)
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleProfile", err)
