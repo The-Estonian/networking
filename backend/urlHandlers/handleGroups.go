@@ -43,6 +43,10 @@ func HandleGroups(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
+
+		sessionEmail := validators.ValidateEmailFromSession(cookie.Value)
+		callback["currentUserEmail"] = sessionEmail
+
 		sendGroups = validators.ValidateGroups()
 		callback["groups"] = sendGroups
 	}

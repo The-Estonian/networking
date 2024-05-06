@@ -111,7 +111,6 @@ return (
       ) : (
         <span className={styles.closedNewEvent} onClick={() => {
           switchNewPostOpen();
-          setUpdateGroups(true);
         }}>
           Create Event
         </span>

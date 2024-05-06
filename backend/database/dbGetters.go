@@ -314,7 +314,7 @@ func GetAllGroups() []structs.Groups {
 
 	var allGroups []structs.Groups
 
-	command := `SELECT guilds.id, users.username, guilds.guild_title, guilds.guild_description, guilds.date
+	command := `SELECT guilds.id, guilds.creator_fk_users, users.email, guilds.guild_title, guilds.guild_description, guilds.date
 				FROM guilds 
 				INNER JOIN users ON guilds.creator_fk_users == users.id 
 				GROUP BY guilds.id
@@ -329,7 +329,7 @@ func GetAllGroups() []structs.Groups {
 
 	for rows.Next() {
 		var group structs.Groups
-		err = rows.Scan(&group.Id, &group.Creator, &group.Title, &group.Description, &group.Date)
+		err = rows.Scan(&group.Id, &group.CreatorId, &group.Creator, &group.Title, &group.Description, &group.Date)
 		if err != nil {
 			helpers.CheckErr("Iterating GetAllGroups", err)
 			continue
@@ -347,8 +347,8 @@ func GetNewGroup() structs.NewGroup {
 	db := sqlite.DbConnection()
 	var newGroup structs.NewGroup
 
-	command := "SELECT guilds.id, users.username, users.id, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC LIMIT 1"
-	err := db.QueryRow(command).Scan(&newGroup.Id, &newGroup.Creator, &newGroup.Members, &newGroup.Title, &newGroup.Description, &newGroup.Date)
+	command := "SELECT guilds.id, guilds.creator_fk_users, users.username, users.id, guilds.guild_title, guilds.guild_description, guilds.date FROM guilds INNER JOIN users ON guilds.creator_fk_users == users.id ORDER BY guilds.date DESC LIMIT 1"
+	err := db.QueryRow(command).Scan(&newGroup.Id, &newGroup.CreatorId, &newGroup.Creator, &newGroup.Members, &newGroup.Title, &newGroup.Description, &newGroup.Date)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			helpers.CheckErr("getNewGroup", err)

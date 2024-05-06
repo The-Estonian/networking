@@ -37,7 +37,7 @@
   overflow-x: hidden;
 }
 
-.groupInvList[id="grInv"], .groupInvList[id="event"] {
+.groupInvList[id="grInv"], .groupInvList[id="event"], .groupInvList[id="grReq"]{
   position: absolute;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 10px 15px;
   background-color: hsl(0, 0%, 45%);
@@ -47,6 +47,10 @@
 
 .groupInvList[id="event"] {
   margin: 50px 220px;
+}
+
+.groupInvList[id="grReq"] {
+  margin: 50px 440px;
 }
 
 .groupInvList p {
@@ -84,6 +88,10 @@
 }
 
 .listButton[id="event"]:hover + .groupInvList[id="event"] {
+  display: block;
+}
+
+.listButton[id="grReq"]:hover + .groupInvList[id="grReq"] {
   display: block;
 }
 

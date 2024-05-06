@@ -125,23 +125,37 @@ func handleMessages() {
 					}
 				}
 			}
+		case "groupRequest":
+			for client := range clientConnections {
+				if msg.To == clientConnections[client].connOwnerId {
+					clientConnections[client].mu.Lock()
+					err := clientConnections[client].connection.WriteJSON(msg)
+					if err != nil {
+						fmt.Println("Error writing gruopinvatation to client:", err)
+						clientConnections[client].mu.Unlock()
+						return
+					}
+					clientConnections[client].mu.Unlock()
+				}
+			}
 
 		case "event":
-			//Insert new event into DB, then get all groupmembers from DB and send notification to all groupmembers
+			//Insert new event into DB, then get all groupmembers from DB and send notification to all groupmembers, except event creator
 			EventId, returnedEmail := validators.ValidateSetNewEvent(msg.GroupId, msg.FromId, msg.EventTitle, msg.EventDescription, msg.EventTime, msg.Participation)
 			groupMembers := validators.ValidateGetGroupMembers(msg.GroupId)
 
 			msg.EventId = EventId
 			msg.SenderEmail = returnedEmail
-			
+
 			for client := range clientConnections {
-				if client == msg.FromId {
-					continue
-				}
 				for _, eventReciever := range groupMembers {
+					if eventReciever.Id == msg.FromId {
+						continue
+					}
+					eventNotificationId := validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever.Id)
+					msg.NotificationId = eventNotificationId
+
 					if eventReciever.Id == clientConnections[client].connOwnerId {
-						eventNotificationId := validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever.Id)
-						msg.NotificationId = eventNotificationId
 						clientConnections[client].mu.Lock()
 						err := clientConnections[client].connection.WriteJSON(msg)
 						if err != nil {
