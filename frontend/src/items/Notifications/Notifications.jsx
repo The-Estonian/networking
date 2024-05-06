@@ -10,6 +10,7 @@ import styles from './NewNotification.module.css';
 const Notifications = () => {
   const [modal,logout, ,lastMessage, ,] = useOutletContext();
   const [groupInvNotify, setGroupInvNotify] = useState([]);
+  const [groupReqNotify, setGroupReqNotify] = useState([]);
   const [eventNotify, setEventNotify] = useState([]);
   const navigate = useNavigate();
     
@@ -32,8 +33,12 @@ const Notifications = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
+      console.log("msgdata: ", messageData);
       if (messageData.type === 'groupInvatation') {
         setGroupInvNotify(prevNotifications => [...prevNotifications, messageData]);
+      }
+      if (messageData.type === 'groupRequest') {
+        setGroupReqNotify(prevNotifications => [...prevNotifications, messageData]);
       }
       if (messageData.type === 'event') {
         setEventNotify(prevNotifications => [...prevNotifications, messageData]);
@@ -67,6 +72,7 @@ const Notifications = () => {
               <div className={styles.notifyBox} key={index}>
               <p>Group name: {notification.message}</p>
               <p>Sender: {notification.SenderEmail}</p>
+
               <button className={styles.accept} value={'accept'} onClick={(e) => {invatationResponse(notification, index, e, 'groupInvatation')}}>Accept</button>
               <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e, 'groupInvatation')}}>Decline</button>    
               </div>  
@@ -93,7 +99,20 @@ const Notifications = () => {
             ))}
 
         </div>
-      <div className={styles.listButton}>Followers</div>
+      <div id='grReq' className={styles.listButton}>Group requests</div>
+        <div id='grReq' className={styles.groupInvList}>
+
+            {groupReqNotify.map((notification, index) => (
+              <div className={styles.notifyBox} key={index}>
+              <p>Group name: {notification.message}</p>
+              <p>Request Sender: {notification.SenderEmail}</p>
+
+              <button className={styles.accept} value={'accept'} onClick={(e) => {invatationResponse(notification, index, e, 'groupRequest')}}>Accept</button>
+              <button className={styles.decline} value={'decline'} onClick={(e) => {invatationResponse(notification, index, e, 'groupRequest')}}>Decline</button>    
+              </div>  
+            ))}
+
+        </div>
     </div>
   );
 };

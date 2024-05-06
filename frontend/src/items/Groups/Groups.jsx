@@ -18,6 +18,7 @@ const Groups = () => {
   const [groupMembers, setGroupMembers] = useState([]);
   const [events, setEvents] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
   const [invatationSent, setInvatationSent] = useState(false);
   const [isGroupMember, setIsGroupMember] = useState(false);
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Groups = () => {
     GetAllGroups().then((data) => {
       if (data.login === 'success') {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
+        setCurrentUserEmail(data.currentUserEmail)
         //data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
         GetUserList().then((data) => {
           setCurrentUser(data.activeUser)
@@ -46,11 +48,21 @@ const Groups = () => {
     formData.append('GroupId', group.Id)
 
     GetGroupContent(formData).then((data => {
-      console.log("data: ", data.events);
       setGroupMembers(data.groupMembers)
       setEvents(data.events)
       data.isGroupMember == false ? setIsGroupMember(false) : setIsGroupMember(true)
     }))
+  }
+
+  const SendGroupRequest = (groupCreator, title, groupId) => {
+    sendJsonMessage({
+      type: 'groupRequest',
+      fromuserid: currentUser,
+      message: title,
+      GroupId: groupId,
+      touser: groupCreator,
+      SenderEmail: currentUserEmail
+    });
   }
 
   const SendGroupInvite = (reciever, title, groupId) => {
@@ -67,7 +79,7 @@ const Groups = () => {
       setInvatationSent(false)
     }, 2000)
   }
-
+console.log("seleceted",selectedGroup);
   return (
     <div className={styles.groupContainer}>
       <NewGroup setGroups={setGroups} /> 
@@ -126,7 +138,7 @@ const Groups = () => {
 
           {invatationSent && <label>Group invitation sent!</label>}
           
-          {!isGroupMember && <button className={styles.inviteButton}>Request to join</button>}
+          {!isGroupMember && <button onClick={() => SendGroupRequest(selectedGroup.CreatorId ,selectedGroup.Title, selectedGroup.Id)} className={styles.inviteButton}>Request to join</button>}
         </div>
       )}
     </div>
