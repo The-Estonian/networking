@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, useLocation, useParams } from 'react-router-dom';
 
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
@@ -19,14 +19,25 @@ const Profile = () => {
   const [privacyButton, setPrivacyButton] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
+  // const userId ='1'
+  const { id } = useParams();
+  const [userId, setUserId] = useState(id || ''); // replace '' with the id of the logged-in user
 
-  //Get path username
-  const userEmail = window.location.pathname.substring(9)
-  // console.log('username from path: ', userEmail)
+  useEffect(() => {
+    if (id === '' || id) {
+      setUserId(id);
+    }
+  }, [id]);
+
 
   useEffect(() => {
     modal(true);
-    GetProfile(userEmail).then((data) => {
+
+    // UserId FormData
+    const formData = new FormData();
+    formData.append('userId', userId);
+
+    GetProfile(formData).then((data) => {
       if (data.login === 'success') {
         // profile info
         setUserProfile(data.profile);
@@ -35,20 +46,19 @@ const Profile = () => {
         setFollowers(['User4', 'User5']);
         // profile related posts
         setPosts(data.posts);
+        console.log('GetProfile posts: ', data.posts);
         modal(false);
       } else {
         logout();
       }
     });
-    // Get privacy settings
-    if (privacy === '') {
-      GetPrivacy(userEmail).then((data) => {
-        setPrivacy(data.GetPrivacy);
-        setPrivacyButton(data.ButtonVisible);
-      });
-    }
+    // Get privacy settings ITS aBROKEN
+    GetPrivacy(userProfile.Id).then((data) => {
+      console.log('GetPrivacy data: ', userProfile.Id)
+      setPrivacy(data.GetPrivacy);
+      setPrivacyButton(data.ButtonVisible);
+    });
   }, [navigate, modal]);
-
   // Privacy settings change
   const handlePrivacyChange = () => {
     let newPrivacy = privacy === '1' ? '2' : '1';
@@ -63,7 +73,9 @@ const Profile = () => {
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
-        {userProfile && Object.keys(userProfile).length > 0 ? (
+        {userProfile && userProfile.Privacy === "-1" ? (
+          <p>This user is private, please send a follow request</p>
+        ) : (
           <>
             <span>SOMEONE STYLE THIS PLEASE!</span>
             <div className={styles.avatar}>
@@ -115,8 +127,6 @@ const Profile = () => {
               )}
             </div>
           </>
-        ) : (
-          <p>This user is private, please send a follow request</p>
         )}
         {/* Privacy settings */}
         {privacyButton === '1' && (
@@ -156,8 +166,11 @@ const Profile = () => {
             <ul>
               {posts.map((post, index) => (
                 <li key={index}>
-                  <p>Post: {post.PostContent}</p>
+                  <p>Id: {post.PostID}</p>
+                  <p>Title: {post.Title}</p>
+                  <p>Post: {post.Content}</p>
                   <p>Date: {post.Date}</p>
+                  <p>Privacy: {post.Privacy}</p>
                   {post.Picture ? (
                     <img
                       className={styles.profilePostImg}
