@@ -2,7 +2,6 @@ package urlHandlers
 
 import (
 	"backend/helpers"
-	"backend/structs"
 	"backend/validators"
 	"encoding/json"
 	"fmt"
@@ -10,15 +9,16 @@ import (
 	"time"
 )
 
-func HandleGroups(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Groups attempt!")
+func HandleGroupContent(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("GroupContent attempt!")
 
 	var callback = make(map[string]interface{})
-	var sendGroups []structs.Groups
-
+	
 	cookie, err := r.Cookie("socialNetworkSession")
+	userId := validators.ValidateUserSession(cookie.Value)
+
 	// if not err and cookie valid
-	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
+	if err != nil || userId == "0" {
 		// check status
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
@@ -43,14 +43,23 @@ func HandleGroups(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
+		callback["isGroupMember"] = false
+		
+		GroupId := r.FormValue("GroupId")
 
-		sessionEmail := validators.ValidateEmailFromSession(cookie.Value)
-		callback["currentUserEmail"] = sessionEmail
+		groupMemebers := validators.ValidateGetGroupMembers(GroupId)
 
-		sendGroups = validators.ValidateGroups()
-		callback["groups"] = sendGroups
+		// Send additional groupcontent if current user is groupmember
+		for _, member := range groupMemebers {
+			if member.Id == userId {
+				callback["isGroupMember"] = true
+				callback["groupMembers"] = groupMemebers
+				callback["events"] = validators.ValidateGroupEvents(GroupId)
+				break
+			}
+		}
 	}
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("HandleGroups", err)
+	helpers.CheckErr("HandlePosts", err)
 	w.Write(writeData)
 }

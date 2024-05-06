@@ -13,7 +13,6 @@ export const GetLogin = async (formData) => {
       credentials: 'include',
     });
     const resp = await response.json();
-    console.log(resp);
     return resp;
   } catch (error) {
     console.log('Login error');

@@ -115,7 +115,7 @@ func ValidateEventNotifications(UserId string) []structs.EventNotifications {
 	return database.GetEventNotifications(UserId)
 }
 
-func ValidateGetGroupMembers(groupId string) []string {
+func ValidateGetGroupMembers(groupId string) []structs.GroupMember {
 	return database.GetGroupMembers(groupId)
 }
 
@@ -131,4 +131,12 @@ func ValidateUserProfilePosts(sessionId, targetUserId string) ([]structs.Posts, 
 		targetUserId = sessionId
 	}
 	return database.GetUserProfilePosts(sessionId, targetUserId)
+}
+
+func ValidateGroupEvents(groupId string) []structs.Events {
+	return database.GetGroupEvents(groupId)
+}
+
+func ValidateUserAvatar(userId string) string {
+	return database.GetUserAvatar(userId)
 }

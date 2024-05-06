@@ -56,3 +56,8 @@
     color: white;
     opacity: 0.9;
 }
+
+.eventInfo {
+    margin: 10px;
+    background-color: hsl(0, 0%, 80%);
+}

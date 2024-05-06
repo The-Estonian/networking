@@ -41,6 +41,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &authCookie)
 		callback["login"] = "success"
 		callback["userid"] = userId
+		callback["useravatar"] = validators.ValidateUserAvatar(userId)
 	} else {
 		callback["login"] = "fail"
 		callback["error"] = userCookie
