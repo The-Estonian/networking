@@ -516,65 +516,7 @@ func GetGroupEvents(groupId string) []structs.Events {
 	return groupEvents
 }
 
-<<<<<<< HEAD
-
-=======
-func GetGroupEvents(groupId string) []structs.Events {
-	db := sqlite.DbConnection()
-	defer db.Close()
-
-	var groupEvents []structs.Events
-
-	command := `SELECT events.*, users.email 
-				FROM events 
-				INNER JOIN users ON events.creator_fk_users = users.id  
-				WHERE guildid_fk_guilds = ?`
-
-	rows, err := db.Query(command, groupId)
-	if err != nil {
-		helpers.CheckErr("GetGroupEvents select: ", err)
-		return nil
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var event structs.Events
-
-		err = rows.Scan(&event.EventId, &event.EventCreatorId, &event.GroupId, &event.EventTitle, &event.EventDescription, &event.EventTime, &event.CreatorEmail)
-		if err != nil {
-			helpers.CheckErr("GetGroupEvents loop: ", err)
-			continue
-		}
-
-		command := `SELECT participant_fk_users, users.email FROM event_participants INNER JOIN users ON event_participants.participant_fk_users = users.id WHERE event_participants.event_id_fk_events = ?`
-		rows, err := db.Query(command, event.EventId)
-		if err != nil {
-			helpers.CheckErr("GetGroupEvents selecting participants: ", err)
-			return nil
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var participant structs.EventParticipant
-
-			err = rows.Scan(&participant.ParticipantId, &participant.ParticipantEmail)
-			if err != nil {
-				helpers.CheckErr("GetGroupEvents participants loop: ", err)
-				continue
-			}
-			event.Participants = append(event.Participants, participant)
-		}
-		groupEvents = append(groupEvents, event)
-	}
-
-	if err = rows.Err(); err != nil {
-		helpers.CheckErr("GetGroupEvents rows: ", err)
-	}
-	return groupEvents
-}
-
 func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
->>>>>>> master
 	db := sqlite.DbConnection()
 	var userProfile structs.Profile
 
@@ -641,21 +583,6 @@ func GetUserProfilePosts(currentUserId, targetUserId string) ([]structs.Posts, e
 	}
 	defer db.Close()
 	return posts, nil
-}
-
-func GetUserAvatar(userId string) string {
-	db := sqlite.DbConnection()
-	defer db.Close()
-	var avatar string
-	command := "SELECT avatar FROM users WHERE id=?"
-	err := db.QueryRow(command, userId).Scan(&avatar)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			helpers.CheckErr("GetUserSession", err)
-		}
-		return "0"
-	}
-	return avatar
 }
 
 func GetUserAvatar(userId string) string {
