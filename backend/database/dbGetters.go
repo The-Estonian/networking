@@ -533,3 +533,18 @@ func GetEmailFromSession(session string) string {
 
 	return email
 }
+
+func GetUserAvatar(userId string) string {
+	db := sqlite.DbConnection()
+	defer db.Close()
+	var avatar string
+	command := "SELECT avatar FROM users WHERE id=?"
+	err := db.QueryRow(command, userId).Scan(&avatar)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			helpers.CheckErr("GetUserSession", err)
+		}
+		return "0"
+	}
+	return avatar
+}

@@ -28,6 +28,7 @@ func HandleStatus(w http.ResponseWriter, r *http.Request) {
 			// user is valid
 			callback["login"] = "success"
 			callback["userid"] = userId
+			callback["useravatar"] = validators.ValidateUserAvatar(userId)
 		}
 	}
 	if callback["login"] == "fail" {

@@ -130,3 +130,7 @@ func ValidateEmailFromSession(session string) string {
 func ValidateGroupEvents(groupId string) []structs.Events {
 	return database.GetGroupEvents(groupId)
 }
+
+func ValidateUserAvatar(userId string) string {
+	return database.GetUserAvatar(userId)
+}

@@ -39,7 +39,7 @@ const router = createBrowserRouter([
         element: <div>FOLLOWERS GO HERE TO-DO</div>,
       },
       {
-        path: '/profile/:email',
+        path: '/profile/*',
         element: <Profile />,
       },
     ],
