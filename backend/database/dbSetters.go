@@ -121,7 +121,7 @@ func SetNewGroupNotification(messageSender, groupId, messageReceiver string) (st
 	return email, id
 }
 
-func SetNewGroupMember(groupId, userId, userResponse string) {
+func SetNewGroupMember(groupId, userId, userResponse, notfType string) {
 	if userResponse == "accept" {
 		db := sqlite.DbConnection()
 		command := "INSERT INTO guildmembers (guild_id_fk_guilds, members_fk_users) VALUES (?, ?)"
@@ -130,11 +130,21 @@ func SetNewGroupMember(groupId, userId, userResponse string) {
 		defer db.Close()
 	}
 
-	db := sqlite.DbConnection()
-	command := "DELETE FROM guildnotifications WHERE guildid_fk_guilds=? AND reciever_fk_users=?"
-	_, err := db.Exec(command, groupId, userId)
-	helpers.CheckErr("SetNewGroupMember remove notification", err)
-	defer db.Close()
+	if notfType == "groupInvatation" {
+		db := sqlite.DbConnection()
+		command := "DELETE FROM guildnotifications WHERE guildid_fk_guilds=? AND reciever_fk_users=?"
+		_, err := db.Exec(command, groupId, userId)
+		helpers.CheckErr("SetNewGroupMember remove groupInvatation notification", err)
+		defer db.Close()
+	}
+
+	if notfType == "groupRequest" {
+		db := sqlite.DbConnection()
+		command := "DELETE FROM guildrequests WHERE guildid_fk_guilds=? AND sender_fk_users=?"
+		_, err := db.Exec(command, groupId, userId)
+		helpers.CheckErr("SetNewGroupMember remove groupRequest notification", err)
+		defer db.Close()
+	}
 }
 
 func SetNewEventParticipant(groupId, eventId, notificationId, userId, userResponse string) {
@@ -189,6 +199,30 @@ func SetNewEventNotification(fromId, groupId, eventID, eventReciever string) str
 	command := "INSERT INTO event_notifications (sender_fk_users, guild_id_fk_guilds, event_id_fk_events, reciever_fk_users) VALUES(?, ?, ?, ?) returning id"
 	err := db.QueryRow(command, fromId, groupId, eventID, eventReciever).Scan(&id)
 	helpers.CheckErr("SetNewGroupNotification - Insert: ", err)
+
+	return id
+}
+
+func SetNewGroupRequest(groupId, messageSender, messageReceiver string) string {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var notificationCount int
+
+	err := db.QueryRow("SELECT COUNT(*) FROM guildrequests WHERE sender_fk_users = ? AND guildid_fk_guilds = ?", messageSender, groupId).Scan(&notificationCount)
+	if err != nil {
+		helpers.CheckErr("SetNewGroupRequest - NotificationCount: ", err)
+		return ""
+	}
+
+	if notificationCount > 0 {
+		return ""
+	}
+
+	var id string
+	command := "INSERT INTO guildrequests (guildid_fk_guilds, sender_fk_users, reciever_fk_users) VALUES(?, ?, ?) returning id"
+	err = db.QueryRow(command, groupId, messageSender, messageReceiver).Scan(&id)
+	helpers.CheckErr("SetNewGroupRequest - Insert: ", err)
 
 	return id
 }

@@ -46,12 +46,15 @@ func HandleNotifications(w http.ResponseWriter, r *http.Request) {
 
 		var sendNotifications []structs.GrInvNotifications
 		var sendEventNotifications []structs.EventNotifications
+		var sendGroupRequests []structs.GrInvNotifications
 
 		sendNotifications = validators.ValidateNotifications(UserID)
 		sendEventNotifications = validators.ValidateEventNotifications(UserID)
+		sendGroupRequests = validators.ValidateGroupRequests(UserID)
 
 		callback["groupInvNotifications"] = sendNotifications
 		callback["eventNotifications"] = sendEventNotifications
+		callback["groupRequests"] = sendGroupRequests
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleNotificatons", err)
