@@ -5,6 +5,7 @@ import { GetMessages } from '../../connections/messagesConnection';
 import Message from './Message';
 import ChatInput from './ChatInput';
 import ChatUserlist from './ChatUserlist';
+import Challenge from './Challenge';
 
 import styles from './Chat.module.css';
 
@@ -15,6 +16,9 @@ const Chat = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [wsConnectionOpen, setWsConnectionOpen] = useState(false);
   const [activeMessage, setActiveMessage] = useState([]);
+  const [activeChallenge, setActiveChallenge] = useState(false);
+  const gameWindowRef = useRef(null);
+
   const [, , sendJsonMessage, lastMessage, readyState, activeSession] =
     useOutletContext();
   const chatContainerRef = useRef(null);
@@ -72,6 +76,10 @@ const Chat = () => {
     if (e.target.value.length > 0) {
       setTextMessage(e.target.value);
     }
+  };
+
+  const handleChallenge = () => {
+    setActiveChallenge(!activeChallenge);
   };
 
   const sendMessage = () => {
@@ -147,24 +155,34 @@ const Chat = () => {
         handleUserClick={handleUserClick}
         activeChatPartner={activeChatPartner}
         activeMessage={activeMessage}
+        handleChallenge={handleChallenge}
       />
-      <div className={styles.chatContainer}>
-        <div ref={chatContainerRef} className={styles.chat}>
-          {allUserMessages?.map((eachMessage, key) => (
-            <Message messageData={eachMessage} key={key} />
-          ))}
+      {!activeChallenge ? (
+        <div className={styles.chatContainer}>
+          <div ref={chatContainerRef} className={styles.chat}>
+            {allUserMessages?.map((eachMessage, key) => (
+              <Message messageData={eachMessage} key={key} />
+            ))}
+          </div>
+          {wsConnectionOpen ? (
+            <ChatInput
+              textMessage={textMessage}
+              handleText={handleText}
+              handleKeyPress={handleKeyPress}
+              sendMessage={sendMessage}
+            />
+          ) : (
+            <p className={styles.chatInput}>Connecting to backend</p>
+          )}
         </div>
-        {wsConnectionOpen ? (
-          <ChatInput
-            textMessage={textMessage}
-            handleText={handleText}
-            handleKeyPress={handleKeyPress}
-            sendMessage={sendMessage}
-          />
-        ) : (
-          <p className={styles.chatInput}>Connecting to backend</p>
-        )}
-      </div>
+      ) : (
+        <Challenge
+          gameWindowRef={gameWindowRef}
+          handleChallenge={handleChallenge}
+          activeChatPartner={activeChatPartner}
+          currentUser={currentUser}
+        />
+      )}
     </div>
   );
 };

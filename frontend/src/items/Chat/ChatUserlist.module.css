@@ -5,10 +5,13 @@
   justify-content: start;
   border: 1px solid white;
   width: 15%;
+  min-width: fit-content;
   /* overflow: hidden; */
 }
 
 .activePartner {
+  display: flex;
+  justify-content: space-between;
   padding: 0.5rem;
   background: black;
   color: white;
@@ -17,6 +20,8 @@
 }
 
 .chatuser {
+  display: flex;
+  justify-content: space-between;
   padding: 0.5rem;
   border: 1px solid transparent;
   border-bottom: 1px solid white;
@@ -34,13 +39,13 @@
 }
 
 
-.onlineUser::after {
+.onlineUser::before {
   content: '';
   display: inline-block;
   background: greenyellow;
   position: relative;
-  left: 35%;
-  top: 0.1rem;
+  left: 0;
+  top: 0.2rem;
   width: 1rem;
   height: 1rem;
   border-radius: 50%;

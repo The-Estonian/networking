@@ -69,7 +69,10 @@ const Container = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      if (messageData.type != 'onlineStatus') {
+      if (
+        messageData.type != 'onlineStatus' &&
+        messageData.type != 'challenge'
+      ) {
         handleNotification(`New ${messageData.type}`);
         setGlow(true);
       }
