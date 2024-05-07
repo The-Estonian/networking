@@ -599,3 +599,52 @@ func GetUserAvatar(userId string) string {
 	}
 	return avatar
 }
+
+func GetEmailFromSession(session string) string {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var email string
+	err := db.QueryRow("SELECT users.email FROM session INNER JOIN users ON session.user_fk_users = users.id WHERE session.hash = ?", session).Scan(&email)
+	if err != nil {
+		helpers.CheckErr("GetEmailFromSession", err)
+		return ""
+	}
+
+	return email
+}
+
+func GetGroupRequests(currentUser string) []structs.GrInvNotifications {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var groupRequests []structs.GrInvNotifications
+
+	command := `SELECT sender_fk_users, reciever_fk_users, email, guild_title, guildrequests.id, guilds.id FROM guildrequests
+				INNER JOIN guilds ON guildrequests.guildid_fk_guilds = guilds.id
+				INNER JOIN users ON guildrequests.sender_fk_users = users.id
+				WHERE reciever_fk_users = ?`
+
+	rows, err := db.Query(command, currentUser)
+	if err != nil {
+		helpers.CheckErr("GetGroupRequests selecting error: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var notif structs.GrInvNotifications
+
+		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.GroupTitle, &notif.NotificationId, &notif.GroupId)
+		if err != nil {
+			helpers.CheckErr("GetGroupRequests Next error: ", err)
+			continue
+		}
+		groupRequests = append(groupRequests, notif)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetGroupRequests", err)
+	}
+	return groupRequests
+}

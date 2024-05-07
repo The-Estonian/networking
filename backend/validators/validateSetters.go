@@ -56,8 +56,8 @@ func ValidateSetNewGroupNotification(messageSender, groupId, messageReceiver str
 	return database.SetNewGroupNotification(messageSender, groupId, messageReceiver)
 }
 
-func ValidateSetNewGroupMember(groupId, userId, userResponse string) {
-	database.SetNewGroupMember(groupId, userId, userResponse)
+func ValidateSetNewGroupMember(groupId, userId, userResponse, notfType string) {
+	database.SetNewGroupMember(groupId, userId, userResponse, notfType)
 }
 
 func ValidateSetNewEvent(groupId, eventCreatorId, title, description, eventTime, participation string) (string, string){
@@ -70,4 +70,8 @@ func ValidateSetNewEventNotification(fromId, groupId, eventID, eventReciever str
 
 func ValidateSetNewEventParticipant(groupId, eventId, notificationId, userId, userResponse string) {
 	database.SetNewEventParticipant(groupId, eventId, notificationId, userId, userResponse)
+}
+
+func ValidateSetNewGroupRequest(groupId, messageSender, messageReceiver string) string{
+	return database.SetNewGroupRequest(groupId, messageSender, messageReceiver)
 }

@@ -19,6 +19,7 @@ const Notifications = () => {
     GetNotifications().then((data) => {
       data.groupInvNotifications == null ? setGroupInvNotify([]) : setGroupInvNotify(data.groupInvNotifications);
       data.eventNotifications == null ? setEventNotify([]) : setEventNotify(data.eventNotifications);
+      data.groupRequests == null ? setGroupReqNotify([]) : setGroupReqNotify(data.groupRequests);
       if (data) {
         if (data.login === 'success') {
           modal(false);
@@ -33,7 +34,6 @@ const Notifications = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      console.log("msgdata: ", messageData);
       if (messageData.type === 'groupInvatation') {
         setGroupInvNotify(prevNotifications => [...prevNotifications, messageData]);
       }
@@ -50,20 +50,21 @@ const Notifications = () => {
   const invatationResponse = (notification, index, e, type) => {
     type == 'groupInvatation' && setGroupInvNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
     type == 'event' && setEventNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
+    type == 'groupRequest' && setGroupReqNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
 
     const formData = {
       decision: e.target.value,
       type: type,
       GroupId: notification.GroupId,
       EventId: notification.EventId,
-      NotificationId: notification.NotificationId
+      NotificationId: notification.NotificationId,
+      fromuserid : notification.fromuserid
     }
     SendNotificationResponse(formData)
 }
 
   return (
     <div className={styles.groupContainer}>
-
       <div className={styles.dropdown}>
         <div id='grInv' className={styles.listButton}>Group invatations</div>
           <div id='grInv' className={styles.groupInvList}>
