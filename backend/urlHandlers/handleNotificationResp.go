@@ -56,7 +56,8 @@ func HandleNotificationResponse(w http.ResponseWriter, r *http.Request) {
 		if notificationResponse.NotificationType == "groupInvatation" {
 			validators.ValidateSetNewGroupMember(notificationResponse.GroupId,
 												 UserID,
-												 notificationResponse.NotificationResponse)
+												 notificationResponse.NotificationResponse,
+												 notificationResponse.NotificationType)
 		}
 
 		if notificationResponse.NotificationType == "event" {
@@ -65,6 +66,13 @@ func HandleNotificationResponse(w http.ResponseWriter, r *http.Request) {
 													  notificationResponse.NotificationId,
 													  UserID,
 													  notificationResponse.NotificationResponse)	
+		}
+
+		if notificationResponse.NotificationType == "groupRequest" {
+			validators.ValidateSetNewGroupMember(notificationResponse.GroupId,
+												 notificationResponse.SenderId,
+												 notificationResponse.NotificationResponse,
+												 notificationResponse.NotificationType)
 		}
 	}
 	writeData, err := json.Marshal(callback)

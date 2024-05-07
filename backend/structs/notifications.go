@@ -6,7 +6,7 @@ type GrInvNotifications struct {
 	GroupTitle           string `json:"message"`
 	RecieverId           string `json:"touser"`
 	NotificationType     string `json:"type"`
-	SenderId             string
+	SenderId             string `json:"fromuserid"`
 	SenderEmail          string
 	NotificationId       string
 	EventId              string `json:"EventId"`

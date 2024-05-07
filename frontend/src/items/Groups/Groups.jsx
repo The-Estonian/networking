@@ -79,7 +79,7 @@ const Groups = () => {
       setInvatationSent(false)
     }, 2000)
   }
-console.log("seleceted",selectedGroup);
+
   return (
     <div className={styles.groupContainer}>
       <NewGroup setGroups={setGroups} /> 

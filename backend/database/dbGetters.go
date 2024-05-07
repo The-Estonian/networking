@@ -516,22 +516,73 @@ func GetGroupEvents(groupId string) []structs.Events {
 	return groupEvents
 }
 
-// this is for finding out if a logged in user
-// is looking at their own profile or someone else's
-// I compare session owner email to /profile/ path
-func GetEmailFromSession(session string) string {
-	fmt.Println("Session original: ", session)
+func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
 	db := sqlite.DbConnection()
-	defer db.Close()
+	var userProfile structs.Profile
 
-	var email string
-	err := db.QueryRow("SELECT users.email FROM session INNER JOIN users ON session.user_fk_users = users.id WHERE session.hash = ?", session).Scan(&email)
+	command := `
+    SELECT u.id, u.email, u.first_name, u.last_name, u.date_of_birth, u.username, u.about_user, u.avatar, up.privacy_fk_users_privacy
+    FROM users u
+    INNER JOIN user_privacy up ON u.id = up.user_fk_users
+    WHERE (up.privacy_fk_users_privacy = 1 AND u.id = ?)
+        OR (u.id = ? AND u.id = ?)
+`
+	err := db.QueryRow(command, targetUserId, currentUserId, targetUserId).Scan(
+		&userProfile.Id,
+		&userProfile.Email,
+		&userProfile.FirstName,
+		&userProfile.LastName,
+		&userProfile.DateOfBirth,
+		&userProfile.Username,
+		&userProfile.AboutUser,
+		&userProfile.Avatar,
+		&userProfile.Privacy)
 	if err != nil {
-		helpers.CheckErr("GetEmailFromSession", err)
-		return ""
+		if err == sql.ErrNoRows {
+			// No user with the given ID was found, or their privacy settings do not allow the current user to view their profile
+			return structs.Profile{Privacy: "-1"}, nil
+		}
+		helpers.CheckErr("GetUserProfileInfo: ", err)
+		return structs.Profile{}, err
+	}
+	defer db.Close()
+	return userProfile, nil
+}
+
+func GetUserProfilePosts(currentUserId, targetUserId string) ([]structs.Posts, error) {
+	db := sqlite.DbConnection()
+	var posts []structs.Posts
+
+	command := `
+    SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
+    FROM posts p
+    INNER JOIN users u ON p.user_fk_users = u.id
+    INNER JOIN user_privacy up ON u.id = up.user_fk_users
+    WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1 AND u.id = ?)
+        OR (u.id = ? AND u.id = ?))
+`
+	rows, err := db.Query(command, targetUserId, currentUserId, targetUserId)
+	if err != nil {
+		helpers.CheckErr("GetUserProfilePosts Query error: ", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post structs.Posts
+		err = rows.Scan(&post.PostID, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date)
+		if err != nil {
+			helpers.CheckErr("GetUserProfilePosts Next error: ", err)
+			continue
+		}
+		posts = append(posts, post)
 	}
 
-	return email
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetUserProfilePosts", err)
+	}
+	defer db.Close()
+	return posts, nil
 }
 
 func GetUserAvatar(userId string) string {
@@ -547,4 +598,53 @@ func GetUserAvatar(userId string) string {
 		return "0"
 	}
 	return avatar
+}
+
+func GetEmailFromSession(session string) string {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var email string
+	err := db.QueryRow("SELECT users.email FROM session INNER JOIN users ON session.user_fk_users = users.id WHERE session.hash = ?", session).Scan(&email)
+	if err != nil {
+		helpers.CheckErr("GetEmailFromSession", err)
+		return ""
+	}
+
+	return email
+}
+
+func GetGroupRequests(currentUser string) []structs.GrInvNotifications {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var groupRequests []structs.GrInvNotifications
+
+	command := `SELECT sender_fk_users, reciever_fk_users, email, guild_title, guildrequests.id, guilds.id FROM guildrequests
+				INNER JOIN guilds ON guildrequests.guildid_fk_guilds = guilds.id
+				INNER JOIN users ON guildrequests.sender_fk_users = users.id
+				WHERE reciever_fk_users = ?`
+
+	rows, err := db.Query(command, currentUser)
+	if err != nil {
+		helpers.CheckErr("GetGroupRequests selecting error: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var notif structs.GrInvNotifications
+
+		err = rows.Scan(&notif.SenderId, &notif.RecieverId, &notif.SenderEmail, &notif.GroupTitle, &notif.NotificationId, &notif.GroupId)
+		if err != nil {
+			helpers.CheckErr("GetGroupRequests Next error: ", err)
+			continue
+		}
+		groupRequests = append(groupRequests, notif)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetGroupRequests", err)
+	}
+	return groupRequests
 }

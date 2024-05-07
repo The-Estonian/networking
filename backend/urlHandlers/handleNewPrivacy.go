@@ -12,9 +12,9 @@ import (
 func HandleNewPrivacy(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("NewPrivacy attempt!")
 
-	err := r.ParseMultipartForm(10 << 20) // 10 MB, why do I need multipart form?
+	err := r.ParseMultipartForm(10 << 20) // 10 MB
 	if err != nil {
-		http.Error(w, "Error parsing form", http.StatusInternalServerError)
+		http.Error(w, "HandleNewPrivacy; Error parsing form ", http.StatusInternalServerError)
 		return
 	}
 

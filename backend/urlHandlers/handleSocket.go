@@ -127,16 +127,21 @@ func handleMessages() {
 				}
 			}
 		case "groupRequest":
-			for client := range clientConnections {
-				if msg.To == clientConnections[client].connOwnerId {
-					clientConnections[client].mu.Lock()
-					err := clientConnections[client].connection.WriteJSON(msg)
-					if err != nil {
-						fmt.Println("Error writing gruopinvatation to client:", err)
+			id := validators.ValidateSetNewGroupRequest(msg.GroupId, msg.FromId, msg.To)
+			msg.NotificationId = id
+
+			if id != "" {
+				for client := range clientConnections {
+					if msg.To == clientConnections[client].connOwnerId {
+						clientConnections[client].mu.Lock()
+						err := clientConnections[client].connection.WriteJSON(msg)
+						if err != nil {
+							fmt.Println("Error writing gruopinvatation to client:", err)
+							clientConnections[client].mu.Unlock()
+							return
+						}
 						clientConnections[client].mu.Unlock()
-						return
 					}
-					clientConnections[client].mu.Unlock()
 				}
 			}
 
