@@ -60,6 +60,11 @@ const ChatUserlist = (props) => {
           onClick={() => props.handleUserClick(each.Id)}
         >
           {each.Email}
+          {onlineUsers.includes(each.Id) ? (
+            <button onClick={props.handleChallenge}>Challenge</button>
+          ) : (
+            ''
+          )}
         </p>
       ))}
     </div>
