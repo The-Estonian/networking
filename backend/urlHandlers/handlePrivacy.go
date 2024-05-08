@@ -40,39 +40,32 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 		// parse form
-		err := r.ParseMultipartForm(10 << 20) // 10 MB
-		fmt.Println("err value", err)
+		err := r.ParseMultipartForm(10 << 20)
 		if err != nil {
 			http.Error(w, "HandlePrivacy; Error parsing form ", http.StatusInternalServerError)
 			return
 		}
 		// Get the userId from the FormData
 		requestedId := r.FormValue("userId")
-		fmt.Println("privacy requestedId: ", requestedId)
-
 		// get session owner userId from session
 		sessionId := validators.ValidateUserSession(cookie.Value)
-		fmt.Println("privacy sessionId: ", sessionId)
 
 		// check if user wants to see own profile
 		if requestedId == sessionId || requestedId == "" {
 			// get logged in user privacy
 			callback["GetPrivacy"] = validators.ValidateUserPrivacyHash(cookie.Value)
-			fmt.Println("GetPrivacy if user wants to see own profile: ", callback["GetPrivacy"])
 			callback["ButtonVisible"] = "1"
 		} else { // requested profile is not the same as session profile
 			// get requestedEmail profile privacy, to see if it is public or private
 			privacyValue := validators.ValidateUserPrivacyId(requestedId)
 			callback["ButtonVisible"] = "2"
-			if privacyValue == "1" { //profile is public
+			if privacyValue == "1" {
 				callback["GetPrivacy"] = "1"
-			} else { // privacy value is "2", private profile
+			} else {
 				callback["GetPrivacy"] = "2"
 			}
-			fmt.Println("GetPrivacy if user wants to see other profile: ", callback["GetPrivacy"])
 		}
 	}
-	fmt.Println("callback: ", callback)
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandlePrivacy", err)
 	w.Write(writeData)
