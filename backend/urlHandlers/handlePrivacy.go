@@ -14,8 +14,8 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 
 	var callback = make(map[string]interface{})
 	cookie, err := r.Cookie("socialNetworkSession")
-
 	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
+
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
 			Value:    "",
@@ -39,14 +39,13 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-
 		// parse form
 		err := r.ParseMultipartForm(10 << 20) // 10 MB
+		fmt.Println("err value", err)
 		if err != nil {
 			http.Error(w, "HandlePrivacy; Error parsing form ", http.StatusInternalServerError)
 			return
 		}
-
 		// Get the userId from the FormData
 		requestedId := r.FormValue("userId")
 		fmt.Println("privacy requestedId: ", requestedId)
@@ -56,7 +55,7 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("privacy sessionId: ", sessionId)
 
 		// check if user wants to see own profile
-		if requestedId == sessionId {
+		if requestedId == sessionId || requestedId == "" {
 			// get logged in user privacy
 			callback["GetPrivacy"] = validators.ValidateUserPrivacyHash(cookie.Value)
 			fmt.Println("GetPrivacy if user wants to see own profile: ", callback["GetPrivacy"])
