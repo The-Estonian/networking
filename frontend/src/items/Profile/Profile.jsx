@@ -46,15 +46,14 @@ const Profile = () => {
         setFollowers(['User4', 'User5']);
         // profile related posts
         setPosts(data.posts);
-        console.log('GetProfile posts: ', data.posts);
         modal(false);
       } else {
         logout();
       }
     });
     // Get privacy settings ITS aBROKEN
-    GetPrivacy(userProfile.Id).then((data) => {
-      console.log('GetPrivacy data: ', userProfile.Id)
+    console.log('userId: ', userId)
+    GetPrivacy(formData).then((data) => {
       setPrivacy(data.GetPrivacy);
       setPrivacyButton(data.ButtonVisible);
     });
