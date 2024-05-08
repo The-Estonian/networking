@@ -28,6 +28,7 @@ const Menu = (props) => {
     ].join(' ') +
     ' ' +
     styles.linkButton;
+    console.log(props.userEmail);
   return (
     <div className={styles.menu}>
       <NavLink
@@ -54,6 +55,7 @@ const Menu = (props) => {
           src={`${backendUrl}/avatar/${props.userAvatar}`}
           alt='Profile picture'
         />
+        <p>{props.userEmail}</p>
       </NavLink>
       <a onClick={props.onLogout} className={styles.linkButton}>
         Logout
