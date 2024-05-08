@@ -40,7 +40,7 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 		// parse form
-		err := r.ParseMultipartForm(10 << 20)
+		err := r.ParseMultipartForm(10 << 20) // 10MB
 		if err != nil {
 			http.Error(w, "HandlePrivacy; Error parsing form ", http.StatusInternalServerError)
 			return
@@ -59,9 +59,9 @@ func HandlePrivacy(w http.ResponseWriter, r *http.Request) {
 			// get requestedEmail profile privacy, to see if it is public or private
 			privacyValue := validators.ValidateUserPrivacyId(requestedId)
 			callback["ButtonVisible"] = "2"
-			if privacyValue == "1" {
+			if privacyValue == "1" { // public
 				callback["GetPrivacy"] = "1"
-			} else {
+			} else { // private
 				callback["GetPrivacy"] = "2"
 			}
 		}
