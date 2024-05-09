@@ -26,6 +26,7 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	privacy := r.FormValue("privacy")
+	groupId := r.FormValue("groupId")
 
 	imageName := ""
 	fileExtension := ""
@@ -91,7 +92,7 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "success"
 		callback["newPost"] = "accepted"
 
-		validators.ValidateSetNewPost(UserID, title, content, imageName+fileExtension, privacy)
+		validators.ValidateSetNewPost(UserID, title, content, imageName+fileExtension, privacy, groupId)
 		callback["SendnewPost"] = validators.ValidateNewPost()
 	}
 

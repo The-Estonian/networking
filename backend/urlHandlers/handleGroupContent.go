@@ -2,6 +2,7 @@ package urlHandlers
 
 import (
 	"backend/helpers"
+	"backend/structs"
 	"backend/validators"
 	"encoding/json"
 	"fmt"
@@ -13,6 +14,7 @@ func HandleGroupContent(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("GroupContent attempt!")
 
 	var callback = make(map[string]interface{})
+	var sendPosts []structs.Posts
 	
 	cookie, err := r.Cookie("socialNetworkSession")
 	userId := validators.ValidateUserSession(cookie.Value)
@@ -44,7 +46,7 @@ func HandleGroupContent(w http.ResponseWriter, r *http.Request) {
 	} else {
 		callback["login"] = "success"
 		callback["isGroupMember"] = false
-		
+
 		GroupId := r.FormValue("GroupId")
 
 		groupMemebers := validators.ValidateGetGroupMembers(GroupId)
@@ -58,6 +60,9 @@ func HandleGroupContent(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
+
+		sendPosts = validators.ValidatePosts(GroupId)
+		callback["posts"] = sendPosts
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandlePosts", err)

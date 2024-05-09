@@ -12,12 +12,19 @@ import NewComment from '../Comments/NewComment.jsx';
 import styles from './Posts.module.css';
 
 
-const Posts = () => {
-  const [allPosts, setAllPosts] = useState([]);
+const Posts = ({ groupId, allPosts, setAllPosts })  => {
   const [displayComments, setDisplayComments] = useState(false);
   const [displayTitle, setDisplayTitle] = useState('');
   const navigate = useNavigate();
   const [modal, logout, , lastMessage] = useOutletContext();
+
+
+  if (setAllPosts == undefined) {
+    const [posts, setPosts] = useState([]);
+    allPosts = posts
+    setAllPosts = setPosts;
+  }
+  
   useEffect(() => {
     showPosts();
   }, [navigate, modal]);
@@ -31,11 +38,14 @@ const Posts = () => {
     }
   }, [lastMessage]);
 
+  const formData = new FormData();
+  formData.append('groupId', groupId);
+
   const showPosts = () => {
     modal(true);
-    GetPosts().then((data) => {
+    GetPosts(formData).then((data) => {
       if (data.login === 'success') {
-        data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
+        setAllPosts(data.posts || [])
         modal(false);
       } else {
         logout();
@@ -66,12 +76,12 @@ const Posts = () => {
       {displayComments ? (
         <NewComment setAllPosts={setAllPosts} />
       ) : (
-        <NewPost setAllPosts={setAllPosts} />
+        <NewPost setAllPosts={setAllPosts} groupId={groupId}/>
       )}
 
       <h1>{displayTitle}</h1>
 
-      {allPosts.map((eachPost, index) => (
+      {allPosts && allPosts.map((eachPost, index) => (
         <div
           className={styles.post}
           key={index}

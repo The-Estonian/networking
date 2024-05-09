@@ -33,8 +33,8 @@ func ValidateRemoveUserSession(hash string) {
 	database.SetRemoveHash(hash)
 }
 
-func ValidateSetNewPost(user, title, postContent, image, privacy string) {
-	database.SetNewPost(user, title, postContent, image, privacy)
+func ValidateSetNewPost(user, title, postContent, image, privacy, groupId string) {
+	database.SetNewPost(user, title, postContent, image, privacy, groupId)
 }
 
 func ValidateSetNewComment(user, commentContent, image, postID string) {

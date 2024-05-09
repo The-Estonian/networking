@@ -1,7 +1,7 @@
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080';
 
-export const GetPosts = async () => {
+export const GetPosts = async (formData) => {
   try {
     const response = await fetch(`${backendUrl}/posts`, {
       method: 'POST',
@@ -9,6 +9,7 @@ export const GetPosts = async () => {
       cache: 'no-cache',
       referrerPolicy: 'no-referrer',
       redirect: 'follow',
+      body: formData,
       credentials: 'include',
     });
     const resp = await response.json();

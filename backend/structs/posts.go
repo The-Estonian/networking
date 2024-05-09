@@ -1,5 +1,7 @@
 package structs
 
+import "database/sql"
+
 type Posts struct {
 	PostID   string
 	Username string
@@ -10,6 +12,7 @@ type Posts struct {
 	Privacy  string
 	Date     string
 	Email    string
+	GroupId  sql.NullString
 }
 
 type NewPost struct {
