@@ -11,6 +11,7 @@ import styles from './Chat.module.css';
 
 const Chat = () => {
   const [textMessage, setTextMessage] = useState('');
+  const [textMessageError, setTextMessageError] = useState('');
   const [allUserMessages, setAllUserMessages] = useState([]);
   const [activeChatPartner, setActiveChatPartner] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
@@ -73,8 +74,11 @@ const Chat = () => {
   }, [activeSession]);
 
   const handleText = (e) => {
-    if (e.target.value.length > 0) {
-      setTextMessage(e.target.value);
+    setTextMessage(e.target.value);
+    if (e.target.value.length < 1) {
+      setTextMessageError("Can't send empty messages!");
+    } else {
+      setTextMessageError('');
     }
   };
 
@@ -170,9 +174,10 @@ const Chat = () => {
               handleText={handleText}
               handleKeyPress={handleKeyPress}
               sendMessage={sendMessage}
+              textMessageError={textMessageError}
             />
           ) : (
-            <p className={styles.chatInput}>Connecting to backend</p>
+            <p className={styles.chatConnection}>Connecting to Chat!</p>
           )}
         </div>
       ) : (

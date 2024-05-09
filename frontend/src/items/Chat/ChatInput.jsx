@@ -9,10 +9,15 @@ const ChatInput = (props) => {
         onChange={props.handleText}
         className={styles.chatInput}
         name='textMessage'
+        placeholder={props.textMessageError}
         id=''
         onKeyDown={props.handleKeyPress}
       />
-      <button type='submit' onClick={props.sendMessage}>
+      <button
+        type='submit'
+        onClick={props.sendMessage}
+        disabled={props.textMessage.length < 1 ? true : false}
+      >
         Send
       </button>
     </div>
