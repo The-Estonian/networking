@@ -73,10 +73,12 @@ func HandleRegistration(w http.ResponseWriter, r *http.Request) {
 			callback["newUser"] = "created"
 		} else {
 			validators.ValidateSetToUsers(email, password, firstName, lastName, date, "defaultAvatar.jpg", username, aboutUser)
-			// set user default privacy (public), use standardize name function to get database email.
-			validators.ValidateSetUserPrivacy(database.GetUserIdIfEmailExists(helpers.StandardizeName(email)), "1")
 			callback["newUser"] = "created"
 		}
+		// set user default privacy (public), use standardize name function to get database email.
+		// don't move this plz	-Oliver
+		fmt.Println("email reg: ", email)
+		validators.ValidateSetUserPrivacy(database.GetUserIdIfEmailExists(helpers.StandardizeName(email)), "1")
 	}
 	writeData, err := json.Marshal(callback)
 	w.Write(writeData)

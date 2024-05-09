@@ -50,7 +50,6 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 
 		// Get the userId from the FormData
 		requestedId := r.FormValue("userId")
-		fmt.Println("requestedId: ", requestedId)
 		// get session owner userId from session
 		sessionId := validators.ValidateUserSession(cookie.Value)
 
@@ -61,7 +60,6 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		callback["profile"] = userProfile
-		fmt.Println("profile info: ", userProfile)
 
 		userProfilePosts, err := validators.ValidateUserProfilePosts(sessionId, requestedId)
 		if err != nil {
@@ -69,7 +67,6 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		callback["posts"] = userProfilePosts
-		fmt.Println("profile posts: ", userProfilePosts)
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandleProfile", err)
