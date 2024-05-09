@@ -6,7 +6,7 @@ import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewPost.module.css';
 
-const NewPost = ({ setAllPosts }) => {
+const NewPost = ({ setAllPosts, groupId }) => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
@@ -55,8 +55,6 @@ const NewPost = ({ setAllPosts }) => {
       return;
     }
 
-    console.log('Sending new post');
-
     const fileInput = newPostPicRef.current;
     const file = fileInput?.files[0];
     if (file) {
@@ -66,11 +64,13 @@ const NewPost = ({ setAllPosts }) => {
         return;
       }
     }
+
     const formData = new FormData();
     formData.append('title', newPostTitle);
     formData.append('content', newPostContent);
     formData.append('privacy', newPostPrivacy);
     formData.append('picture', file);
+    formData.append('groupId', groupId);
 
     SendNewPost(formData).then((data) => {
       sendJsonMessage({

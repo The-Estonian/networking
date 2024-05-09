@@ -135,13 +135,17 @@ func GetProfilePosts(userId string) []structs.ProfilePosts {
 	return profilePosts
 }
 
-func GetAllPosts() []structs.Posts {
+func GetAllPosts(groupId string) []structs.Posts {
 	db := sqlite.DbConnection()
 	defer db.Close()
 
 	var allPosts []structs.Posts
 
-	command := "SELECT posts.id, users.username, users.avatar, posts.post_Title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date, users.email FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC"
+	if groupId == "undefined" {
+		groupId = "NULL"
+	}
+
+	command := "SELECT posts.id, users.username, users.avatar, posts.post_Title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date, users.email, posts.guildid_fk_guilds FROM posts INNER JOIN users ON posts.user_fk_users == users.id where posts.guildid_fk_guilds IS " + groupId + " ORDER BY posts.date DESC"
 	rows, err := db.Query(command)
 	if err != nil {
 		helpers.CheckErr("getAllPosts", err)
@@ -151,7 +155,7 @@ func GetAllPosts() []structs.Posts {
 
 	for rows.Next() {
 		var post structs.Posts
-		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date, &post.Email)
+		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date, &post.Email, &post.GroupId)
 		if err != nil {
 			helpers.CheckErr("getAllPosts", err)
 			continue
