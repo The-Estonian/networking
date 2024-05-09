@@ -28,7 +28,6 @@ const Menu = (props) => {
     ].join(' ') +
     ' ' +
     styles.linkButton;
-    console.log(props.userEmail);
   return (
     <div className={styles.menu}>
       <NavLink
