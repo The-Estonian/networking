@@ -132,6 +132,7 @@ const Container = () => {
           currSession={handleActiveSession}
           setUserId={setUserId}
           setUserAvatar={setUserAvatar}
+          setUserEmail={setUserEmail}
         />
       )}
       <Outlet

@@ -44,14 +44,14 @@
   left: 0;
 }
 
-.menu:hover .linkButton:nth-child(6) p {
+.menu:hover .userName {
   padding: 0 0.5rem;
   margin: auto;
-  visibility: visible;
+  display: flex;
 }
 
-.linkButton:nth-child(6) p {
-  visibility: hidden;
+.linkButton:nth-child(6) .userName {
+  display: none;
   color: black;
 }
 
@@ -65,7 +65,7 @@
 
 .linkButton:nth-child(6) img {
   position: relative;
-  left: 74%;
+  /* left: 74%; */
   transition: 1s;
   height: 4.5rem;
   width: auto;
