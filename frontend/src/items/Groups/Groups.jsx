@@ -5,6 +5,8 @@ import { GetAllGroups } from '../../connections/groupsConnection.js';
 import { GetGroupContent } from '../../connections/groupContentConnection.js';
 import { GetUserList } from '../../connections/userListConnection.js';
 
+import Posts from '../Posts/Posts.jsx';
+
 import NewGroup from './NewGroup.jsx';
 import NewEvent from './NewEvent.jsx';
 
@@ -21,6 +23,9 @@ const Groups = () => {
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
   const [invatationSent, setInvatationSent] = useState(false);
   const [isGroupMember, setIsGroupMember] = useState(false);
+  const [refreshPosts, setRefreshPosts] = useState(false);
+  const [allPosts, setAllPosts] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,19 +46,6 @@ const Groups = () => {
     });
   }, [navigate, modal]);
 
-  const Groupinfo = (group) => {
-    setSelectedGroup(group);
-
-    const formData = new FormData()
-    formData.append('GroupId', group.Id)
-
-    GetGroupContent(formData).then((data => {
-      setGroupMembers(data.groupMembers)
-      setEvents(data.events)
-      data.isGroupMember == false ? setIsGroupMember(false) : setIsGroupMember(true)
-    }))
-  }
-
   const SendGroupRequest = (groupCreator, title, groupId) => {
     sendJsonMessage({
       type: 'groupRequest',
@@ -64,7 +56,7 @@ const Groups = () => {
       SenderEmail: currentUserEmail
     });
   }
-
+  
   const SendGroupInvite = (reciever, title, groupId) => {
     sendJsonMessage({
       type: 'groupInvatation',
@@ -74,14 +66,30 @@ const Groups = () => {
       touser: reciever,
     });
     setInvatationSent(true)
-
     setTimeout(() => {
       setInvatationSent(false)
     }, 2000)
   }
 
+  const Groupinfo = (group) => {
+    setSelectedGroup(group);
+  
+    const formData = new FormData()
+    formData.append('GroupId', group.Id)
+  
+    GetGroupContent(formData).then((data => {
+      setGroupMembers(data.groupMembers)
+      setEvents(data.events)
+      data.isGroupMember == false ? setIsGroupMember(false) : setIsGroupMember(true)
+      data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
+    }))
+    setRefreshPosts(!refreshPosts);
+  }
+
+
   return (
     <div className={styles.groupContainer}>
+      
       <NewGroup setGroups={setGroups} /> 
       {isGroupMember && <NewEvent groupId={selectedGroup && selectedGroup.Id} currentUser={currentUser} groupTitle={selectedGroup && selectedGroup.Title} />}
 
@@ -102,12 +110,15 @@ const Groups = () => {
         ))}
         <h3>Joined Groups</h3>
       </div>
+
       {selectedGroup && (
         <div className={styles.groupInfo}>
           <h1>{selectedGroup.Title}</h1>
           <h2>Description: {selectedGroup.Description}</h2>
           <h3>Created by: {selectedGroup.Creator}</h3>
           <h4>Group Members:</h4>
+
+         
 
           {groupMembers && groupMembers.map((member => (
             <p key={member.Id}>{member.Email}</p>
@@ -128,7 +139,6 @@ const Groups = () => {
             </div>
           )))}
 
-        
           {isGroupMember &&  <select className={styles.userDopDownMenu} value='' onChange={(e) => SendGroupInvite(e.target.value, selectedGroup.Title, selectedGroup.Id)}>
             <option value="" disabled>Invite user</option>
               {notGroupMembers && notGroupMembers.map((user) => (
@@ -139,6 +149,7 @@ const Groups = () => {
           {invatationSent && <label>Group invitation sent!</label>}
           
           {!isGroupMember && <button onClick={() => SendGroupRequest(selectedGroup.CreatorId ,selectedGroup.Title, selectedGroup.Id)} className={styles.inviteButton}>Request to join</button>}
+          {isGroupMember && <Posts groupId={selectedGroup.Id} allPosts={allPosts} setAllPosts={setAllPosts}/>}
         </div>
       )}
     </div>
