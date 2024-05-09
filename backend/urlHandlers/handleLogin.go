@@ -42,7 +42,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "success"
 		callback["userid"] = userId
 		callback["useravatar"] = validators.ValidateUserAvatar(userId)
-		callback["useremail"] = validators.ValidateEmailFromSession(userCookie)
+		callback["useremail"] = validators.ValidateUserEmailFromId(userId)
 	} else {
 		callback["login"] = "fail"
 		callback["error"] = userCookie

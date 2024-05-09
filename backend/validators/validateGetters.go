@@ -141,6 +141,10 @@ func ValidateUserAvatar(userId string) string {
 	return database.GetUserAvatar(userId)
 }
 
+func ValidateUserEmailFromId(userId string) string {
+	return database.GetUserEmailWithId(userId)
+}
+
 func ValidateEmailFromSession(session string) string {
 	// get email by sessionID
 	email := database.GetEmailFromSession(session)
