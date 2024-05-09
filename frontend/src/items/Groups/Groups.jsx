@@ -33,15 +33,15 @@ const Groups = () => {
     GetAllGroups().then((data) => {
       if (data.login === 'success') {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
-        setCurrentUserEmail(data.currentUserEmail)
+        setCurrentUserEmail(data.currentUserEmail);
         //data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
         GetUserList().then((data) => {
-          setCurrentUser(data.activeUser)
-          setNotGroupMembers(data.userList)
-        })
+          setCurrentUser(data.activeUser);
+          setNotGroupMembers(data.userList);
+        });
         modal(false);
       } else {
-        logout()
+        logout();
       }
     });
   }, [navigate, modal]);
@@ -53,10 +53,10 @@ const Groups = () => {
       message: title,
       GroupId: groupId,
       touser: groupCreator,
-      SenderEmail: currentUserEmail
+      SenderEmail: currentUserEmail,
     });
-  }
-  
+  };
+
   const SendGroupInvite = (reciever, title, groupId) => {
     sendJsonMessage({
       type: 'groupInvatation',
@@ -65,33 +65,39 @@ const Groups = () => {
       GroupId: groupId,
       touser: reciever,
     });
-    setInvatationSent(true)
+    setInvatationSent(true);
     setTimeout(() => {
-      setInvatationSent(false)
-    }, 2000)
-  }
+      setInvatationSent(false);
+    }, 2000);
+  };
 
   const Groupinfo = (group) => {
     setSelectedGroup(group);
-  
-    const formData = new FormData()
-    formData.append('GroupId', group.Id)
-  
-    GetGroupContent(formData).then((data => {
-      setGroupMembers(data.groupMembers)
-      setEvents(data.events)
-      data.isGroupMember == false ? setIsGroupMember(false) : setIsGroupMember(true)
-      data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
-    }))
-    setRefreshPosts(!refreshPosts);
-  }
 
+    const formData = new FormData();
+    formData.append('GroupId', group.Id);
+
+    GetGroupContent(formData).then((data) => {
+      setGroupMembers(data.groupMembers);
+      setEvents(data.events);
+      data.isGroupMember == false
+        ? setIsGroupMember(false)
+        : setIsGroupMember(true);
+      data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
+    });
+    setRefreshPosts(!refreshPosts);
+  };
 
   return (
     <div className={styles.groupContainer}>
-      
-      <NewGroup setGroups={setGroups} /> 
-      {isGroupMember && <NewEvent groupId={selectedGroup && selectedGroup.Id} currentUser={currentUser} groupTitle={selectedGroup && selectedGroup.Title} />}
+      <NewGroup setGroups={setGroups} />
+      {isGroupMember && (
+        <NewEvent
+          groupId={selectedGroup && selectedGroup.Id}
+          currentUser={currentUser}
+          groupTitle={selectedGroup && selectedGroup.Title}
+        />
+      )}
 
       <div className={styles.groupList}>
         <h3>All Groups</h3>
@@ -118,38 +124,73 @@ const Groups = () => {
           <h3>Created by: {selectedGroup.Creator}</h3>
           <h4>Group Members:</h4>
 
-         
-
-          {groupMembers && groupMembers.map((member => (
-            <p key={member.Id}>{member.Email}</p>
-          )))}
+          {groupMembers &&
+            groupMembers.map((member) => <p key={member.Id}>{member.Email}</p>)}
 
           <h4>Group events:</h4>
-          {events && events.map((event => (
-            <div key={event.EventId} className={styles.eventInfo}>
-              <p>{event.EventTitle}</p>
-              <p>{event.EventDescription}</p>
-              <p>{event.CreatorEmail}</p>
-              <p>{event.EventTime}</p>
+          {events &&
+            events.map((event) => (
+              <div key={event.EventId} className={styles.eventInfo}>
+                <p>{event.EventTitle}</p>
+                <p>{event.EventDescription}</p>
+                <p>{event.CreatorEmail}</p>
+                <p>{event.EventTime}</p>
 
-                {event.Participants.map((participant => (
-                <p key={participant.ParticipantId}>{participant.ParticipantEmail}</p>
-                )))}
+                {event.Participants.map((participant) => (
+                  <p key={participant.ParticipantId}>
+                    {participant.ParticipantEmail}
+                  </p>
+                ))}
+              </div>
+            ))}
 
-            </div>
-          )))}
-
-          {isGroupMember &&  <select className={styles.userDopDownMenu} value='' onChange={(e) => SendGroupInvite(e.target.value, selectedGroup.Title, selectedGroup.Id)}>
-            <option value="" disabled>Invite user</option>
-              {notGroupMembers && notGroupMembers.map((user) => (
-              <option key={user.Id} value={user.Id}>{user.Email}</option>
-              ))}
-          </select>}
+          {isGroupMember && (
+            <select
+              className={styles.userDopDownMenu}
+              value=''
+              onChange={(e) =>
+                SendGroupInvite(
+                  e.target.value,
+                  selectedGroup.Title,
+                  selectedGroup.Id
+                )
+              }
+            >
+              <option value='' disabled>
+                Invite user
+              </option>
+              {notGroupMembers &&
+                notGroupMembers.map((user) => (
+                  <option key={user.Id} value={user.Id}>
+                    {user.Email}
+                  </option>
+                ))}
+            </select>
+          )}
 
           {invatationSent && <label>Group invitation sent!</label>}
-          
-          {!isGroupMember && <button onClick={() => SendGroupRequest(selectedGroup.CreatorId ,selectedGroup.Title, selectedGroup.Id)} className={styles.inviteButton}>Request to join</button>}
-          {isGroupMember && <Posts groupId={selectedGroup.Id} allPosts={allPosts} setAllPosts={setAllPosts}/>}
+
+          {!isGroupMember && (
+            <button
+              onClick={() =>
+                SendGroupRequest(
+                  selectedGroup.CreatorId,
+                  selectedGroup.Title,
+                  selectedGroup.Id
+                )
+              }
+              className={styles.inviteButton}
+            >
+              Request to join
+            </button>
+          )}
+          {isGroupMember && (
+            <Posts
+              groupId={selectedGroup.Id}
+              allPosts={allPosts}
+              setAllPosts={setAllPosts}
+            />
+          )}
         </div>
       )}
     </div>
