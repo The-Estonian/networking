@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useLocation } from 'react-router-dom';
 
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
 
 import { GetProfile } from '../../connections/profileConnection.js';
 import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
-import { GetPrivacy } from '../../connections/privacyConnection.js';
 
 import styles from './Profile.module.css';
 
@@ -19,23 +18,14 @@ const Profile = () => {
   const [privacyButton, setPrivacyButton] = useState('');
   const navigate = useNavigate();
   const [modal, logout] = useOutletContext();
-  // const userId ='1'
-  const { id } = useParams();
-  const [userId, setUserId] = useState(id || ''); // replace '' with the id of the logged-in user
-
-  useEffect(() => {
-    if (id === '' || id) {
-      setUserId(id);
-    }
-  }, [id]);
-
+  const location = useLocation()
+  const currentUser = location.pathname.substring(9);
 
   useEffect(() => {
     modal(true);
 
-    // UserId FormData
     const formData = new FormData();
-    formData.append('userId', userId);
+    formData.append('userId', currentUser);
 
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
@@ -46,18 +36,18 @@ const Profile = () => {
         setFollowers(['User4', 'User5']);
         // profile related posts
         setPosts(data.posts);
-        modal(false);
+        if (currentUser.length === 0) {
+          setPrivacy(data.profile.Privacy);
+          setPrivacyButton("1")
+        } else {
+          setPrivacyButton("2")
+        }
+          modal(false);
       } else {
         logout();
       }
     });
-    // Get privacy settings ITS aBROKEN
-    console.log('userId: ', userId)
-    GetPrivacy(formData).then((data) => {
-      setPrivacy(data.GetPrivacy);
-      setPrivacyButton(data.ButtonVisible);
-    });
-  }, [navigate, modal]);
+  }, [navigate, modal, currentUser]);
   // Privacy settings change
   const handlePrivacyChange = () => {
     let newPrivacy = privacy === '1' ? '2' : '1';

@@ -65,25 +65,45 @@ type Client struct {
 	lastActive  time.Time
 }
 
-// func periodicUserPresenceCheck() {
-// 	for {
-// 		time.Sleep(time.Minute)
-// 		// Iterate through clients and update their online status based on lastActive
-// 		currentTimestamp := time.Now()
-// 		if len(clientConnections) > 0 {
+func periodicUserPresenceCheck() {
+	for {
+		time.Sleep(time.Minute)
+		// Iterate through clients and update their online status based on lastActive
+		currentTimestamp := time.Now()
+		if len(clientConnections) > 0 {
 
-// 		}
-// 		for client := range clientConnections {
-// 			clientConnections[client].mu.Lock()
-// 			if currentTimestamp.Sub(clientConnections[client].lastActive) > 3*time.Minute {
-// 				clientConnections[client].connection.Close()
-// 				delete(clientConnections, client)
-// 			} else {
-// 				clientConnections[client].mu.Unlock()
-// 			}
-// 		}
-// 	}
-// }
+		}
+		for client := range clientConnections {
+			clientConnections[client].mu.Lock()
+			if currentTimestamp.Sub(clientConnections[client].lastActive) > 3*time.Minute {
+				clientConnections[client].connection.Close()
+				delete(clientConnections, client)
+
+				users := []string{}
+				for client := range clientConnections {
+					users = append(users, clientConnections[client].connOwnerId)
+				}
+				allUsers := SocketMessage{
+					Type:             "onlineStatus",
+					Status:           "offline",
+					ConnectedClients: users,
+				}
+				for client := range clientConnections {
+					clientConnections[client].mu.Lock()
+					err := clientConnections[client].connection.WriteJSON(allUsers)
+					if err != nil {
+						fmt.Println("Error broadcasting online status to client:", err)
+						clientConnections[client].mu.Unlock()
+						return
+					}
+					clientConnections[client].mu.Unlock()
+				}
+			} else {
+				clientConnections[client].mu.Unlock()
+			}
+		}
+	}
+}
 
 func handleMessages() {
 	for {
