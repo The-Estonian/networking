@@ -1,12 +1,13 @@
 .menu {
   position: absolute;
-  top: 5rem;
+  top: 0rem;
   right: 1rem;
   margin: 1rem;
   margin-left: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 6rem;
 }
 
 .linkButton:nth-child(6) {
@@ -15,7 +16,7 @@
   background: none;
   color: white;
   width: 4.5rem;
-  top: -5.2rem;
+  top: 1rem;
   height: 4.5rem;
   right: 5rem;
   margin: 0;
@@ -23,9 +24,49 @@
   overflow: hidden;
   padding: 0;
   border: 2px solid black;
+  opacity: 1;
+  transition: 1s;
+}
+
+.menu:hover .linkButton:nth-child(6) {
+  transition: 1s;
+  border-radius: 4px;
+  width: 15rem;
+  height: 3rem;
+  top: 2.9rem;
+  right: 0.1rem;
+}
+
+.menu:hover .linkButton:nth-child(6) img {
+  width: auto;
+  height: 3rem;
+  margin: auto;
+  left: 0;
+}
+
+.menu:hover .userName {
+  padding: 0 0.5rem;
+  margin: auto;
+  display: flex;
+}
+
+.linkButton:nth-child(6) .userName {
+  display: none;
+  color: black;
+}
+
+.menu:hover .linkButton {
+  opacity: 1;
+}
+
+.menu:hover .linkButton p {
+  display: flex;
 }
 
 .linkButton:nth-child(6) img {
+  position: relative;
+  /* left: 74%; */
+  transition: 1s;
   height: 4.5rem;
   width: auto;
 }
@@ -46,6 +87,13 @@
   border: 2px solid transparent;
   font-size: inherit;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  opacity: 0;
+  transition: 1s;
+}
+
+.linkButton:hover {
+  transition: 0.2s;
+  border: 2px solid white;
 }
 
 .active {
@@ -64,16 +112,18 @@
 
 @keyframes notification-glow {
   0% {
-    box-shadow: rgb(85, 91, 255) 0px 0px 0px 3px,
-      rgb(31, 193, 27) 0px 0px 0px 6px, rgb(255, 217, 19) 0px 0px 0px 9px,
-      rgb(255, 156, 85) 0px 0px 0px 12px, rgb(255, 85, 85) 0px 0px 0px 15px;
+    background: white;
+    color: black;
+    opacity: 1;
   }
   50% {
-    box-shadow: none;
+    background: black;
+    color: white;
+    opacity: 0;
   }
   100% {
-    box-shadow: rgb(85, 91, 255) 0px 0px 0px 3px,
-      rgb(31, 193, 27) 0px 0px 0px 6px, rgb(255, 217, 19) 0px 0px 0px 9px,
-      rgb(255, 156, 85) 0px 0px 0px 12px, rgb(255, 85, 85) 0px 0px 0px 15px;
+    background: white;
+    color: black;
+    opacity: 1;
   }
 }

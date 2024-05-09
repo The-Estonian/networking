@@ -618,6 +618,20 @@ func GetEmailFromSession(session string) string {
 	return email
 }
 
+func GetUserEmailWithId(userId string) string {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var scanId string
+	err := db.QueryRow("SELECT email FROM users WHERE id = ?", userId).Scan(&scanId)
+	if err != nil {
+		helpers.CheckErr("GetEmailFromSession", err)
+		return ""
+	}
+
+	return scanId
+}
+
 func GetGroupRequests(currentUser string) []structs.GrInvNotifications {
 	db := sqlite.DbConnection()
 	defer db.Close()

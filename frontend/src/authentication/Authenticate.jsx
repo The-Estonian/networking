@@ -154,6 +154,7 @@ const Authenticate = (props) => {
           props.currSession('true');
           props.setUserId(data['userid']);
           props.setUserAvatar(data['useravatar']);
+          props.setUserEmail(data['useremail']);
         } else {
           setInputError(true);
           setInputErrorText(data.error);

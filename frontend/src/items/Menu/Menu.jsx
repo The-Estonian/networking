@@ -54,6 +54,7 @@ const Menu = (props) => {
           src={`${backendUrl}/avatar/${props.userAvatar}`}
           alt='Profile picture'
         />
+        <p className={styles.userName}>{props.userEmail}</p>
       </NavLink>
       <a onClick={props.onLogout} className={styles.linkButton}>
         Logout

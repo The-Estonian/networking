@@ -25,6 +25,7 @@ const Container = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationText, setNotificationText] = useState('');
   const [userAvatar, setUserAvatar] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [userId, setUserId] = useState('');
   const navigate = useNavigate();
 
@@ -47,6 +48,7 @@ const Container = () => {
         } else if (data['login'] == 'success') {
           setUserId(data['userid']);
           setUserAvatar(data['useravatar']);
+          setUserEmail(data['useremail']);
           setActiveSession('true');
           startWebSocketConnection();
         }
@@ -122,6 +124,7 @@ const Container = () => {
           handleGlow={handleGlowTrigger}
           onLogout={handleLogout}
           userAvatar={userAvatar}
+          userEmail={userEmail}
         />
       ) : (
         <Authenticate
@@ -129,6 +132,7 @@ const Container = () => {
           currSession={handleActiveSession}
           setUserId={setUserId}
           setUserAvatar={setUserAvatar}
+          setUserEmail={setUserEmail}
         />
       )}
       <Outlet
