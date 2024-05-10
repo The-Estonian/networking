@@ -5,10 +5,11 @@ import { GetAllGroups } from '../../connections/groupsConnection.js';
 import { GetGroupContent } from '../../connections/groupContentConnection.js';
 import { GetUserList } from '../../connections/userListConnection.js';
 
-import Posts from '../Posts/Posts.jsx';
-
 import NewGroup from './NewGroup.jsx';
 import NewEvent from './NewEvent.jsx';
+import GroupChat from './GroupChat.jsx';
+import GroupPosts from './GroupPosts.jsx';
+import NewGroupPost from './NewGroupPost.jsx';
 
 import styles from './Groups.module.css';
 
@@ -24,7 +25,8 @@ const Groups = () => {
   const [invatationSent, setInvatationSent] = useState(false);
   const [isGroupMember, setIsGroupMember] = useState(false);
   const [refreshPosts, setRefreshPosts] = useState(false);
-  const [allPosts, setAllPosts] = useState([]);
+  const [newGroupPostOpen, setNewGroupPostOpen] = useState(false);
+  const [groupPosts, setGroupPosts] = useState([]);
 
   const navigate = useNavigate();
 
@@ -34,7 +36,10 @@ const Groups = () => {
       if (data.login === 'success') {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
         setCurrentUserEmail(data.currentUserEmail);
-        //data.groups == null ? setSelectedGroup('') : setSelectedGroup(data.groups[0])
+        if (data?.groups?.length > 0) {
+          setSelectedGroup(data.groups[0]);
+          Groupinfo(data.groups[0]);
+        }
         GetUserList().then((data) => {
           setCurrentUser(data.activeUser);
           setNotGroupMembers(data.userList);
@@ -83,9 +88,14 @@ const Groups = () => {
       data.isGroupMember == false
         ? setIsGroupMember(false)
         : setIsGroupMember(true);
-      data.posts == null ? setAllPosts([]) : setAllPosts(data.posts);
+      data.posts == null ? setGroupPosts([]) : setGroupPosts(data.posts);
     });
     setRefreshPosts(!refreshPosts);
+  };
+
+  const newGroupPostHandler = () => {
+    setNewGroupPostOpen(!newGroupPostOpen);
+    Groupinfo(selectedGroup);
   };
 
   return (
@@ -98,52 +108,61 @@ const Groups = () => {
           groupTitle={selectedGroup && selectedGroup.Title}
         />
       )}
-
-      <div className={styles.groupList}>
-        <h3>All Groups</h3>
-        {groups.map((group) => (
-          <p
-            className={
-              group === selectedGroup
-                ? styles.groupNameSelected
-                : styles.groupName
-            }
-            key={group.Id}
-            onClick={() => Groupinfo(group)}
-          >
-            {group.Title}
-          </p>
-        ))}
-        <h3>Joined Groups</h3>
-      </div>
-
-      {selectedGroup && (
+      {newGroupPostOpen ? (
+        <NewGroupPost
+          newGroupPostHandler={newGroupPostHandler}
+          selectedGroup={selectedGroup}
+          setGroupPosts={setGroupPosts}
+        />
+      ) : (
+        <div className={styles.groupList}>
+          <h3>All Groups</h3>
+          {groups.map((group) => (
+            <p
+              className={
+                group === selectedGroup
+                  ? styles.groupNameSelected
+                  : styles.groupName
+              }
+              key={group.Id}
+              onClick={() => Groupinfo(group)}
+            >
+              {group.Title}
+            </p>
+          ))}
+          <h3>Joined Groups</h3>
+        </div>
+      )}
+      {selectedGroup && !newGroupPostOpen && (
         <div className={styles.groupInfo}>
-          <h1>{selectedGroup.Title}</h1>
-          <h2>Description: {selectedGroup.Description}</h2>
-          <h3>Created by: {selectedGroup.Creator}</h3>
-          <h4>Group Members:</h4>
+          <div className={styles.currentGroup}>
+            <h1>{selectedGroup.Title}</h1>
+            <h2>Description: {selectedGroup.Description}</h2>
+            <h3>Created by: {selectedGroup.Creator}</h3>
+            <h4>Group Members:</h4>
 
-          {groupMembers &&
-            groupMembers.map((member) => <p key={member.Id}>{member.Email}</p>)}
+            {groupMembers &&
+              groupMembers.map((member) => (
+                <p key={member.Id}>{member.Email}</p>
+              ))}
 
-          <h4>Group events:</h4>
-          {events &&
-            events.map((event) => (
-              <div key={event.EventId} className={styles.eventInfo}>
-                <p>{event.EventTitle}</p>
-                <p>{event.EventDescription}</p>
-                <p>{event.CreatorEmail}</p>
-                <p>{event.EventTime}</p>
+            <h4>Group events:</h4>
+            {events &&
+              events.map((event) => (
+                <div key={event.EventId} className={styles.eventInfo}>
+                  <p>{event.EventTitle}</p>
+                  <p>{event.EventDescription}</p>
+                  <p>{event.CreatorEmail}</p>
+                  <p>{event.EventTime}</p>
 
-                {event.Participants.map((participant) => (
-                  <p key={participant.ParticipantId}>
-                    {participant.ParticipantEmail}
-                  </p>
-                ))}
-              </div>
-            ))}
-
+                  {event.Participants.map((participant) => (
+                    <p key={participant.ParticipantId}>
+                      {participant.ParticipantEmail}
+                    </p>
+                  ))}
+                </div>
+              ))}
+          </div>
           {isGroupMember && (
             <select
               className={styles.userDopDownMenu}
@@ -184,13 +203,16 @@ const Groups = () => {
               Request to join
             </button>
           )}
-          {isGroupMember && (
-            <Posts
-              groupId={selectedGroup.Id}
-              allPosts={allPosts}
-              setAllPosts={setAllPosts}
-            />
-          )}
+          <div className={styles.postsAndChat}>
+            {isGroupMember && (
+              <GroupPosts
+                groupPosts={groupPosts}
+                newGroupPostHandler={newGroupPostHandler}
+                selectedGroup={selectedGroup}
+              />
+            )}
+            {isGroupMember && <GroupChat />}
+          </div>
         </div>
       )}
     </div>

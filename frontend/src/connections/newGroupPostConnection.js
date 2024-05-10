@@ -1,9 +1,9 @@
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080';
 
-export const SendNewComment = async (formData) => {
+export const SendNewGroupPost = async (formData) => {
   try {
-    const response = await fetch(`${backendUrl}/newcomment`, {
+    const response = await fetch(`${backendUrl}/newgrouppost`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -15,7 +15,7 @@ export const SendNewComment = async (formData) => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('SendNewComment error');
+    console.log('SendNewPost error');
     console.log(error);
   }
 };

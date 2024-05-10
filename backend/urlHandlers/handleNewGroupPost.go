@@ -14,18 +14,18 @@ import (
 	"github.com/google/uuid"
 )
 
-func HandleNewPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("NewPost attempt!")
+func HandleNewGroupPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("HandleNewGroupPost attempt!")
 
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		http.Error(w, "Avatar file too big", http.StatusInternalServerError)
+		http.Error(w, "Picture file too big", http.StatusInternalServerError)
 		return
 	}
 
 	title := r.FormValue("title")
 	content := r.FormValue("content")
-	privacy := r.FormValue("privacy")
+	group := r.FormValue("group")
 
 	imageName := ""
 	fileExtension := ""
@@ -89,10 +89,7 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		callback["newPost"] = "accepted"
-
-		validators.ValidateSetNewPost(UserID, title, content, imageName+fileExtension, privacy)
-		callback["SendnewPost"] = validators.ValidateNewPost()
+		validators.ValidateSetNewGroupPost(UserID, title, content, group, imageName+fileExtension)
 	}
 
 	writeData, err := json.Marshal(callback)

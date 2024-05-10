@@ -21,5 +21,8 @@ func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/notificationresponse", HandleNotificationResponse)
 	r.HandleFunc("/notifications", HandleNotifications)
 	r.HandleFunc("/groupcontent", HandleGroupContent)
+	r.HandleFunc("/newgrouppost", HandleNewGroupPost)
+	r.HandleFunc("/grouppostcomments", HandleGroupPostComments)
+	r.HandleFunc("/newgroupcomment", HandleGetGroupPostComments)
 	r.Handle("/avatar/", http.StripPrefix("/avatar/", http.FileServer(http.Dir("./database/images"))))
 }
