@@ -75,7 +75,8 @@ func periodicUserPresenceCheck() {
 		}
 		for client := range clientConnections {
 			clientConnections[client].mu.Lock()
-			if currentTimestamp.Sub(clientConnections[client].lastActive) > 3*time.Minute {
+			if currentTimestamp.Sub(clientConnections[client].lastActive) > 60*time.Minute {
+				fmt.Println("TIMEOUT!")
 				clientConnections[client].connection.Close()
 				delete(clientConnections, client)
 
@@ -307,6 +308,10 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error in receiving message:", err)
 			client.mu.Lock()
 			delete(clientConnections, userId)
+			broadcast <- SocketMessage{
+				Type:   "onlineStatus",
+				Status: "offline",
+			}
 			client.mu.Unlock()
 			return
 		}

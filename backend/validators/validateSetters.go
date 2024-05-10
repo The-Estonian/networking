@@ -33,13 +33,22 @@ func ValidateRemoveUserSession(hash string) {
 	database.SetRemoveHash(hash)
 }
 
-func ValidateSetNewPost(user, title, postContent, image, privacy, groupId string) {
-	database.SetNewPost(user, title, postContent, image, privacy, groupId)
+func ValidateSetNewPost(user, title, postContent, image, privacy string) {
+	database.SetNewPost(user, title, postContent, image, privacy)
+}
+
+func ValidateSetNewGroupPost(user, title, postContent, group, image string) {
+	database.SetNewGroupPost(user, title, postContent, group, image)
 }
 
 func ValidateSetNewComment(user, commentContent, image, postID string) {
 	database.SetNewComment(user, commentContent, image, postID)
 }
+
+func ValidateSetNewGroupComment(user, commentContent, image, postID string) {
+	database.SetNewGroupComment(user, commentContent, image, postID)
+}
+
 func ValidateSetNewMessage(messageSender, message, messageReceiver string) {
 	database.SetNewMessage(messageSender, message, messageReceiver)
 }
@@ -52,7 +61,7 @@ func ValidateSetNewGroup(user, title, description string) {
 	database.SetNewGroup(user, title, description)
 }
 
-func ValidateSetNewGroupNotification(messageSender, groupId, messageReceiver string) (string, string){
+func ValidateSetNewGroupNotification(messageSender, groupId, messageReceiver string) (string, string) {
 	return database.SetNewGroupNotification(messageSender, groupId, messageReceiver)
 }
 
@@ -60,11 +69,11 @@ func ValidateSetNewGroupMember(groupId, userId, userResponse, notfType string) {
 	database.SetNewGroupMember(groupId, userId, userResponse, notfType)
 }
 
-func ValidateSetNewEvent(groupId, eventCreatorId, title, description, eventTime, participation string) (string, string){
+func ValidateSetNewEvent(groupId, eventCreatorId, title, description, eventTime, participation string) (string, string) {
 	return database.SetNewEvent(groupId, eventCreatorId, title, description, eventTime, participation)
 }
 
-func ValidateSetNewEventNotification(fromId, groupId, eventID, eventReciever string) string{
+func ValidateSetNewEventNotification(fromId, groupId, eventID, eventReciever string) string {
 	return database.SetNewEventNotification(fromId, groupId, eventID, eventReciever)
 }
 
@@ -72,6 +81,6 @@ func ValidateSetNewEventParticipant(groupId, eventId, notificationId, userId, us
 	database.SetNewEventParticipant(groupId, eventId, notificationId, userId, userResponse)
 }
 
-func ValidateSetNewGroupRequest(groupId, messageSender, messageReceiver string) string{
+func ValidateSetNewGroupRequest(groupId, messageSender, messageReceiver string) string {
 	return database.SetNewGroupRequest(groupId, messageSender, messageReceiver)
 }

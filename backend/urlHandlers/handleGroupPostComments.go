@@ -2,7 +2,6 @@ package urlHandlers
 
 import (
 	"backend/helpers"
-	"backend/structs"
 	"backend/validators"
 	"encoding/json"
 	"fmt"
@@ -10,11 +9,11 @@ import (
 	"time"
 )
 
-func HandlePosts(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Posts attempt!")
+func HandleGroupPostComments(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Comments attempt!")
 
 	var callback = make(map[string]interface{})
-	var sendPosts []structs.Posts
+
 	cookie, err := r.Cookie("socialNetworkSession")
 	// if not err and cookie valid
 	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
@@ -42,9 +41,8 @@ func HandlePosts(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-
-		sendPosts = validators.ValidatePosts()
-		callback["posts"] = sendPosts
+		groupPostId := r.FormValue("groupPostId")
+		callback["groupComments"] = validators.ValidateGroupPostComments(groupPostId)
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandlePosts", err)

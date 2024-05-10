@@ -14,18 +14,16 @@ import (
 	"github.com/google/uuid"
 )
 
-func HandleNewPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("NewPost attempt!")
+func HandleGetGroupPostComments(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Group Post Comment attempt!")
+
+	var callback = make(map[string]interface{})
 
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		http.Error(w, "Avatar file too big", http.StatusInternalServerError)
 		return
 	}
-
-	title := r.FormValue("title")
-	content := r.FormValue("content")
-	privacy := r.FormValue("privacy")
 
 	imageName := ""
 	fileExtension := ""
@@ -58,13 +56,10 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var callback = make(map[string]interface{})
-
 	cookie, err := r.Cookie("socialNetworkSession")
 	UserID := validators.ValidateUserSession(cookie.Value)
 	// if not err and cookie valid
-
-	if err != nil || UserID == "0" {
+	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
 		// check status
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
@@ -89,12 +84,12 @@ func HandleNewPost(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
-		callback["newPost"] = "accepted"
+		content := r.FormValue("content")
+		selectedPost := r.FormValue("groupPost")
+		fmt.Println(content, selectedPost, imageName+fileExtension)
 
-		validators.ValidateSetNewPost(UserID, title, content, imageName+fileExtension, privacy)
-		callback["SendnewPost"] = validators.ValidateNewPost()
+		validators.ValidateSetNewGroupComment(UserID, content, imageName+fileExtension, selectedPost)
 	}
-
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("HandlePosts", err)
 	w.Write(writeData)

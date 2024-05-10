@@ -6,7 +6,7 @@ import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewPost.module.css';
 
-const NewPost = ({ setAllPosts, groupId }) => {
+const NewPost = ({ setAllPosts }) => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
@@ -70,7 +70,6 @@ const NewPost = ({ setAllPosts, groupId }) => {
     formData.append('content', newPostContent);
     formData.append('privacy', newPostPrivacy);
     formData.append('picture', file);
-    formData.append('groupId', groupId);
 
     SendNewPost(formData).then((data) => {
       sendJsonMessage({

@@ -30,20 +30,20 @@ func SetRemoveHash(hash string) {
 	defer db.Close()
 }
 
-func SetNewPost(user, title, postContent, image, privacy, groupId string) {
-	if groupId == "undefined" {
-		db := sqlite.DbConnection()
-		command := "INSERT INTO posts (user_fk_users, post_title, post_content, post_image, privacy_fk_posts_privacy, date) VALUES(?, ?, ?, ?, ?, datetime('now', '+2 hours'))"
-		_, err := db.Exec(command, user, title, postContent, image, privacy, groupId)
-		helpers.CheckErr("SetNewPost", err)
-		defer db.Close()
-	} else {
-		db := sqlite.DbConnection()
-		command := "INSERT INTO posts (user_fk_users, post_title, post_content, post_image, privacy_fk_posts_privacy, guildid_fk_guilds, date) VALUES(?, ?, ?, ?, ?, ?, datetime('now', '+2 hours'))"
-		_, err := db.Exec(command, user, title, postContent, image, privacy, groupId)
-		helpers.CheckErr("SetNewPost", err)
-		defer db.Close()
-	}
+func SetNewPost(user, title, postContent, image, privacy string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO posts (user_fk_users, post_title, post_content, post_image, privacy_fk_posts_privacy, date) VALUES(?, ?, ?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, user, title, postContent, image, privacy)
+	helpers.CheckErr("SetNewPost", err)
+	defer db.Close()
+}
+
+func SetNewGroupPost(user, title, postContent, group, image string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO group_posts (user_fk_users, post_title, post_content, post_image, guildid_fk_guilds, date) VALUES(?, ?, ?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, user, title, postContent, image, group)
+	helpers.CheckErr("SetNewPost", err)
+	defer db.Close()
 }
 
 func SetNewComment(user, commenContent, image, postID string) {
@@ -53,6 +53,15 @@ func SetNewComment(user, commenContent, image, postID string) {
 	helpers.CheckErr("SetNewComment", err)
 	defer db.Close()
 }
+
+func SetNewGroupComment(user, commenContent, image, postID string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO group_post_comments (user_fk_users, comment_content, comment_image, post_Id_fk_group_posts, date) VALUES(?, ?, ?, ?, datetime('now', '+2 hours'))"
+	_, err := db.Exec(command, user, commenContent, image, postID)
+	helpers.CheckErr("SetNewGroupComment", err)
+	defer db.Close()
+}
+
 func SetNewMessage(messageSender, message, messageReceiver string) {
 	db := sqlite.DbConnection()
 	command := "INSERT INTO messages (message_sender_fk_users, message, message_receiver_fk_users, date) VALUES(?, ?, ?, datetime('now', '+3 hours'))"

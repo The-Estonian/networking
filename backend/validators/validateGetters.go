@@ -52,8 +52,12 @@ func ValidateUserProfile(requestedEmail string) structs.Profile {
 	return database.GetUserProfile(userId)
 }
 
-func ValidatePosts(groupId string) []structs.Posts {
-	return database.GetAllPosts(groupId)
+func ValidatePosts() []structs.Posts {
+	return database.GetAllPosts()
+}
+
+func ValidateGroupPosts(groupId string) []structs.GroupPosts {
+	return database.GetGroupPosts(groupId)
 }
 
 func ValidateNewPost() structs.Posts {
@@ -75,6 +79,10 @@ func ValidateProfilePosts(requestedEmail string) []structs.ProfilePosts {
 
 func ValidateComments(postID string) []structs.Comments {
 	return database.GetAllComments(postID)
+}
+
+func ValidateGroupPostComments(groupPostID string) []structs.Comments {
+	return database.GetGroupPostComments(groupPostID)
 }
 
 func ValidateNewComments() structs.Comments {
