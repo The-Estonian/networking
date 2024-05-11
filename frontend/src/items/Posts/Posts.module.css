@@ -1,24 +1,65 @@
-.postsContainer{
+.postsOverlay{
     display: flex;
     flex-direction: column;
     margin: auto;
     height: 80vh;
+    width: 80vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-.post {
+.postContainer{
+    display:flex;
+}
+/* .post {
     background-color: hsl(0, 0%, 70%);
     margin-bottom: 20px;
     width: 50vw;
     cursor: pointer;
-}
+} */
 
 .avatarImg {
-    max-width: 10rem;
-    max-height: 10rem;
+    max-width: 8rem;
+    max-height: 8rem;
     overflow: hidden;
     border-radius: 4px;
     border: 1px solid black;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   }
+
+.postsImg {
+    max-width: 20rem;
+    max-height: 20rem;
+    overflow: hidden;
+    border-radius: 4px;
+    border: 1px solid black;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+
+.leftSide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 70px;
+    background: yellow;
+}
+
+/*main post*/
+.post {
+    flex-grow: 1;
+}
+
+.mainContent p {
+    padding: 10px;
+}
+
+.mainContent {
+    flex-grow: 1;
+}
+
+.topPart {
+    height: 30px;
+    background: green;
+}

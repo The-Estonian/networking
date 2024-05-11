@@ -62,7 +62,7 @@ const Posts = () => {
   };
 
   return (
-    <div className={styles.postsContainer}>
+    <div className={styles.postsOverlay}>
       {displayComments ? (
         <NewComment setAllPosts={setAllPosts} />
       ) : (
@@ -72,45 +72,55 @@ const Posts = () => {
       <h1>{displayTitle}</h1>
 
       {allPosts &&
-        allPosts.map((eachPost, index) => (
-          <div
-            className={styles.post}
-            key={index}
-            onClick={() =>
-              ShowComments(
-                eachPost,
-                setAllPosts,
-                setDisplayComments,
-                setDisplayTitle
-              )
-            }
-          >
-            <h3>{eachPost.Title}</h3>
-            <p>{eachPost.Content}</p>
-            <Link to={`/profile/${eachPost.Email}`}>{eachPost.Email}</Link>
-            <p>{eachPost.Username}</p>
-            <p>{eachPost.Privacy}</p>
-            <p>{eachPost.Date}</p>
-            {eachPost.Avatar ? (
-              <img
-                className={styles.avatarImg}
-                src={`${backendUrl}/avatar/${eachPost.Avatar}`}
-                alt='Avatar'
-              ></img>
-            ) : (
-              ''
-            )}
-            {eachPost.Picture ? (
-              <img
-                className={styles.avatarImg}
-                src={`${backendUrl}/avatar/${eachPost.Picture}`}
-                alt='PostPicure'
-              ></img>
-            ) : (
-              ''
-            )}
+      allPosts.map((eachPost, index) => (
+        <div 
+          className={styles.postContainer} 
+          key={index}
+          onClick={() =>
+            ShowComments(
+              eachPost,
+              setAllPosts,
+              setDisplayComments,
+              setDisplayTitle
+            )
+          }
+        >
+          <div className={styles.leftSide}>
+            <div>U</div>
+            <div>55</div>
+            <div>D</div>
           </div>
-        ))}
+
+          <div className={styles.post}>
+            <p className={styles.topPart}>
+              Published by {eachPost.Username} some time ago
+            </p>
+
+            <div className={styles.mainContent}>
+              <p className={styles.title}>{eachPost.Title}</p>
+              <p className={styles.contain}>{eachPost.Content}</p>
+              {eachPost.Avatar ? (
+                <img
+                  className={styles.avatarImg}
+                  src={`${backendUrl}/avatar/${eachPost.Avatar}`}
+                  alt='Avatar'
+                ></img>
+              ) : (
+                ''
+              )}
+              {eachPost.Picture ? (
+                <img
+                  className={styles.postsImg}
+                  src={`${backendUrl}/avatar/${eachPost.Picture}`}
+                  alt='PostPicure'
+                ></img>
+              ) : (
+                ''
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
       {displayComments ? (
         <button onClick={showPosts}>RETURN TO POSTS</button>
       ) : (
