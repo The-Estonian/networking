@@ -37,9 +37,8 @@ var clientConnections = make(map[string]*Client)
 var broadcast = make(chan SocketMessage)
 
 type SocketMessage struct {
-	Type   string `json:"type"`
-	Status string `json:"status"`
-	// From             string   `json:"fromuser"`
+	Type             string   `json:"type"`
+	Status           string   `json:"status"`
 	FromId           string   `json:"fromuserid"`
 	Message          string   `json:"message"`
 	Description      string   `json:"description"`
@@ -125,6 +124,21 @@ func handleMessages() {
 						return
 					}
 					clientConnections[client].mu.Unlock()
+				}
+			}
+		case "groupMessage":
+			validators.ValidateSetNewGroupMessage(msg.FromId, msg.Message, msg.GroupId)
+			groupMembers := validators.ValidateGetGroupMembers(msg.GroupId)
+			for _, groupMember := range groupMembers {
+				if clientConnections[groupMember.Id] != nil && clientConnections[groupMember.Id].connOwnerId != msg.FromId {
+					clientConnections[groupMember.Id].mu.Lock()
+					err := clientConnections[groupMember.Id].connection.WriteJSON(msg)
+					if err != nil {
+						fmt.Println("Error writing message to client:", err)
+						clientConnections[groupMember.Id].mu.Unlock()
+						return
+					}
+					clientConnections[groupMember.Id].mu.Unlock()
 				}
 			}
 		case "groupInvatation":

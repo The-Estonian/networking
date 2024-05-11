@@ -53,6 +53,10 @@ func ValidateSetNewMessage(messageSender, message, messageReceiver string) {
 	database.SetNewMessage(messageSender, message, messageReceiver)
 }
 
+func ValidateSetNewGroupMessage(messageSender, message, group string) {
+	database.SetNewGroupMessage(messageSender, message, group)
+}
+
 func ValidateSetUserPrivacy(userId, privacyNmbr string) {
 	database.SetUserPrivacy(userId, privacyNmbr)
 }

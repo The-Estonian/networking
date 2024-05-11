@@ -211,7 +211,12 @@ const Groups = () => {
                 selectedGroup={selectedGroup}
               />
             )}
-            {isGroupMember && <GroupChat />}
+            {isGroupMember && (
+              <GroupChat
+                currentUser={currentUser}
+                selectedGroup={selectedGroup}
+              />
+            )}
           </div>
         </div>
       )}

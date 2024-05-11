@@ -7,3 +7,11 @@ type ChatMessage struct {
 	MessageReceiver string
 	Date            string
 }
+
+type GroupMessage struct {
+	GroupChatMessageId     string
+	GroupChatMessageSender string
+	GroupChatMessage       string
+	GroupChatId            string
+	Date                   string
+}

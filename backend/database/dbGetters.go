@@ -368,6 +368,25 @@ func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	return UserMessages
 }
 
+func GetGroupMessages(groupId string) []structs.GroupMessage {
+	db := sqlite.DbConnection()
+	var UserMessages []structs.GroupMessage
+	command := "SELECT * FROM group_messages WHERE guild_fk_guilds = ? ORDER BY id"
+	rows, err := db.Query(command, groupId)
+	if err != sql.ErrNoRows {
+		helpers.CheckErr("GetMessages", err)
+	}
+	defer db.Close()
+	helpers.CheckErr("GetMessage", err)
+	for rows.Next() {
+		var groupMessage structs.GroupMessage
+		rows.Scan(&groupMessage.GroupChatMessageId, &groupMessage.GroupChatMessageSender, &groupMessage.GroupChatMessage, &groupMessage.GroupChatId, &groupMessage.Date)
+		UserMessages = append(UserMessages, groupMessage)
+	}
+	defer rows.Close()
+	return UserMessages
+}
+
 func GetAllGroups() []structs.Groups {
 	db := sqlite.DbConnection()
 	defer db.Close()
