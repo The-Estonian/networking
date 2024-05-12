@@ -81,11 +81,13 @@ const Posts = () => {
           <div className={styles.post}>
             <div className={styles.topPart}>
               {eachPost.Avatar ? (
+                <Link to={`/profile/${eachPost.UserId}`}>
                   <img
                     className={styles.avatarImg}
                     src={`${backendUrl}/avatar/${eachPost.Avatar}`}
                     alt='Avatar'
-                  ></img>
+                  />
+                </Link>
                 ) : (
                   ''
               )}
