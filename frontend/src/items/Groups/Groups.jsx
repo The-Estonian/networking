@@ -136,32 +136,42 @@ const Groups = () => {
       {selectedGroup && !newGroupPostOpen && (
         <div className={styles.groupInfo}>
           <div className={styles.currentGroup}>
-            <h1>{selectedGroup.Title}</h1>
-            <h2>Description: {selectedGroup.Description}</h2>
-            <h3>Created by: {selectedGroup.Creator}</h3>
-            <h4>Group Members:</h4>
-
-            {groupMembers &&
-              groupMembers.map((member) => (
-                <p key={member.Id}>{member.Email}</p>
-              ))}
-
-            <h4>Group events:</h4>
-            {events &&
-              events.map((event) => (
-                <div key={event.EventId} className={styles.eventInfo}>
-                  <p>{event.EventTitle}</p>
-                  <p>{event.EventDescription}</p>
-                  <p>{event.CreatorEmail}</p>
-                  <p>{event.EventTime}</p>
-
-                  {event.Participants.map((participant) => (
-                    <p key={participant.ParticipantId}>
-                      {participant.ParticipantEmail}
-                    </p>
+            <div className={styles.selectedGroupInfo}>
+              <h1>{selectedGroup.Title}</h1>
+              <h2>Description: {selectedGroup.Description}</h2>
+              <h3>Created by: {selectedGroup.Creator}</h3>
+              <div className={styles.groupMembers}>
+                <p>Group Members:</p>
+                {groupMembers &&
+                  groupMembers.map((member) => (
+                    <p key={member.Id}>{member.Email}</p>
                   ))}
-                </div>
-              ))}
+              </div>
+            </div>
+            <h4>Group events:</h4>
+            <div className={styles.groupEvents}>
+              {events &&
+                events.map((event) => {
+                  const messageDate = new Date(event.EventTime.slice(0, -1));
+                  const messageDateString = `${messageDate.getDate()}/${
+                    messageDate.getMonth() + 1
+                  }/${messageDate.getFullYear()} ${messageDate.getHours()}:${messageDate.getMinutes()}`;
+                  return (
+                    <div key={event.EventId} className={styles.eventInfo}>
+                      <p>{event.EventTitle}</p>
+                      <p>{event.EventDescription}</p>
+                      <p>{event.CreatorEmail}</p>
+                      <p>{messageDateString}</p>
+
+                      {event.Participants.map((participant) => (
+                        <p key={participant.ParticipantId}>
+                          {participant.ParticipantEmail}
+                        </p>
+                      ))}
+                    </div>
+                  );
+                })}
+            </div>
           </div>
           {isGroupMember && (
             <select
