@@ -85,38 +85,40 @@ const Posts = () => {
             )
           }
         >
-          <div className={styles.leftSide}>
-            <div>U</div>
-            <div>55</div>
-            <div>D</div>
-          </div>
 
           <div className={styles.post}>
-            <p className={styles.topPart}>
-              Published by {eachPost.Username} some time ago
-            </p>
+            <div className={styles.topPart}>
+              {eachPost.Avatar ? (
+                  <img
+                    className={styles.avatarImg}
+                    src={`${backendUrl}/avatar/${eachPost.Avatar}`}
+                    alt='Avatar'
+                  ></img>
+                ) : (
+                  ''
+              )}
+              <p>Published by {eachPost.Username} some time ago</p>
+            </div>
 
             <div className={styles.mainContent}>
-              <p className={styles.title}>{eachPost.Title}</p>
-              <p className={styles.contain}>{eachPost.Content}</p>
-              {eachPost.Avatar ? (
-                <img
-                  className={styles.avatarImg}
-                  src={`${backendUrl}/avatar/${eachPost.Avatar}`}
-                  alt='Avatar'
-                ></img>
-              ) : (
-                ''
-              )}
-              {eachPost.Picture ? (
-                <img
-                  className={styles.postsImg}
-                  src={`${backendUrl}/avatar/${eachPost.Picture}`}
-                  alt='PostPicure'
-                ></img>
-              ) : (
-                ''
-              )}
+              <div className={styles.leftSide}>
+                <div>Up</div>
+                <div>Mid</div>
+                <div>Dn</div>
+              </div>
+              <div className={styles.rightSide}>
+                <p className={styles.title}>{eachPost.Title}</p>
+                {eachPost.Picture ? (
+                  <img
+                    className={styles.postsImg}
+                    src={`${backendUrl}/avatar/${eachPost.Picture}`}
+                    alt='PostPicure'
+                  ></img>
+                ) : (
+                  ''
+                )}
+                <p className={styles.contain}>{eachPost.Content}</p>
+              </div>
             </div>
           </div>
         </div>
