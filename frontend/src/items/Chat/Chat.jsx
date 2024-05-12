@@ -111,7 +111,6 @@ const Chat = () => {
     } else {
       setAllUserMessages([messageObject]);
     }
-    // console.log(chatContainerRef.current);
     setTimeout(() => {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;

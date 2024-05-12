@@ -12,6 +12,7 @@
     background: black;
     color: white;
     padding-top: 1rem;
+    width: 30%;
   }
   
   input[id="content"]{

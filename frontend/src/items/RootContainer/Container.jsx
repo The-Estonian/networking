@@ -73,7 +73,8 @@ const Container = () => {
       const messageData = JSON.parse(lastMessage.data);
       if (
         messageData.type != 'onlineStatus' &&
-        messageData.type != 'challenge'
+        messageData.type != 'challenge' &&
+        messageData.type != 'groupMessage'
       ) {
         handleNotification(`New ${messageData.type}`);
         setGlow(true);

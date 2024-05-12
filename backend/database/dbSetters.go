@@ -70,6 +70,14 @@ func SetNewMessage(messageSender, message, messageReceiver string) {
 	defer db.Close()
 }
 
+func SetNewGroupMessage(messageSender, message, group string) {
+	db := sqlite.DbConnection()
+	command := "INSERT INTO group_messages (message_sender_fk_users, message, guild_fk_guilds, date) VALUES(?, ?, ?, datetime('now', '+3 hours'))"
+	_, err := db.Exec(command, messageSender, message, group)
+	helpers.CheckErr("SetNewGroupMessage", err)
+	defer db.Close()
+}
+
 // SetUserPrivacy sets user privacy settings, it currently uses posts_privacy_table values
 // since the privacy settings values are the same for both users and posts
 // dunno, might be a bad idea
