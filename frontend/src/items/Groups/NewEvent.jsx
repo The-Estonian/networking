@@ -1,28 +1,30 @@
 import { useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
-
-import { GetStatus } from '../../connections/statusConnection.js';
+import { useOutletContext } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import styles from './NewGroup.module.css';
 
-const NewEvent =  ({ groupId, setUpdateGroups, currentUser, groupTitle }) => {
-  const [modal, logout, sendJsonMessage, ,] = useOutletContext();
-  const [events, setEvents] = useState([]);
+const NewEvent = ({ groupId, setUpdateGroups, currentUser, groupTitle }) => {
+  const [, , sendJsonMessage, ,] = useOutletContext();
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
-  const [eventTime, setEventTime] = useState('');
+  // const [eventTime, setEventTime] = useState('');
   const [attendEvent, setAttendEvent] = useState('1');
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
-  
-  const today = new Date();
-  const formattedToday = today.toISOString().substring(0, 16);
 
-  const validateEventTitleInput = (e) => setEventTitle(e.target.value)
-  const validateEventInputDescrInput = (e) => setEventDescription(e.target.value)
-  const validateEventDateInput = (e) => setEventTime(e.target.value)
-  const validateAttendEventInput = (e) => setAttendEvent(e.target.value)
+  const [startDate, setStartDate] = useState(new Date());
+
+  // const today = new Date();
+  // const formattedToday = today.toISOString().substring(0, 16);
+
+  const validateEventTitleInput = (e) => setEventTitle(e.target.value);
+  const validateEventInputDescrInput = (e) =>
+    setEventDescription(e.target.value);
+  // const validateEventDateInput = (e) => setEventTime(e.target.value)
+  const validateAttendEventInput = (e) => setAttendEvent(e.target.value);
 
   const switchNewPostOpen = () => {
     setNewPostOpen(!newPostOpen);
@@ -30,7 +32,7 @@ const NewEvent =  ({ groupId, setUpdateGroups, currentUser, groupTitle }) => {
   };
 
   const CreateNewEvent = () => {
-    if (eventTitle.length < 1 || eventDescription.length < 1 || eventTime < 1) {
+    if (eventTitle.length < 1 || eventDescription.length < 1 || startDate < 1) {
       setInputError(true);
       setInputErrorText('Title or description can not be empty!');
       return;
@@ -38,43 +40,43 @@ const NewEvent =  ({ groupId, setUpdateGroups, currentUser, groupTitle }) => {
 
     sendJsonMessage({
       type: 'event',
-      GroupId : groupId,
+      GroupId: groupId,
       EventTitle: eventTitle,
-      EventDescription : eventDescription,
-      eventtime : eventTime,
-      participation : attendEvent,
-      fromuserid : currentUser,
-      GroupTitle : groupTitle,
+      EventDescription: eventDescription,
+      eventtime: startDate,
+      participation: attendEvent,
+      fromuserid: currentUser,
+      GroupTitle: groupTitle,
     });
 
-    // SendNewEvent(formData).then((data) => {
-    //   setEvents(prevEvent => [data.SendNewEvent, ...prevEvent])
-    // })
     switchNewPostOpen();
-  }
+  };
 
-return (
+  return (
     <div className={styles.newPost}>
       {newPostOpen ? (
         <div className={styles.openNewPost}>
           <span>Title</span>
-          <input type='text' id='content' onChange={validateEventTitleInput}/>
+          <input type='text' id='content' onChange={validateEventTitleInput} />
           <span>Description</span>
           <input
-            type='text'                                                                   
-            id='content'                          
+            type='text'
+            id='content'
             onChange={validateEventInputDescrInput}
           />
-            <span className={styles.required}>Event date</span>
-            <input
-              className={styles.userInput}
-              min={formattedToday}
-              type='datetime-local'
-              name='date'          
-              id='content'
-              onChange={validateEventDateInput}
-            />
-             <div className={styles.privacySelection}>
+          <span className={styles.required}>Event date</span>
+
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            showTimeSelect
+            timeFormat='HH:mm'
+            timeIntervals={15}
+            timeCaption='time'
+            dateFormat='MMMM d, yyyy h:mm aa'
+          />
+
+          <div className={styles.privacySelection}>
             <div>
               <input
                 type='radio'
@@ -93,9 +95,13 @@ return (
               />
               <span>Not going</span>
             </div>
-            </div>
-          {inputError ? <span className={styles.errorMsg}>{inputErrorText}</span> : ''}
-         
+          </div>
+          {inputError ? (
+            <span className={styles.errorMsg}>{inputErrorText}</span>
+          ) : (
+            ''
+          )}
+
           <div className={styles.openNewPostOptions}>
             <span className={styles.openNewPostSubmit} onClick={CreateNewEvent}>
               Submit
@@ -109,13 +115,16 @@ return (
           </div>
         </div>
       ) : (
-        <span className={styles.closedNewEvent} onClick={() => {
-          switchNewPostOpen();
-        }}>
+        <span
+          className={styles.closedNewEvent}
+          onClick={() => {
+            switchNewPostOpen();
+          }}
+        >
           Create Event
         </span>
       )}
     </div>
   );
-}
-export default NewEvent;      
+};
+export default NewEvent;
