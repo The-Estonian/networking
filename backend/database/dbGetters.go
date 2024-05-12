@@ -141,7 +141,7 @@ func GetAllPosts() []structs.Posts {
 
 	var allPosts []structs.Posts
 
-	command := "SELECT posts.id, users.username, users.avatar, posts.post_Title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date, users.email FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC"
+	command := "SELECT posts.id, users.username, users.avatar, posts.post_Title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date, users.email, users.id FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC"
 	rows, err := db.Query(command)
 	if err != nil {
 		helpers.CheckErr("getAllPosts", err)
@@ -151,7 +151,7 @@ func GetAllPosts() []structs.Posts {
 
 	for rows.Next() {
 		var post structs.Posts
-		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date, &post.Email)
+		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date, &post.Email, &post.UserId)
 		if err != nil {
 			helpers.CheckErr("getAllPosts", err)
 			continue

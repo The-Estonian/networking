@@ -90,8 +90,7 @@ const Posts = () => {
                   ''
               )}
               <div>
-                <p>Published by {eachPost.Username !== "" ? eachPost.Username : eachPost.Email}</p>
-                <Link to={`/profile/${eachPost.Email}`}>{eachPost.Email}</Link>
+                <p>Published by <Link style={{ color: 'inherit', textDecoration: 'none' }} to={`/profile/${eachPost.UserId}`}>{eachPost.Username !== "" ? eachPost.Username : eachPost.Email}</Link></p>
                 <p>at {new Date(eachPost.Date).toLocaleTimeString()} on {new Intl.DateTimeFormat('en-GB').format(new Date(eachPost.Date))}</p>
               </div>
             </div>
