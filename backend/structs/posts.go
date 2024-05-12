@@ -10,6 +10,7 @@ type Posts struct {
 	Privacy  string
 	Date     string
 	Email    string
+	UserId   string
 }
 
 type GroupPosts struct {
