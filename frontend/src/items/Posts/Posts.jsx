@@ -60,7 +60,7 @@ const Posts = () => {
     setDisplayTitle(post.Title);
     setDisplayComments(true);
   };
-
+  console.log("eachpost is: ", allPosts);
   return (
     <div className={styles.postsOverlay}>
       {displayComments ? (
@@ -76,14 +76,6 @@ const Posts = () => {
         <div 
           className={styles.postContainer} 
           key={index}
-          onClick={() =>
-            ShowComments(
-              eachPost,
-              setAllPosts,
-              setDisplayComments,
-              setDisplayTitle
-            )
-          }
         >
 
           <div className={styles.post}>
@@ -97,15 +89,15 @@ const Posts = () => {
                 ) : (
                   ''
               )}
-              <p>Published by {eachPost.Username} some time ago</p>
+              <div>
+                <p>Published by {eachPost.Username !== "" ? eachPost.Username : eachPost.Email}</p>
+                <Link to={`/profile/${eachPost.Email}`}>{eachPost.Email}</Link>
+                <p>at {new Date(eachPost.Date).toLocaleTimeString()} on {new Intl.DateTimeFormat('en-GB').format(new Date(eachPost.Date))}</p>
+              </div>
             </div>
 
             <div className={styles.mainContent}>
-              <div className={styles.leftSide}>
-                <div>Up</div>
-                <div>Mid</div>
-                <div>Dn</div>
-              </div>
+              <div className={styles.leftSide}></div>
               <div className={styles.rightSide}>
                 <p className={styles.title}>{eachPost.Title}</p>
                 {eachPost.Picture ? (
@@ -117,9 +109,23 @@ const Posts = () => {
                 ) : (
                   ''
                 )}
-                <p className={styles.contain}>{eachPost.Content}</p>
+                <p className={styles.content}>{eachPost.Content}</p>
+                <div
+                  className={styles.commentsButton}
+                  onClick={() =>
+                    ShowComments(
+                      eachPost,
+                      setAllPosts,
+                      setDisplayComments,
+                      setDisplayTitle
+                    )
+                  }
+                >
+                  Comments
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       ))}
