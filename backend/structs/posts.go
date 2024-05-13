@@ -23,6 +23,7 @@ type GroupPosts struct {
 	Date     string
 	Email    string
 	GroupId  string
+	UserId   string
 }
 
 type NewPost struct {

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { GetGroupPostComments } from '../../connections/getGroupPostComments';
 import { SendNewGroupComment } from '../../connections/newGroupCommentConnection';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 
 import styles from './GroupPosts.module.css';
 
@@ -72,9 +72,9 @@ const GroupPosts = (props) => {
     setInputError(false);
     setInputErrorText('');
   };
-
+  console.log("groupPosts: ", props.groupPosts)
   return (
-    <div className={styles.groupPosts}>
+    <div className={styles.postsOverlay}>
       {showComments && (
         <div className={styles.commentMenu}>
           <button
@@ -107,27 +107,50 @@ const GroupPosts = (props) => {
         </div>
       )}
       {!showComments ? (
-        props.groupPosts.map((post) => (
-          <div
-            className={styles.eachPost}
-            key={post.PostID}
-            onClick={() => handleGroupPostComment(post.PostID)}
-          >
-            <img
-              className={styles.avatarImg}
-              src={`${backendUrl}/avatar/${post.Avatar}`}
-              alt='PostPicture'
-            ></img>
-            {post.Picture && (
-              <img
-                className={styles.avatarImg}
-                src={`${backendUrl}/avatar/${post.Picture}`}
-                alt='PostPicture'
-              ></img>
-            )}
+        props.groupPosts.map((eachPost, index) => (
+          <div 
+          className={styles.postContainer} 
+          key={index}
+          onClick={() => handleGroupPostComment(eachPost.PostID)}
+        >
+          <div className={styles.post}>
+            <div className={styles.topPart}>
+              {eachPost.Avatar ? (
+                <Link to={`/profile/${eachPost.UserId}`}>
+                  <img
+                    className={styles.avatarImg}
+                    src={`${backendUrl}/avatar/${eachPost.Avatar}`}
+                    alt='Avatar'
+                  />
+                </Link>
+                ) : (
+                  ''
+              )}
+              <div>
+                <p>Published by <Link style={{ color: 'inherit', textDecoration: 'none' }} to={`/profile/${eachPost.UserId}`}>{eachPost.Username !== "" ? eachPost.Username : eachPost.Email}</Link></p>
+                <p>at {new Date(eachPost.Date).toLocaleTimeString()} on {new Intl.DateTimeFormat('en-GB').format(new Date(eachPost.Date))}</p>
+              </div>
+            </div>
 
-            <p>{post.Content}</p>
+            <div className={styles.mainContent}>
+              <div className={styles.leftSide}></div>
+              <div className={styles.rightSide}>
+                <p className={styles.title}>{eachPost.Title}</p>
+                {eachPost.Picture ? (
+                  <img
+                    className={styles.postsImg}
+                    src={`${backendUrl}/avatar/${eachPost.Picture}`}
+                    alt='PostPicure'
+                  ></img>
+                ) : (
+                  ''
+                )}
+                <p className={styles.content}>{eachPost.Content}</p>
+              </div>
+            </div>
           </div>
+        </div>
+
         ))
       ) : groupPostComments ? (
         groupPostComments.map((comment, i) => <p key={i}>{comment.Content}</p>)
