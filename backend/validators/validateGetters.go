@@ -167,3 +167,15 @@ func ValidateEmailFromSession(session string) string {
 func ValidateGroupRequests(userId string) []structs.GrInvNotifications {
 	return database.GetGroupRequests(userId)
 }
+
+func ValidateFollowRequests(userId string) []structs.FollowRequests {
+	return database.GetFollowRequests(userId)
+}
+
+func ValidateFollowers(userId string) []structs.FollowRequests {
+	return database.GetFollowers(userId)
+}
+
+func ValidateFollowing(userId string) []structs.FollowRequests {
+	return database.GetFollowing(userId)
+}

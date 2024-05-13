@@ -37,23 +37,24 @@ var clientConnections = make(map[string]*Client)
 var broadcast = make(chan SocketMessage)
 
 type SocketMessage struct {
-	Type             string   `json:"type"`
-	Status           string   `json:"status"`
-	FromId           string   `json:"fromuserid"`
-	Message          string   `json:"message"`
-	Description      string   `json:"description"`
-	To               string   `json:"touser"`
-	Participation    string   `json:"participation"`
-	ConnectedClients []string `json:"connectedclients"`
-	NotificationId   string   `json:"NotificationId"`
-	SenderEmail      string   `json:"SenderEmail"`
-	EventTitle       string   `json:"EventTitle"`
-	EventDescription string   `json:"EventDescription"`
-	EventTime        string   `json:"EventTime"`
-	EventId          string   `json:"EventId"`
-	GroupId          string   `json:"GroupId"`
-	GroupTitle       string   `json:"GroupTitle"`
-	Coords           string   `json:"coords"`
+	Type              string   `json:"type"`
+	Status            string   `json:"status"`
+	FromId            string   `json:"fromuserid"`
+	From_HandleSocket string   `json:"fromuserId"` //experimental
+	Message           string   `json:"message"`
+	Description       string   `json:"description"`
+	To                string   `json:"touser"`
+	Participation     string   `json:"participation"`
+	ConnectedClients  []string `json:"connectedclients"`
+	NotificationId    string   `json:"NotificationId"`
+	SenderEmail       string   `json:"SenderEmail"`
+	EventTitle        string   `json:"EventTitle"`
+	EventDescription  string   `json:"EventDescription"`
+	EventTime         string   `json:"EventTime"`
+	EventId           string   `json:"EventId"`
+	GroupId           string   `json:"GroupId"`
+	GroupTitle        string   `json:"GroupTitle"`
+	Coords            string   `json:"coords"`
 }
 
 type Client struct {
@@ -209,6 +210,25 @@ func handleMessages() {
 				}
 			}
 
+		case "followUser":
+			email := validators.ValidateSetNewFollowNotification(msg.From_HandleSocket, msg.To)
+			msg.SenderEmail = email
+
+			if email != "" {
+				for client := range clientConnections {
+					if msg.To == clientConnections[client].connOwnerId {
+						clientConnections[client].mu.Lock()
+						err := clientConnections[client].connection.WriteJSON(msg)
+						if err != nil {
+							fmt.Println("Error writing gruopinvatation to client:", err)
+							clientConnections[client].mu.Unlock()
+							return
+						}
+						clientConnections[client].mu.Unlock()
+					}
+				}
+			}
+
 		case "newPost":
 			for client := range clientConnections {
 				if msg.FromId != clientConnections[client].connOwnerId {
@@ -317,6 +337,8 @@ func HandleSocket(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		var msg SocketMessage
+		msg.From_HandleSocket = userId
+
 		err := conn.ReadJSON(&msg)
 		if err != nil {
 			fmt.Println("Error in receiving message:", err)

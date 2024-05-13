@@ -74,6 +74,12 @@ func HandleNotificationResponse(w http.ResponseWriter, r *http.Request) {
 												 notificationResponse.NotificationResponse,
 												 notificationResponse.NotificationType)
 		}
+
+		if notificationResponse.NotificationType == "followUser" {
+			validators.ValidateSetNewFollower(notificationResponse.SenderId,
+											  UserID,										
+											  notificationResponse.NotificationResponse)
+		}
 	}
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("Handlenofiticationresp", err)
