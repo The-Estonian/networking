@@ -595,17 +595,28 @@ func GetGroupEvents(groupId string) []structs.Events {
 	return groupEvents
 }
 
-func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
+func GetUserProfileInfo(currentUserId string, targetUserId string, followingUser bool) (structs.Profile, error) {
 	db := sqlite.DbConnection()
 	var userProfile structs.Profile
 
-	command := `
+	command := ""
+	if !followingUser {
+		command = `
     SELECT u.id, u.email, u.first_name, u.last_name, u.date_of_birth, u.username, u.about_user, u.avatar, up.privacy_fk_users_privacy
     FROM users u
     INNER JOIN user_privacy up ON u.id = up.user_fk_users
     WHERE (up.privacy_fk_users_privacy = 1 AND u.id = ?)
-        OR (u.id = ? AND u.id = ?)
-`
+        OR (u.id = ? AND u.id = ?)`
+
+	} else {
+		command = `
+	SELECT u.id, u.email, u.first_name, u.last_name, u.date_of_birth, u.username, u.about_user, u.avatar, up.privacy_fk_users_privacy
+	FROM users u
+	INNER JOIN user_privacy up ON u.id = up.user_fk_users
+	WHERE (u.id = ?)
+		OR (u.id = ? AND u.id = ?)`
+	}
+
 	err := db.QueryRow(command, targetUserId, currentUserId, targetUserId).Scan(
 		&userProfile.Id,
 		&userProfile.Email,

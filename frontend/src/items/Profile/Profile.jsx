@@ -31,7 +31,7 @@ const Profile = () => {
 
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
-        console.log("data: ", data);
+        console.log("data1: ", data);
         // profile info
         setUserProfile(data.profile)
         setFollowing(data.following);
@@ -64,17 +64,46 @@ const Profile = () => {
     SendNewPrivacy(formData).then((data) => setPrivacy(data.SendNewPrivacy));
   };
 
-  const followUser = (followUserId) => {
+  const followUser = (followUserId, e) => {
     sendJsonMessage({
       type: 'followUser',
       touser: followUserId,
     });
+    const formData = new FormData();
+    formData.append('userId', currentUser);
+    
+    GetProfile(formData).then((data) => {
+      if (data.login === 'success') {
+        setFollowers(data.followers);
+        setAlreadyFollowing(data.alreadyFollowing)
+        setUserProfile(data.profile)
+      }
+    })
+    if (userProfile.Privacy === "-1") {
+      e.target.style.opacity = "0.4" // rändom stiil et näha kas toimib
+      e.target.style.cursor = "default"
+    }
+  }
+
+  const unfollowUser = (userId, e) => {
+    const formData = new FormData();
+    formData.append('userId', currentUser);
+    formData.append('unFollowId', userId);
+    
+    GetProfile(formData).then((data) => {
+      if (data.login === 'success') {
+        setFollowers(data.followers);
+        setAlreadyFollowing(data.alreadyFollowing)
+        setUserProfile(data.profile)
+        setPrivacy("-1") // Is this ok??
+      }
+    })
   }
 
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
-        {userProfile && userProfile.Privacy === "-1" ? (
+        {userProfile && userProfile.Privacy === "-1"  && !alreadyFollowing ? (
           <p>This user is private, please send a follow request</p>
         ) : (
           <>
@@ -160,8 +189,8 @@ const Profile = () => {
 
         {ownProfile ? null : 
           (alreadyFollowing ? 
-            <button onClick={() => unfollowUser(currentUser)}>Unfollow</button> :
-            <button onClick={() => followUser(currentUser)}>Follow</button>
+            <button onClick={(e) => unfollowUser(currentUser, e)}>Unfollow</button> :
+            <button onClick={(e) => followUser(currentUser, e)}>Follow</button>
           )
         }
 

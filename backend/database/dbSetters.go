@@ -317,3 +317,11 @@ func SetNewFollower(followSender, followReciever, userResponse string) {
 	helpers.CheckErr("SetNewFollowe remove notification: ", err)
 	defer db.Close()
 }
+
+func Unfollow(userId, unfollowId string) {
+	db := sqlite.DbConnection()
+	command := "DELETE FROM followers WHERE from_user_fk_users = ? AND to_user_fk_users = ?"
+	_, err := db.Exec(command, userId, unfollowId)
+	helpers.CheckErr("SetNewFollowet insert: ", err)
+	defer db.Close()
+}

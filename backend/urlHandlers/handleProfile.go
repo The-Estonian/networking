@@ -50,15 +50,29 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 
 		// Get the userId from the FormData
 		requestedId := r.FormValue("userId")
+		unFollowId := r.FormValue("unFollowId")
+
 		viewId := requestedId
 		var ownProfile bool
 		var followingUser bool
-		
+
 		// get session owner userId from session
 		sessionId := validators.ValidateUserSession(cookie.Value)
 
+		if unFollowId != "" {
+			validators.ValidateUnfollowUser(sessionId, unFollowId)
+		}
+
+		followers := validators.ValidateFollowers(viewId)
+
+		for _, follower := range followers {
+			if follower.SenderId == sessionId {
+				followingUser = true
+			}
+		}
+
 		// get profile info
-		userProfile, err := validators.ValidateUserProfileInfo(sessionId, requestedId)
+		userProfile, err := validators.ValidateUserProfileInfo(sessionId, requestedId, followingUser)
 		if err != nil {
 			callback["profile"] = err.Error()
 			return
@@ -72,24 +86,17 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		callback["posts"] = userProfilePosts
 
-		if (requestedId == "" || requestedId == sessionId) {
+		if requestedId == "" || requestedId == sessionId {
 			ownProfile = true
 			viewId = sessionId
 		}
 
-		followers := validators.ValidateFollowers(viewId)
 		callback["followers"] = followers
 
 		following := validators.ValidateFollowing(viewId)
 		callback["following"] = following
 
 		callback["ownProfile"] = ownProfile
-
-		for _, follower := range followers {
-			if follower.SenderId == sessionId {
-				followingUser = true
-			}
-		}
 		callback["alreadyFollowing"] = followingUser
 	}
 	writeData, err := json.Marshal(callback)

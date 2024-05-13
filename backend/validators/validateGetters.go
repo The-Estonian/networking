@@ -132,11 +132,11 @@ func ValidateGetGroupMembers(groupId string) []structs.GroupMember {
 	return database.GetGroupMembers(groupId)
 }
 
-func ValidateUserProfileInfo(sessionId, targetUserId string) (structs.Profile, error) {
+func ValidateUserProfileInfo(sessionId string, targetUserId string, followingUser bool) (structs.Profile, error) {
 	if targetUserId == "" {
 		targetUserId = sessionId
 	}
-	return database.GetUserProfileInfo(sessionId, targetUserId)
+	return database.GetUserProfileInfo(sessionId, targetUserId, followingUser)
 }
 
 func ValidateUserProfilePosts(sessionId, targetUserId string) ([]structs.Posts, error) {
