@@ -96,3 +96,7 @@ func ValidateSetNewFollowNotification(fromId, touser string) string{
 func ValidateSetNewFollower(followSender, followReciever, userResponse string) {
 	database.SetNewFollower(followSender, followReciever, userResponse)
 }
+
+func ValidateUnfollowUser(sessionId, unFollowId string) {
+	database.Unfollow(sessionId, unFollowId)
+}
