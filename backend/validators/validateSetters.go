@@ -88,3 +88,11 @@ func ValidateSetNewEventParticipant(groupId, eventId, notificationId, userId, us
 func ValidateSetNewGroupRequest(groupId, messageSender, messageReceiver string) string {
 	return database.SetNewGroupRequest(groupId, messageSender, messageReceiver)
 }
+
+func ValidateSetNewFollowNotification(fromId, touser string) string{
+	return database.SetNewFollowNotification(fromId, touser)
+}
+
+func ValidateSetNewFollower(followSender, followReciever, userResponse string) {
+	database.SetNewFollower(followSender, followReciever, userResponse)
+}

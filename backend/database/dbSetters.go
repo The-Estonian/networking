@@ -251,3 +251,69 @@ func SetNewGroupRequest(groupId, messageSender, messageReceiver string) string {
 
 	return id
 }
+
+func SetNewFollowNotification(fromId, touser string) string {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	privacy := GetUserPrivacy(touser)
+
+	var followerCount int
+	err := db.QueryRow("SELECT COUNT(*) FROM followers WHERE from_user_fk_users = ? AND to_user_fk_users = ?", fromId, touser).Scan(&followerCount)
+	if err != nil {
+		helpers.CheckErr("SetNewFollowNotification - Followercount: ", err)
+		return ""
+	}
+
+	if followerCount > 0 {
+		return ""
+	}
+
+	if privacy == "1" {
+		command := "INSERT INTO followers (from_user_fk_users, to_user_fk_users) VALUES (?, ?)"
+		_, err = db.Exec(command, fromId, touser)
+		helpers.CheckErr("SetNewFollowet insert: ", err)
+		defer db.Close()
+		return ""
+	}
+
+	var notificationCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM followrequests WHERE from_user_fk_users = ? AND to_user_fk_users = ?", fromId, touser).Scan(&notificationCount)
+	if err != nil {
+		helpers.CheckErr("SetNewFollowNotification - NotificationCount: ", err)
+		return ""
+	}
+
+	if notificationCount > 0 {
+		return ""
+	}
+
+	command := "INSERT INTO followrequests (from_user_fk_users, to_user_fk_users) VALUES(?, ?)"
+	_, err = db.Exec(command, fromId, touser)
+	helpers.CheckErr("SetNewFollowNotification - Insert: ", err)
+
+	var email string
+	command = "SELECT email FROM users WHERE id = ?"
+	row := db.QueryRow(command, fromId)
+
+	err = row.Scan(&email)
+	helpers.CheckErr("SetNewFollowNotification GetEmail - Scan: ", err)
+
+	return email
+}
+
+func SetNewFollower(followSender, followReciever, userResponse string) {
+	if userResponse == "accept" {
+		db := sqlite.DbConnection()
+		command := "INSERT INTO followers (from_user_fk_users, to_user_fk_users) VALUES (?, ?)"
+		_, err := db.Exec(command, followSender, followReciever)
+		helpers.CheckErr("SetNewFollowet insert: ", err)
+		defer db.Close()
+	}
+
+	db := sqlite.DbConnection()
+	command := "DELETE FROM followrequests WHERE from_user_fk_users = ? AND to_user_fk_users = ?"
+	_, err := db.Exec(command, followSender, followReciever)
+	helpers.CheckErr("SetNewFollowe remove notification: ", err)
+	defer db.Close()
+}

@@ -741,3 +741,97 @@ func GetGroupRequests(currentUser string) []structs.GrInvNotifications {
 	}
 	return groupRequests
 }
+
+func GetFollowRequests(userId string) []structs.FollowRequests {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var followRequests []structs.FollowRequests
+	command := `SELECT followrequests.id, from_user_fk_users, to_user_fk_users, users.email FROM followrequests 
+				INNER JOIN users ON followrequests.from_user_fk_users = users.id
+				WHERE followrequests.to_user_fk_users = ?`
+
+	rows, err := db.Query(command, userId)
+	if err != nil {
+		helpers.CheckErr("GetFollowRequests selecting error: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var request structs.FollowRequests
+		err = rows.Scan(&request.NotificationId, &request.SenderId, &request.RecieverId, &request.SenderEmail)
+		if err != nil {
+			helpers.CheckErr("GetFollowRequests Next error: ", err)
+			continue
+		}
+		followRequests = append(followRequests, request)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetFollowRequests", err)
+	}
+	return followRequests
+}
+
+func GetFollowers(userId string) []structs.FollowRequests {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var followers []structs.FollowRequests
+
+	command := "SELECT followers.id, followers.from_user_fk_users, users.email FROM followers INNER JOIN users ON followers.from_user_fk_users = users.id  WHERE to_user_fk_users = ?"
+	rows, err := db.Query(command, userId)
+	if err != nil {
+		helpers.CheckErr("GetFollowers selecting error: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var follower structs.FollowRequests
+
+		err = rows.Scan(&follower.NotificationId, &follower.SenderId, &follower.SenderEmail)
+		if err != nil {
+			helpers.CheckErr("GetFollowers Next error: ", err)
+			continue
+		}
+		followers = append(followers, follower)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetFollowers", err)
+	}
+	return followers
+}
+
+func GetFollowing(userId string) []structs.FollowRequests {
+	db := sqlite.DbConnection()
+	defer db.Close()
+
+	var followers []structs.FollowRequests
+
+	command := "SELECT followers.id, followers.to_user_fk_users, users.email FROM followers INNER JOIN users ON followers.to_user_fk_users = users.id  WHERE from_user_fk_users = ?"
+	rows, err := db.Query(command, userId)
+	if err != nil {
+		helpers.CheckErr("GetFollowing selecting error: ", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var follower structs.FollowRequests
+
+		err = rows.Scan(&follower.NotificationId, &follower.SenderId, &follower.SenderEmail)
+		if err != nil {
+			helpers.CheckErr("GetFollowing Next error: ", err)
+			continue
+		}
+		followers = append(followers, follower)
+	}
+
+	if err = rows.Err(); err != nil {
+		helpers.CheckErr("GetFollowing", err)
+	}
+	return followers
+}

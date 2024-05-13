@@ -17,9 +17,11 @@ const Profile = () => {
   const [privacy, setPrivacy] = useState('');
   const [privacyButton, setPrivacyButton] = useState('');
   const navigate = useNavigate();
-  const [modal, logout] = useOutletContext();
+  const [modal, logout, sendJsonMessage] = useOutletContext();
   const location = useLocation()
   const currentUser = location.pathname.substring(9);
+  const [ownProfile, setOwnProfile] = useState(false);
+  const [alreadyFollowing, setAlreadyFollowing] = useState(false);
 
   useEffect(() => {
     modal(true);
@@ -29,11 +31,13 @@ const Profile = () => {
 
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
+        console.log("data: ", data);
         // profile info
-        setUserProfile(data.profile);
-        // following and followers test!!!
-        setFollowing(['User1', 'User2', 'User3']);
-        setFollowers(['User4', 'User5']);
+        setUserProfile(data.profile)
+        setFollowing(data.following);
+        setFollowers(data.followers);
+        setOwnProfile(data.ownProfile)
+        setAlreadyFollowing(data.alreadyFollowing)
         // profile related posts
         setPosts(data.posts);
         if (currentUser.length === 0) {
@@ -59,6 +63,14 @@ const Profile = () => {
     formData.append('privacy', newPrivacy);
     SendNewPrivacy(formData).then((data) => setPrivacy(data.SendNewPrivacy));
   };
+
+  const followUser = (followUserId) => {
+    sendJsonMessage({
+      type: 'followUser',
+      touser: followUserId,
+    });
+  }
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profile}>
@@ -94,7 +106,7 @@ const Profile = () => {
                   <h2>Following</h2>
                   <ul>
                     {following.map((user, index) => (
-                      <li key={index}>{user}</li>
+                      <li key={index}>{user.SenderEmail}</li>
                     ))}
                   </ul>
                 </div>
@@ -107,7 +119,7 @@ const Profile = () => {
                   <h2>Followers</h2>
                   <ul>
                     {followers.map((user, index) => (
-                      <li key={index}>{user}</li>
+                      <li key={index}>{user.SenderEmail}</li>
                     ))}
                   </ul>
                 </div>
@@ -145,6 +157,14 @@ const Profile = () => {
             </div>
           </div>
         )}
+
+        {ownProfile ? null : 
+          (alreadyFollowing ? 
+            <button onClick={() => unfollowUser(currentUser)}>Unfollow</button> :
+            <button onClick={() => followUser(currentUser)}>Follow</button>
+          )
+        }
+
       </div>
 
       {/* Logged in user's posts */}
