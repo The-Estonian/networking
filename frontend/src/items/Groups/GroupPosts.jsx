@@ -111,7 +111,6 @@ const GroupPosts = (props) => {
           <div 
           className={styles.postContainer} 
           key={index}
-          onClick={() => handleGroupPostComment(eachPost.PostID)}
         >
           <div className={styles.post}>
             <div className={styles.topPart}>
@@ -146,6 +145,12 @@ const GroupPosts = (props) => {
                   ''
                 )}
                 <p className={styles.content}>{eachPost.Content}</p>
+                <div 
+                  className={styles.commentsButton}
+                  onClick={() => handleGroupPostComment(eachPost.PostID)}
+                >
+                  View Comments
+                </div>
               </div>
             </div>
           </div>
