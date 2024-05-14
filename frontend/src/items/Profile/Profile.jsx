@@ -76,7 +76,7 @@ const Profile = () => {
       if (data.login === 'success') {
         setFollowers(data.followers);
         setAlreadyFollowing(data.alreadyFollowing)
-        setUserProfile(data.profile)
+        setUserProfile(data.profile)  
       }
     })
     if (userProfile.Privacy === "-1") {
@@ -92,9 +92,11 @@ const Profile = () => {
     
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
+        console.log("data2: ", data);
         setFollowers(data.followers);
         setAlreadyFollowing(data.alreadyFollowing)
         setUserProfile(data.profile)
+        setPosts(data.posts)
         setPrivacy("-1") // Is this ok??
       }
     })

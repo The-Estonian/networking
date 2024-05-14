@@ -639,18 +639,31 @@ func GetUserProfileInfo(currentUserId string, targetUserId string, followingUser
 	return userProfile, nil
 }
 
-func GetUserProfilePosts(currentUserId, targetUserId string) ([]structs.Posts, error) {
+func GetUserProfilePosts(currentUserId string, targetUserId string, followingUser bool) ([]structs.Posts, error) {
 	db := sqlite.DbConnection()
 	var posts []structs.Posts
+	command := ""
 
-	command := `
-    SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
-    FROM posts p
-    INNER JOIN users u ON p.user_fk_users = u.id
-    INNER JOIN user_privacy up ON u.id = up.user_fk_users
-    WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1 AND u.id = ?)
-        OR (u.id = ? AND u.id = ?))
-`
+	if !followingUser {
+		command = `
+		SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
+		FROM posts p
+		INNER JOIN users u ON p.user_fk_users = u.id
+		INNER JOIN user_privacy up ON u.id = up.user_fk_users
+		WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1 AND u.id = ?)
+			OR (u.id = ? AND u.id = ?))
+	`
+	} else {
+		command = `
+		SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
+		FROM posts p
+		INNER JOIN users u ON p.user_fk_users = u.id
+		INNER JOIN user_privacy up ON u.id = up.user_fk_users
+		WHERE (u.id = ?)
+			OR (u.id = ? AND u.id = ?)
+	`
+	}
+
 	rows, err := db.Query(command, targetUserId, currentUserId, targetUserId)
 	if err != nil {
 		helpers.CheckErr("GetUserProfilePosts Query error: ", err)

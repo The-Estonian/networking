@@ -59,10 +59,16 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		// get session owner userId from session
 		sessionId := validators.ValidateUserSession(cookie.Value)
 
+		if requestedId == "" || requestedId == sessionId {
+			ownProfile = true
+			viewId = sessionId
+		}
+
 		if unFollowId != "" {
 			validators.ValidateUnfollowUser(sessionId, unFollowId)
 		}
 
+		following := validators.ValidateFollowing(viewId)
 		followers := validators.ValidateFollowers(viewId)
 
 		for _, follower := range followers {
@@ -79,23 +85,14 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		callback["profile"] = userProfile
 
-		userProfilePosts, err := validators.ValidateUserProfilePosts(sessionId, requestedId)
+		userProfilePosts, err := validators.ValidateUserProfilePosts(sessionId, requestedId, followingUser)
 		if err != nil {
 			callback["posts"] = err.Error()
 			return
 		}
 		callback["posts"] = userProfilePosts
-
-		if requestedId == "" || requestedId == sessionId {
-			ownProfile = true
-			viewId = sessionId
-		}
-
 		callback["followers"] = followers
-
-		following := validators.ValidateFollowing(viewId)
 		callback["following"] = following
-
 		callback["ownProfile"] = ownProfile
 		callback["alreadyFollowing"] = followingUser
 	}
