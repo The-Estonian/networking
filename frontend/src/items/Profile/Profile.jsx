@@ -92,7 +92,6 @@ const Profile = () => {
     
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
-        console.log("data2: ", data);
         setFollowers(data.followers);
         setAlreadyFollowing(data.alreadyFollowing)
         setUserProfile(data.profile)
@@ -104,13 +103,7 @@ const Profile = () => {
 
   return (
     <div className={styles.profileContainer}>
-      <div className={styles.profile}>
-        {userProfile && userProfile.Privacy === "-1"  && !alreadyFollowing ? (
-          <p>This user is private, please send a follow request</p>
-        ) : (
-          <>
-            <span>SOMEONE STYLE THIS PLEASE!</span>
-            <div className={styles.avatar}>
+              <div className={styles.avatar}>
               {userProfile.Avatar ? (
                 <img
                   className={styles.avatarImg}
@@ -121,9 +114,13 @@ const Profile = () => {
                 ''
               )}
             </div>
-
+      <div className={styles.profile}>
+      <span>Email: {userProfile.Email}</span>
+        {userProfile && userProfile.Privacy === "-1"  && !alreadyFollowing ? (
+          <p>This user is private, please send a follow request</p>
+        ) : (
+          <>
             <span>Id: {userProfile.Id}</span>
-            <span>Email: {userProfile.Email}</span>
             <span>First Name: {userProfile.FirstName}</span>
             <span>Last Name: {userProfile.LastName}</span>
             <span>Username: {userProfile.Username}</span>

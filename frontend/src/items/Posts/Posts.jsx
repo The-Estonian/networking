@@ -60,7 +60,7 @@ const Posts = () => {
     setDisplayTitle(post.Title);
     setDisplayComments(true);
   };
-  console.log("eachpost is: ", allPosts);
+
   return (
     <div className={styles.postsOverlay}>
       {displayComments ? (
