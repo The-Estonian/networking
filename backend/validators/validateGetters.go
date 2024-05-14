@@ -139,11 +139,11 @@ func ValidateUserProfileInfo(sessionId string, targetUserId string, followingUse
 	return database.GetUserProfileInfo(sessionId, targetUserId, followingUser)
 }
 
-func ValidateUserProfilePosts(sessionId, targetUserId string) ([]structs.Posts, error) {
+func ValidateUserProfilePosts(sessionId string, targetUserId string, followingUser bool) ([]structs.Posts, error) {
 	if targetUserId == "" {
 		targetUserId = sessionId
 	}
-	return database.GetUserProfilePosts(sessionId, targetUserId)
+	return database.GetUserProfilePosts(sessionId, targetUserId, followingUser)
 }
 
 func ValidateGroupEvents(groupId string) []structs.Events {
