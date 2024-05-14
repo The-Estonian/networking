@@ -598,6 +598,8 @@ func GetGroupEvents(groupId string) []structs.Events {
 func GetUserProfileInfo(currentUserId string, targetUserId string, followingUser bool) (structs.Profile, error) {
 	db := sqlite.DbConnection()
 	var userProfile structs.Profile
+	var email string
+	var avatar string
 
 	command := ""
 	if !followingUser {
@@ -607,6 +609,11 @@ func GetUserProfileInfo(currentUserId string, targetUserId string, followingUser
     INNER JOIN user_privacy up ON u.id = up.user_fk_users
     WHERE (up.privacy_fk_users_privacy = 1 AND u.id = ?)
         OR (u.id = ? AND u.id = ?)`
+
+	err := db.QueryRow("SELECT email, avatar FROM users WHERE id = ?", targetUserId).Scan(&email, &avatar)
+	if err != nil {
+		helpers.CheckErr("GetUserProfileInfo - email scan", err)
+	}
 
 	} else {
 		command = `
@@ -630,7 +637,7 @@ func GetUserProfileInfo(currentUserId string, targetUserId string, followingUser
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// No user with the given ID was found, or their privacy settings do not allow the current user to view their profile
-			return structs.Profile{Privacy: "-1"}, nil
+			return structs.Profile{Privacy: "-1", Email: email, Avatar: avatar}, nil
 		}
 		helpers.CheckErr("GetUserProfileInfo: ", err)
 		return structs.Profile{}, err
