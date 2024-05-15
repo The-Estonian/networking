@@ -132,10 +132,11 @@ func GetProfilePosts(userId string) []structs.ProfilePosts {
 		profilePosts = append(profilePosts, profilePost)
 	}
 	defer db.Close()
+	fmt.Println("prof;ePosts: ", profilePosts)
 	return profilePosts
 }
 
-func GetAllPosts() []structs.Posts {
+func GetAllPosts(userId string) []structs.Posts {
 	db := sqlite.DbConnection()
 	defer db.Close()
 
@@ -151,10 +152,54 @@ func GetAllPosts() []structs.Posts {
 
 	for rows.Next() {
 		var post structs.Posts
-		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date, &post.Email, &post.UserId)
+
+		err := rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date, &post.Email, &post.UserId)
 		if err != nil {
 			helpers.CheckErr("getAllPosts", err)
 			continue
+		}
+
+		if post.Privacy == "2" && post.UserId != userId {
+			followers := GetFollowers(post.UserId)
+			if len(followers) == 0 {
+				continue
+			}
+
+			followerFound := false
+			for _, follower := range followers {
+				if follower.SenderId == userId {
+					followerFound = true
+					break
+				}
+			}
+			if !followerFound {
+				continue
+			}
+		}
+
+		if post.Privacy == "3" && post.UserId != userId {
+			followers := GetFollowers(post.UserId)
+			following := GetFollowers(userId)
+
+			isFollowing := false
+			for _, follower := range followers {
+				if follower.SenderId == userId {
+					isFollowing = true
+					break
+				}
+			}
+
+			isFollowed := false
+			for _, follower := range following {
+				if follower.SenderId == post.UserId {
+					isFollowed = true
+					break
+				}
+			}
+			if !isFollowing || !isFollowed {
+				continue
+			}
+
 		}
 		allPosts = append(allPosts, post)
 	}
@@ -610,10 +655,10 @@ func GetUserProfileInfo(currentUserId string, targetUserId string, followingUser
     WHERE (up.privacy_fk_users_privacy = 1 AND u.id = ?)
         OR (u.id = ? AND u.id = ?)`
 
-	err := db.QueryRow("SELECT email, avatar FROM users WHERE id = ?", targetUserId).Scan(&email, &avatar)
-	if err != nil {
-		helpers.CheckErr("GetUserProfileInfo - email scan", err)
-	}
+		err := db.QueryRow("SELECT email, avatar FROM users WHERE id = ?", targetUserId).Scan(&email, &avatar)
+		if err != nil {
+			helpers.CheckErr("GetUserProfileInfo - email scan", err)
+		}
 
 	} else {
 		command = `
@@ -649,8 +694,18 @@ func GetUserProfileInfo(currentUserId string, targetUserId string, followingUser
 func GetUserProfilePosts(currentUserId string, targetUserId string, followingUser bool) ([]structs.Posts, error) {
 	db := sqlite.DbConnection()
 	var posts []structs.Posts
-	command := ""
 
+	isFollowed := false
+	followers := GetFollowers(currentUserId)
+
+	for _, follower := range followers {
+		if follower.SenderId == targetUserId {
+			isFollowed = true
+			break
+		}
+	}
+
+	command := ""
 	if !followingUser {
 		command = `
 		SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
@@ -660,15 +715,23 @@ func GetUserProfilePosts(currentUserId string, targetUserId string, followingUse
 		WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1 AND u.id = ?)
 			OR (u.id = ? AND u.id = ?))
 	`
+	} else if followingUser && isFollowed {
+		command = `
+		SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
+		FROM posts p
+		INNER JOIN users u ON p.user_fk_users = u.id
+		INNER JOIN user_privacy up ON u.id = up.user_fk_users
+		WHERE ((up.privacy_fk_users_privacy = 1 AND u.id = ?)
+			OR (u.id = ? AND u.id = ?))
+	`
 	} else {
 		command = `
 		SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
 		FROM posts p
 		INNER JOIN users u ON p.user_fk_users = u.id
 		INNER JOIN user_privacy up ON u.id = up.user_fk_users
-		WHERE (u.id = ?)
-			OR (u.id = ? AND u.id = ?)
-	`
+		WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1)
+     	  OR (u.id = ? AND p.privacy_fk_posts_privacy = 2))`
 	}
 
 	rows, err := db.Query(command, targetUserId, currentUserId, targetUserId)

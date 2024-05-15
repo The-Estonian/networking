@@ -75,8 +75,10 @@ const Profile = () => {
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
         setFollowers(data.followers);
+        setFollowing(data.following);
         setAlreadyFollowing(data.alreadyFollowing)
         setUserProfile(data.profile)  
+        setPosts(data.posts)
       }
     })
     if (userProfile.Privacy === "-1") {
@@ -85,7 +87,7 @@ const Profile = () => {
     }
   }
 
-  const unfollowUser = (userId, e) => {
+  const unfollowUser = (userId) => {
     const formData = new FormData();
     formData.append('userId', currentUser);
     formData.append('unFollowId', userId);
@@ -93,6 +95,7 @@ const Profile = () => {
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
         setFollowers(data.followers);
+        setFollowing(data.following);
         setAlreadyFollowing(data.alreadyFollowing)
         setUserProfile(data.profile)
         setPosts(data.posts)
