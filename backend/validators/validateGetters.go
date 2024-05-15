@@ -52,8 +52,8 @@ func ValidateUserProfile(requestedEmail string) structs.Profile {
 	return database.GetUserProfile(userId)
 }
 
-func ValidatePosts() []structs.Posts {
-	return database.GetAllPosts()
+func ValidatePosts(userId string) []structs.Posts {
+	return database.GetAllPosts(userId)
 }
 
 func ValidateGroupPosts(groupId string) []structs.GroupPosts {
@@ -132,18 +132,18 @@ func ValidateGetGroupMembers(groupId string) []structs.GroupMember {
 	return database.GetGroupMembers(groupId)
 }
 
-func ValidateUserProfileInfo(sessionId, targetUserId string) (structs.Profile, error) {
+func ValidateUserProfileInfo(sessionId string, targetUserId string, followingUser bool) (structs.Profile, error) {
 	if targetUserId == "" {
 		targetUserId = sessionId
 	}
-	return database.GetUserProfileInfo(sessionId, targetUserId)
+	return database.GetUserProfileInfo(sessionId, targetUserId, followingUser)
 }
 
-func ValidateUserProfilePosts(sessionId, targetUserId string) ([]structs.Posts, error) {
+func ValidateUserProfilePosts(sessionId string, targetUserId string, followingUser bool) ([]structs.Posts, error) {
 	if targetUserId == "" {
 		targetUserId = sessionId
 	}
-	return database.GetUserProfilePosts(sessionId, targetUserId)
+	return database.GetUserProfilePosts(sessionId, targetUserId, followingUser)
 }
 
 func ValidateGroupEvents(groupId string) []structs.Events {

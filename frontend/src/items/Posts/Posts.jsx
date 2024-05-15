@@ -60,7 +60,7 @@ const Posts = () => {
     setDisplayTitle(post.Title);
     setDisplayComments(true);
   };
-  console.log("eachpost is: ", allPosts);
+
   return (
     <div className={styles.postsOverlay}>
       {displayComments ? (
@@ -111,7 +111,7 @@ const Posts = () => {
                   ''
                 )}
                 <p className={styles.content}>{eachPost.Content}</p>
-                <div
+                {!displayComments ?<div
                   className={styles.commentsButton}
                   onClick={() =>
                     ShowComments(
@@ -123,7 +123,7 @@ const Posts = () => {
                   }
                 >
                   Comments
-                </div>
+                </div> : ""}
               </div>
             </div>
 

@@ -132,10 +132,11 @@ func GetProfilePosts(userId string) []structs.ProfilePosts {
 		profilePosts = append(profilePosts, profilePost)
 	}
 	defer db.Close()
+	fmt.Println("prof;ePosts: ", profilePosts)
 	return profilePosts
 }
 
-func GetAllPosts() []structs.Posts {
+func GetAllPosts(userId string) []structs.Posts {
 	db := sqlite.DbConnection()
 	defer db.Close()
 
@@ -151,10 +152,54 @@ func GetAllPosts() []structs.Posts {
 
 	for rows.Next() {
 		var post structs.Posts
-		err = rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date, &post.Email, &post.UserId)
+
+		err := rows.Scan(&post.PostID, &post.Username, &post.Avatar, &post.Title, &post.Content, &post.Picture, &post.Privacy, &post.Date, &post.Email, &post.UserId)
 		if err != nil {
 			helpers.CheckErr("getAllPosts", err)
 			continue
+		}
+
+		if post.Privacy == "2" && post.UserId != userId {
+			followers := GetFollowers(post.UserId)
+			if len(followers) == 0 {
+				continue
+			}
+
+			followerFound := false
+			for _, follower := range followers {
+				if follower.SenderId == userId {
+					followerFound = true
+					break
+				}
+			}
+			if !followerFound {
+				continue
+			}
+		}
+
+		if post.Privacy == "3" && post.UserId != userId {
+			followers := GetFollowers(post.UserId)
+			following := GetFollowers(userId)
+
+			isFollowing := false
+			for _, follower := range followers {
+				if follower.SenderId == userId {
+					isFollowing = true
+					break
+				}
+			}
+
+			isFollowed := false
+			for _, follower := range following {
+				if follower.SenderId == post.UserId {
+					isFollowed = true
+					break
+				}
+			}
+			if !isFollowing || !isFollowed {
+				continue
+			}
+
 		}
 		allPosts = append(allPosts, post)
 	}
@@ -595,17 +640,35 @@ func GetGroupEvents(groupId string) []structs.Events {
 	return groupEvents
 }
 
-func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, error) {
+func GetUserProfileInfo(currentUserId string, targetUserId string, followingUser bool) (structs.Profile, error) {
 	db := sqlite.DbConnection()
 	var userProfile structs.Profile
+	var email string
+	var avatar string
 
-	command := `
+	command := ""
+	if !followingUser {
+		command = `
     SELECT u.id, u.email, u.first_name, u.last_name, u.date_of_birth, u.username, u.about_user, u.avatar, up.privacy_fk_users_privacy
     FROM users u
     INNER JOIN user_privacy up ON u.id = up.user_fk_users
     WHERE (up.privacy_fk_users_privacy = 1 AND u.id = ?)
-        OR (u.id = ? AND u.id = ?)
-`
+        OR (u.id = ? AND u.id = ?)`
+
+		err := db.QueryRow("SELECT email, avatar FROM users WHERE id = ?", targetUserId).Scan(&email, &avatar)
+		if err != nil {
+			helpers.CheckErr("GetUserProfileInfo - email scan", err)
+		}
+
+	} else {
+		command = `
+	SELECT u.id, u.email, u.first_name, u.last_name, u.date_of_birth, u.username, u.about_user, u.avatar, up.privacy_fk_users_privacy
+	FROM users u
+	INNER JOIN user_privacy up ON u.id = up.user_fk_users
+	WHERE (u.id = ?)
+		OR (u.id = ? AND u.id = ?)`
+	}
+
 	err := db.QueryRow(command, targetUserId, currentUserId, targetUserId).Scan(
 		&userProfile.Id,
 		&userProfile.Email,
@@ -619,7 +682,7 @@ func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, er
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// No user with the given ID was found, or their privacy settings do not allow the current user to view their profile
-			return structs.Profile{Privacy: "-1"}, nil
+			return structs.Profile{Privacy: "-1", Email: email, Avatar: avatar}, nil
 		}
 		helpers.CheckErr("GetUserProfileInfo: ", err)
 		return structs.Profile{}, err
@@ -628,18 +691,49 @@ func GetUserProfileInfo(currentUserId, targetUserId string) (structs.Profile, er
 	return userProfile, nil
 }
 
-func GetUserProfilePosts(currentUserId, targetUserId string) ([]structs.Posts, error) {
+func GetUserProfilePosts(currentUserId string, targetUserId string, followingUser bool) ([]structs.Posts, error) {
 	db := sqlite.DbConnection()
 	var posts []structs.Posts
 
-	command := `
-    SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
-    FROM posts p
-    INNER JOIN users u ON p.user_fk_users = u.id
-    INNER JOIN user_privacy up ON u.id = up.user_fk_users
-    WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1 AND u.id = ?)
-        OR (u.id = ? AND u.id = ?))
-`
+	isFollowed := false
+	followers := GetFollowers(currentUserId)
+
+	for _, follower := range followers {
+		if follower.SenderId == targetUserId {
+			isFollowed = true
+			break
+		}
+	}
+
+	command := ""
+	if !followingUser {
+		command = `
+		SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
+		FROM posts p
+		INNER JOIN users u ON p.user_fk_users = u.id
+		INNER JOIN user_privacy up ON u.id = up.user_fk_users
+		WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1 AND u.id = ?)
+			OR (u.id = ? AND u.id = ?))
+	`
+	} else if followingUser && isFollowed {
+		command = `
+		SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
+		FROM posts p
+		INNER JOIN users u ON p.user_fk_users = u.id
+		INNER JOIN user_privacy up ON u.id = up.user_fk_users
+		WHERE ((up.privacy_fk_users_privacy = 1 AND u.id = ?)
+			OR (u.id = ? AND u.id = ?))
+	`
+	} else {
+		command = `
+		SELECT p.id, p.post_title, p.post_content, p.post_image, p.privacy_fk_posts_privacy, p.date
+		FROM posts p
+		INNER JOIN users u ON p.user_fk_users = u.id
+		INNER JOIN user_privacy up ON u.id = up.user_fk_users
+		WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1)
+     	  OR (u.id = ? AND p.privacy_fk_posts_privacy = 2))`
+	}
+
 	rows, err := db.Query(command, targetUserId, currentUserId, targetUserId)
 	if err != nil {
 		helpers.CheckErr("GetUserProfilePosts Query error: ", err)

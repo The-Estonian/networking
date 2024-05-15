@@ -31,7 +31,7 @@ const Profile = () => {
 
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
-        console.log("data: ", data);
+        console.log("data1: ", data);
         // profile info
         setUserProfile(data.profile)
         setFollowing(data.following);
@@ -64,22 +64,49 @@ const Profile = () => {
     SendNewPrivacy(formData).then((data) => setPrivacy(data.SendNewPrivacy));
   };
 
-  const followUser = (followUserId) => {
+  const followUser = (followUserId, e) => {
     sendJsonMessage({
       type: 'followUser',
       touser: followUserId,
     });
+    const formData = new FormData();
+    formData.append('userId', currentUser);
+    
+    GetProfile(formData).then((data) => {
+      if (data.login === 'success') {
+        setFollowers(data.followers);
+        setFollowing(data.following);
+        setAlreadyFollowing(data.alreadyFollowing)
+        setUserProfile(data.profile)  
+        setPosts(data.posts)
+      }
+    })
+    if (userProfile.Privacy === "-1") {
+      e.target.style.opacity = "0.4" // rändom stiil et näha kas toimib
+      e.target.style.cursor = "default"
+    }
+  }
+
+  const unfollowUser = (userId) => {
+    const formData = new FormData();
+    formData.append('userId', currentUser);
+    formData.append('unFollowId', userId);
+    
+    GetProfile(formData).then((data) => {
+      if (data.login === 'success') {
+        setFollowers(data.followers);
+        setFollowing(data.following);
+        setAlreadyFollowing(data.alreadyFollowing)
+        setUserProfile(data.profile)
+        setPosts(data.posts)
+        setPrivacy("-1") // Is this ok??
+      }
+    })
   }
 
   return (
     <div className={styles.profileContainer}>
-      <div className={styles.profile}>
-        {userProfile && userProfile.Privacy === "-1" ? (
-          <p>This user is private, please send a follow request</p>
-        ) : (
-          <>
-            <span>SOMEONE STYLE THIS PLEASE!</span>
-            <div className={styles.avatar}>
+              <div className={styles.avatar}>
               {userProfile.Avatar ? (
                 <img
                   className={styles.avatarImg}
@@ -90,9 +117,13 @@ const Profile = () => {
                 ''
               )}
             </div>
-
+      <div className={styles.profile}>
+      <span>Email: {userProfile.Email}</span>
+        {userProfile && userProfile.Privacy === "-1"  && !alreadyFollowing ? (
+          <p>This user is private, please send a follow request</p>
+        ) : (
+          <>
             <span>Id: {userProfile.Id}</span>
-            <span>Email: {userProfile.Email}</span>
             <span>First Name: {userProfile.FirstName}</span>
             <span>Last Name: {userProfile.LastName}</span>
             <span>Username: {userProfile.Username}</span>
@@ -160,8 +191,8 @@ const Profile = () => {
 
         {ownProfile ? null : 
           (alreadyFollowing ? 
-            <button onClick={() => unfollowUser(currentUser)}>Unfollow</button> :
-            <button onClick={() => followUser(currentUser)}>Follow</button>
+            <button onClick={(e) => unfollowUser(currentUser, e)}>Unfollow</button> :
+            <button onClick={(e) => followUser(currentUser, e)}>Follow</button>
           )
         }
 
