@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext, useLocation } from 'react-router-dom';
+import { useNavigate, useOutletContext, useLocation, Link } from 'react-router-dom';
 
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
 
 import { GetProfile } from '../../connections/profileConnection.js';
 import { SendNewPrivacy } from '../../connections/newPrivacyConnection.js';
+// import { GetAllComments } from '../../connections/commentsConnection.js';
+// import NewComment from '../Comments/NewComment.jsx';
 
 import styles from './Profile.module.css';
 
@@ -22,6 +24,7 @@ const Profile = () => {
   const currentUser = location.pathname.substring(9);
   const [ownProfile, setOwnProfile] = useState(false);
   const [alreadyFollowing, setAlreadyFollowing] = useState(false);
+  // const [displayComments, setDisplayComments] = useState(false);
 
   useEffect(() => {
     modal(true);
@@ -103,20 +106,35 @@ const Profile = () => {
       }
     })
   }
+  // const ShowComments = (
+  //   post,
+  //   setAllPosts,
+  //   setDisplayComments,
+  //   setDisplayTitle
+  // ) => {
+  //   const formData = new FormData();
+  //   formData.append('postID', post.PostID);
 
+  //   GetAllComments(formData).then((data) =>
+  //     data.comments == null ? setAllPosts([]) : setAllPosts(data.comments)
+  //   );
+  //   setDisplayTitle(post.Title);
+  //   setDisplayComments(true);
+  // };
+  console.log("user posts: ", posts)
   return (
     <div className={styles.profileContainer}>
-              <div className={styles.avatar}>
-              {userProfile.Avatar ? (
-                <img
-                  className={styles.avatarImg}
-                  src={`${backendUrl}/avatar/${userProfile.Avatar}`}
-                  alt='Avatar'
-                ></img>
-              ) : (
-                ''
-              )}
-            </div>
+      <div className={styles.avatar}>
+        {userProfile.Avatar ? (
+          <img
+            className={styles.avatarImg}
+            src={`${backendUrl}/avatar/${userProfile.Avatar}`}
+            alt='Avatar'
+          ></img>
+        ) : (
+          ''
+        )}
+      </div>
       <div className={styles.profile}>
       <span>Email: {userProfile.Email}</span>
         {userProfile && userProfile.Privacy === "-1"  && !alreadyFollowing ? (
@@ -199,34 +217,79 @@ const Profile = () => {
       </div>
 
       {/* Logged in user's posts */}
-      <div className={styles.posts}>
+      <div className={styles.postsOverlay}>
+        {/* {displayComments ? (
+          <NewComment setAllPosts={setAllPosts} />
+        ) : (
+          <NewPost setAllPosts={setAllPosts} />
+        )} */}
         {posts && posts.length > 0 ? (
-          <div>
-            <h2>Posts</h2>
-            <ul>
-              {posts.map((post, index) => (
-                <li key={index}>
-                  <p>Id: {post.PostID}</p>
-                  <p>Title: {post.Title}</p>
-                  <p>Post: {post.Content}</p>
-                  <p>Date: {post.Date}</p>
-                  <p>Privacy: {post.Privacy}</p>
-                  {post.Picture ? (
-                    <img
-                      className={styles.profilePostImg}
-                      src={`${backendUrl}/avatar/${post.Picture}`}
-                      alt='PostPicure'
-                    ></img>
+          posts.map((eachPost, index) => (
+            <div className={styles.postContainer} key={index}>
+              <div className={styles.post}>
+                <div className={styles.topPart}>
+                  {eachPost.Avatar ? (
+                    <Link to={`/profile/${eachPost.UserId}`}>
+                      <img
+                        className={styles.avatarImg}
+                        src={`${backendUrl}/avatar/${eachPost.Avatar}`}
+                        alt='Avatar'
+                      />
+                    </Link>
                   ) : (
                     ''
                   )}
-                </li>
-              ))}
-            </ul>
-          </div>
+                  <div>
+                    <p>Published at {new Date(eachPost.Date).toLocaleTimeString()} on {new Intl.DateTimeFormat('en-GB').format(new Date(eachPost.Date))}</p>
+                  </div>
+                </div>
+
+                <div className={styles.mainContent}>
+                  <div className={styles.leftSide}></div>
+                  <div className={styles.rightSide}>
+                    <p className={styles.title}>{eachPost.Title}</p>
+                    {eachPost.Picture ? (
+                      <img
+                        className={styles.postsImg}
+                        src={`${backendUrl}/avatar/${eachPost.Picture}`}
+                        alt='PostPicure'
+                      ></img>
+                    ) : (
+                      ''
+                    )}
+                    <p className={styles.content}>{eachPost.Content}</p>
+                    {/* {!displayComments ?<div
+                        className={styles.commentsButton}
+                        onClick={() =>
+                          ShowComments(
+                            eachPost,
+                            setAllPosts,
+                            setDisplayComments,
+                            setDisplayTitle
+                          )
+                        }
+                      >
+                        View Comments
+                      </div> : ""} */}
+                    <div 
+                      className={styles.commentsButton}
+                      // onClick={() => handleGroupPostComment(eachPost.PostID)}
+                    >
+                      View Comments
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
         ) : (
           <p>No posts to show.</p>
         )}
+        {/* {displayComments ? (
+          <button onClick={showPosts}>RETURN TO POSTS</button>
+        ) : (
+          ''
+        )} */}
       </div>
     </div>
   );
