@@ -216,7 +216,7 @@ func GetGroupPosts(groupId string) []structs.GroupPosts {
 
 	var allGroupPosts []structs.GroupPosts
 
-	command := "SELECT group_posts.id, users.username, users.avatar, group_posts.post_Title, group_posts.post_content, group_posts.post_image, group_posts.date, users.email, group_posts.guildid_fk_guilds FROM group_posts INNER JOIN users ON group_posts.user_fk_users == users.id WHERE group_posts.guildid_fk_guilds = ? ORDER BY group_posts.date DESC"
+	command := "SELECT group_posts.id, users.username, users.avatar, group_posts.post_title, group_posts.post_content, group_posts.post_image, group_posts.date, users.email, group_posts.guildid_fk_guilds, users.id FROM group_posts INNER JOIN users ON group_posts.user_fk_users == users.id WHERE group_posts.guildid_fk_guilds = ? ORDER BY group_posts.date DESC"
 	rows, err := db.Query(command, groupId)
 	if err != nil {
 		helpers.CheckErr("GetGroupPosts", err)
@@ -226,7 +226,7 @@ func GetGroupPosts(groupId string) []structs.GroupPosts {
 
 	for rows.Next() {
 		var groupPost structs.GroupPosts
-		err = rows.Scan(&groupPost.PostID, &groupPost.Username, &groupPost.Avatar, &groupPost.Title, &groupPost.Content, &groupPost.Picture, &groupPost.Date, &groupPost.Email, &groupPost.GroupId)
+		err = rows.Scan(&groupPost.PostID, &groupPost.Username, &groupPost.Avatar, &groupPost.Title, &groupPost.Content, &groupPost.Picture, &groupPost.Date, &groupPost.Email, &groupPost.GroupId, &groupPost.UserId)
 		if err != nil {
 			helpers.CheckErr("GetGroupPosts", err)
 			continue

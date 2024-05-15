@@ -1,1 +1,1 @@
-DROP TABLE followers;
+DROP TABLE followrequests;
