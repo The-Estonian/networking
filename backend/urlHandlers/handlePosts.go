@@ -14,10 +14,11 @@ func HandlePosts(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Posts attempt!")
 
 	var callback = make(map[string]interface{})
-	var sendPosts []structs.Posts
+
 	cookie, err := r.Cookie("socialNetworkSession")
+	userId := validators.ValidateUserSession(cookie.Value)
 	// if not err and cookie valid
-	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
+	if err != nil || userId == "0" {
 		// check status
 		sessionCookie := http.Cookie{
 			Name:     "socialNetworkSession",
@@ -42,8 +43,9 @@ func HandlePosts(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 	} else {
 		callback["login"] = "success"
+		var sendPosts []structs.Posts
 
-		sendPosts = validators.ValidatePosts()
+		sendPosts = validators.ValidatePosts(userId)
 		callback["posts"] = sendPosts
 	}
 	writeData, err := json.Marshal(callback)
