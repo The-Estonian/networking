@@ -62,6 +62,7 @@ const NewGroupPost = (props) => {
     }
 
     const formData = new FormData();
+    formData.append('title', newGroupPostTitle);
     formData.append('content', newGroupPostContent);
     formData.append('group', props.selectedGroup.Id);
     formData.append('picture', file);

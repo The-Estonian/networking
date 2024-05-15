@@ -72,7 +72,7 @@ const GroupPosts = (props) => {
     setInputError(false);
     setInputErrorText('');
   };
-  console.log("groupPosts: ", props.groupPosts)
+  console.log("groupPosts: ", props)
   return (
     <div className={styles.postsOverlay}>
       {showComments && (
