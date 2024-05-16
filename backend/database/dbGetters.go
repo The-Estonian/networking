@@ -142,7 +142,7 @@ func GetAllPosts(userId string) []structs.Posts {
 
 	var allPosts []structs.Posts
 
-	command := "SELECT posts.id, users.username, users.avatar, posts.post_Title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date, users.email, users.id FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC"
+	command := "SELECT posts.id, users.email, users.avatar, posts.post_Title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date, users.email, users.id FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC"
 	rows, err := db.Query(command)
 	if err != nil {
 		helpers.CheckErr("getAllPosts", err)
@@ -216,7 +216,7 @@ func GetGroupPosts(groupId string) []structs.GroupPosts {
 
 	var allGroupPosts []structs.GroupPosts
 
-	command := "SELECT group_posts.id, users.username, users.avatar, group_posts.post_title, group_posts.post_content, group_posts.post_image, group_posts.date, users.email, group_posts.guildid_fk_guilds, users.id FROM group_posts INNER JOIN users ON group_posts.user_fk_users == users.id WHERE group_posts.guildid_fk_guilds = ? ORDER BY group_posts.date DESC"
+	command := "SELECT group_posts.id, users.email, users.avatar, group_posts.post_title, group_posts.post_content, group_posts.post_image, group_posts.date, users.email, group_posts.guildid_fk_guilds, users.id FROM group_posts INNER JOIN users ON group_posts.user_fk_users == users.id WHERE group_posts.guildid_fk_guilds = ? ORDER BY group_posts.date DESC"
 	rows, err := db.Query(command, groupId)
 	if err != nil {
 		helpers.CheckErr("GetGroupPosts", err)
@@ -244,7 +244,7 @@ func GetNewPost() structs.Posts {
 	db := sqlite.DbConnection()
 	var lastPost structs.Posts
 
-	command := "SELECT posts.id, users.username, users.avatar, posts.post_title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC LIMIT 1"
+	command := "SELECT posts.id, users.email, users.avatar, posts.post_title, posts.post_content, posts.post_image, posts.privacy_fk_posts_privacy, posts.date FROM posts INNER JOIN users ON posts.user_fk_users == users.id ORDER BY posts.date DESC LIMIT 1"
 	err := db.QueryRow(command).Scan(&lastPost.PostID, &lastPost.Username, &lastPost.Avatar, &lastPost.Title, &lastPost.Content, &lastPost.Picture, &lastPost.Privacy, &lastPost.Date)
 	if err != nil {
 		if err != sql.ErrNoRows {
