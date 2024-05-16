@@ -122,7 +122,7 @@ const Posts = () => {
                     )
                   }
                 >
-                  Comments
+                  View Comments
                 </div> : ""}
               </div>
             </div>
