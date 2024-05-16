@@ -124,98 +124,98 @@ const Profile = () => {
   console.log("user posts: ", posts)
   return (
     <div className={styles.profileContainer}>
-      <div className={styles.avatar}>
-        {userProfile.Avatar ? (
-          <img
-            className={styles.avatarImg}
-            src={`${backendUrl}/avatar/${userProfile.Avatar}`}
-            alt='Avatar'
-          ></img>
-        ) : (
-          ''
-        )}
-      </div>
-      <div className={styles.profile}>
-      <span>Email: {userProfile.Email}</span>
-        {userProfile && userProfile.Privacy === "-1"  && !alreadyFollowing ? (
-          <p>This user is private, please send a follow request</p>
-        ) : (
-          <>
-            <span>Id: {userProfile.Id}</span>
-            <span>First Name: {userProfile.FirstName}</span>
-            <span>Last Name: {userProfile.LastName}</span>
-            <span>Username: {userProfile.Username}</span>
-            <span>
-              Date of Birth: {new Date(userProfile.DateOfBirth).toDateString()}
-            </span>
-            {/* Logged in user's followers and following*/}
-            <div className={styles.follow}>
-              {following ? (
+      <div className={styles.profileInfo}>
+        <div className={styles.avatar}>
+          {userProfile.Avatar ? (
+            <img
+              className={styles.avatarImg}
+              src={`${backendUrl}/avatar/${userProfile.Avatar}`}
+              alt='Avatar'
+            ></img>
+          ) : (
+            ''
+          )}
+        </div>
+        <div className={styles.profile}>
+          <span>Email: </span>{userProfile.Email}
+          {userProfile && userProfile.Privacy === "-1"  && !alreadyFollowing ? (
+            <p>This user is private, please send a follow request</p>
+          ) : (
+            <>
+              <span>Id: </span>{userProfile.Id}
+              <span>First Name: </span>{userProfile.FirstName}
+              <span>Last Name: </span>{userProfile.LastName}
+              <span>Username: </span>{userProfile.Username}
+              <span>Date of Birth: </span>{new Date(userProfile.DateOfBirth).toDateString()}
+              {/* Privacy settings */}
+              {privacyButton === '1' && (
                 <div>
+                  <span>Privacy mode: </span>
+                  <div className={styles.toggleSwitch}>
+                    <input
+                      type='checkbox'
+                      id='toggle'
+                      className={styles.toggleSwitchCheckbox}
+                      checked={privacy === '2'}
+                      onChange={handlePrivacyChange}
+                    />
+                    <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
+                      <span className={styles.toggleSwitchInner} />
+                      <span className={styles.toggleSwitchSwitch} />
+                      <span
+                        className={
+                          privacy === '2'
+                            ? styles.toggleSwitchTextOn
+                            : styles.toggleSwitchTextOff
+                        }
+                      >
+                        {privacy === '2' ? 'ON' : 'OFF'}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              )}
+              {/* Logged in user's followers and following*/}
+              <div className={styles.follow}>
+                <div className={styles.following}>
                   <h2>Following</h2>
-                  <ul>
-                    {following.map((user, index) => (
-                      <li key={index}>{user.SenderEmail}</li>
-                    ))}
-                  </ul>
+                  {following ? (
+                    <div>
+                      <ul className={styles.noBullets}>
+                        {following.map((user, index) => (
+                          <li key={index}>{user.SenderEmail}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p>No users are being followed.</p>
+                  )}
                 </div>
-              ) : (
-                <p>No users are being followed.</p>
-              )}
-
-              {followers ? (
-                <div>
+                <div className={styles.followers}>
                   <h2>Followers</h2>
-                  <ul>
-                    {followers.map((user, index) => (
-                      <li key={index}>{user.SenderEmail}</li>
-                    ))}
-                  </ul>
+                  {followers ? (
+                    <div>
+                      <ul className={styles.noBullets}>
+                        {followers.map((user, index) => (
+                          <li key={index}>{user.SenderEmail}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p>No followers found.</p>
+                  )}                  
                 </div>
-              ) : (
-                <p>No followers found.</p>
-              )}
-            </div>
-          </>
-        )}
-        {/* Privacy settings */}
-        {privacyButton === '1' && (
-          <div>
-            <span>Privacy mode: </span>
-            <div className={styles.toggleSwitch}>
-              <input
-                type='checkbox'
-                id='toggle'
-                className={styles.toggleSwitchCheckbox}
-                checked={privacy === '2'}
-                onChange={handlePrivacyChange}
-              />
-              <label className={styles.toggleSwitchLabel} htmlFor='toggle'>
-                <span className={styles.toggleSwitchInner} />
-                <span className={styles.toggleSwitchSwitch} />
-                <span
-                  className={
-                    privacy === '2'
-                      ? styles.toggleSwitchTextOn
-                      : styles.toggleSwitchTextOff
-                  }
-                >
-                  {privacy === '2' ? 'ON' : 'OFF'}
-                </span>
-              </label>
-            </div>
-          </div>
-        )}
-
-        {ownProfile ? null : 
-          (alreadyFollowing ? 
-            <button onClick={(e) => unfollowUser(currentUser, e)}>Unfollow</button> :
-            <button onClick={(e) => followUser(currentUser, e)}>Follow</button>
-          )
-        }
-
+              </div>
+            </>
+          )}
+          {ownProfile ? null : 
+            (alreadyFollowing ? 
+              <button onClick={(e) => unfollowUser(currentUser, e)}>Unfollow</button> :
+              <button onClick={(e) => followUser(currentUser, e)}>Follow</button>
+            )
+          }
+        </div>
       </div>
-
       {/* Logged in user's posts */}
       <div className={styles.postsOverlay}>
         {/* {displayComments ? (

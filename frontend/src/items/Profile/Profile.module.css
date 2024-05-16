@@ -4,9 +4,9 @@
   margin: auto;
   width: 60%;
   height: 90%;
-  border: 1px solid black;
+  border: 2px solid black;
   padding: 1rem;
-  background-color: rgba(128, 128, 128, 0.5);
+  background-color: rgb(155, 155, 155);
 }
 
 .profile {
@@ -25,6 +25,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  border-top: white 1px solid;
+  padding-top: 1rem;
+  margin-top: 1rem;
 }
 
 .avatar {
@@ -90,7 +93,7 @@
 
 .toggleSwitchTextOn {
   position: absolute;
-  top: 30%;
+  top: 15%;
   left: 20%;
 
   font-size: 0.75rem;
@@ -99,7 +102,7 @@
 
 .toggleSwitchTextOff {
   position: absolute;
-  top: 30%;
+  top: 15%;
   left: 55%;
 
   font-size: 0.75rem;
@@ -112,7 +115,7 @@
 }
 /* Privacy button ends here */
 /* Posts Styling */
-.postsOverlay{
+.postsOverlay {
   display: flex;
   flex-direction: column;
   margin: auto;
@@ -121,9 +124,15 @@
   width: 90vh;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color:rgba(255, 255, 255, 0.671);
-  border:#464646 solid 1px;
-  border-radius: 15px;
+  border-top:#ffffff solid 1px;
+  border-bottom:#ffffff solid 1px;
+  background: linear-gradient(rgba(155, 155, 155, 0.671), rgba(155, 155, 155, 0.671)), 
+              linear-gradient(rgba(155, 155, 155, 0.671), rgb(99, 99, 99)) no-repeat scroll,
+              linear-gradient(rgb(99, 99, 99), rgba(155, 155, 155, 0.705)) no-repeat scroll;
+  background-size: 100% 25px, 100% 25px, 100% 25px;
+  background-attachment: local, scroll, scroll;
+  background-position: top, bottom;
+  border-radius: 0.5rem;
 }
 
 .postContainer{
@@ -224,3 +233,29 @@
   border: 2px solid white;
 }
 /* Posts Styling Ends Here*/
+/* User Profile Elements*/
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 1rem;
+  border-right: 1px solid white;
+}
+
+.profileInfo span {
+  font-weight: bold;
+  line-height: 1.5rem;
+}
+
+.following {
+  margin-top: 1rem;
+}
+
+.followers {
+  margin-top: 1rem;
+}
+
+.noBullets {
+  list-style-type: none;
+}
+/* User Profile Elements end here*/
