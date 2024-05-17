@@ -138,6 +138,7 @@ const NewPost = ({ setAllPosts }) => {
             </div>
           </div>
           <span>Add Img/Gif</span>
+          <label className={styles.pictureCountainer}>
           <input
             type='file'
             name='postPic'
@@ -145,6 +146,7 @@ const NewPost = ({ setAllPosts }) => {
             id='file'
             ref={newPostPicRef}
           />
+          </label>
           {authError}
           <div className={styles.openNewPostOptions}>
             <span className={styles.openNewPostSubmit} onClick={submitNewPost}>

@@ -23,7 +23,7 @@ const Notifications = () => {
           data.groupInvNotifications == null ? setGroupInvNotify([]) : setGroupInvNotify(data.groupInvNotifications);
           data.eventNotifications == null ? setEventNotify([]) : setEventNotify(data.eventNotifications);
           data.groupRequests == null ? setGroupReqNotify([]) : setGroupReqNotify(data.groupRequests);
-          data.followRequests == null ? setFollowNotify([]) : setFollowNotify(data.followRequests);
+          data.followRequests == null ? setFollowNotify([]) : setFollowNotify(data.followRequests); 
           modal(false);
         } else {
           logout()
@@ -59,15 +59,19 @@ const Notifications = () => {
     type == 'groupRequest' && setGroupReqNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
     type == 'followUser' && setFollowNotify(prevNotifications => prevNotifications.filter((_, i) => i !== index))
 
+    let fromUser = notification.fromuserid
+    if (fromUser === "" || fromUser === undefined) {
+      fromUser = notification.fromuserId
+    }
+
     const formData = {
       decision: e.target.value,
       type: type,
       GroupId: notification.GroupId,
       EventId: notification.EventId,
       NotificationId: notification.NotificationId,
-      fromuserid : notification.fromuserId
+      fromuserid : fromUser
     }
-    console.log(formData);
     SendNotificationResponse(formData)
 }
 

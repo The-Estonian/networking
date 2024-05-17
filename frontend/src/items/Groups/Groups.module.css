@@ -73,6 +73,8 @@
 .userDopDownMenu {
   position: absolute;
   align-self: flex-end;
+  margin-top: 1px;
+  margin-right: 1px;
 }
 
 .groupInvatation {
