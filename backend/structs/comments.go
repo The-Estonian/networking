@@ -14,5 +14,3 @@ type NewComment struct {
 	Content string `json:"content"`
 	Picture string `json:"image"`
 }
-
-var PostID string

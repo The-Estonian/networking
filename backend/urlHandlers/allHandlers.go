@@ -1,6 +1,12 @@
 package urlHandlers
 
-import "net/http"
+import (
+	"backend/helpers"
+	"backend/validators"
+	"encoding/json"
+	"net/http"
+	"time"
+)
 
 func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/login", HandleLogin)
@@ -26,4 +32,38 @@ func StartHandlers(r *http.ServeMux) {
 	r.HandleFunc("/newgroupcomment", HandleGetGroupPostComments)
 	r.HandleFunc("/groupmessages", HandleGetGroupMessages)
 	r.Handle("/avatar/", http.StripPrefix("/avatar/", http.FileServer(http.Dir("./database/images"))))
+}
+
+func handleSession(w http.ResponseWriter, r *http.Request) bool {
+	cookie, err := r.Cookie("socialNetworkSession")
+	if err != nil || validators.ValidateUserSession(cookie.Value) == "0" {
+		var callback = make(map[string]string)
+		// check status
+		sessionCookie := http.Cookie{
+			Name:     "socialNetworkSession",
+			Value:    "",
+			Expires:  time.Now(),
+			Path:     "/",
+			HttpOnly: true,
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
+		}
+		http.SetCookie(w, &sessionCookie)
+
+		authCookie := http.Cookie{
+			Name:     "socialNetworkAuth",
+			Value:    "false",
+			Expires:  time.Now(),
+			Path:     "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
+		}
+		http.SetCookie(w, &authCookie)
+		callback["login"] = "fail"
+		writeData, err := json.Marshal(callback)
+		helpers.CheckErr("handleSession", err)
+		w.Write(writeData)
+		return false
+	}
+	return true
 }

@@ -44,6 +44,6 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &authCookie)
 	callback["login"] = "fail"
 	writeData, err := json.Marshal(callback)
-	helpers.CheckErr("handleLogin", err)
+	helpers.CheckErr("HandleLogout", err)
 	w.Write(writeData)
 }

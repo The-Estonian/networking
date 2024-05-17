@@ -6,15 +6,15 @@ import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewComment.module.css';
 
-const NewComment = ({ setAllPosts }) => {
+const NewComment = (props) => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
   const newPostPicRef = useRef(null);
-  
+
   const [authError, setAuthError] = useState('');
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,11 +51,14 @@ const NewComment = ({ setAllPosts }) => {
       }
     }
     const formData = new FormData();
-    formData.append('content', newPostContent)
-    formData.append('picture', file)
+    formData.append('content', newPostContent);
+    formData.append('postId', props.activePost);
+    formData.append('picture', file);
 
-    SendNewComment(formData).then(data => setAllPosts(prevPosts => [data.sendNewComment, ...prevPosts]))
-   
+    SendNewComment(formData).then((data) =>
+      props.setAllPosts((prevPosts) => [data.sendNewComment, ...prevPosts])
+    );
+
     setNewPostContent('');
     switchNewPostOpen();
   };
@@ -70,8 +73,12 @@ const NewComment = ({ setAllPosts }) => {
             id='content'
             onChange={validateNewPostContentInput}
           />
-          {inputError ? <span className={styles.errorMsg}>{inputErrorText}</span> : ''}
-         
+          {inputError ? (
+            <span className={styles.errorMsg}>{inputErrorText}</span>
+          ) : (
+            ''
+          )}
+
           <span>Add Img/Gif</span>
           <input
             type='file'
@@ -82,7 +89,10 @@ const NewComment = ({ setAllPosts }) => {
           />
           {authError}
           <div className={styles.openNewPostOptions}>
-            <span className={styles.openNewPostSubmit} onClick={submitNewComment}>
+            <span
+              className={styles.openNewPostSubmit}
+              onClick={submitNewComment}
+            >
               Submit
             </span>
             <span

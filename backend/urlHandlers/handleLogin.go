@@ -47,8 +47,6 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "fail"
 		callback["error"] = userCookie
 	}
-	// fmt.Println(email)
-	// fmt.Println(password)
 
 	writeData, err := json.Marshal(callback)
 	helpers.CheckErr("handleLogin", err)

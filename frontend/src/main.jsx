@@ -26,17 +26,13 @@ const router = createBrowserRouter([
         path: '/posts',
         element: <Posts />,
       },
-      { 
+      {
         path: '/groups',
         element: <Groups />,
       },
       {
         path: '/chat',
         element: <Chat />,
-      },
-      {
-        path: '/followers',
-        element: <div>FOLLOWERS GO HERE TO-DO</div>,
       },
       {
         path: '/profile/:id',

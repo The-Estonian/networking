@@ -46,9 +46,6 @@ const Menu = (props) => {
       <NavLink to={`/chat`} className={activeClassName}>
         Chat
       </NavLink>
-      <NavLink to={`/followers`} className={activeClassName}>
-        Followers
-      </NavLink>
       <NavLink to={`/profile/`} className={activeProfile}>
         <img
           src={`${backendUrl}/avatar/${props.userAvatar}`}
