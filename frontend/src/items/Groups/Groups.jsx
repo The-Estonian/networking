@@ -130,7 +130,6 @@ const Groups = () => {
               {group.Title}
             </p>
           ))}
-          <h3>Joined Groups</h3>
         </div>
       )}
       {selectedGroup && !newGroupPostOpen && (
@@ -158,11 +157,11 @@ const Groups = () => {
                   }/${messageDate.getFullYear()} ${messageDate.getHours()}:${messageDate.getMinutes()}`;
                   return (
                     <div key={event.EventId} className={styles.eventInfo}>
-                      <p>{event.EventTitle}</p>
+                      <h4>{event.EventTitle}</h4>
                       <p>{event.EventDescription}</p>
-                      <p>{event.CreatorEmail}</p>
-                      <p>{messageDateString}</p>
-
+                      <p>Creator: {event.CreatorEmail}</p>
+                      <p>{messageDateString}</p><br></br>
+                      <p>Participants:</p>
                       {event.Participants.map((participant) => (
                         <p key={participant.ParticipantId}>
                           {participant.ParticipantEmail}

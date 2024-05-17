@@ -104,7 +104,7 @@ const NewGroupPost = (props) => {
       ) : (
         ''
       )}
-      <span>Add Img/Gif</span>
+      <label className={styles.pictureCountainer}>
       <input
         type='file'
         name='postPic'
@@ -112,6 +112,7 @@ const NewGroupPost = (props) => {
         id='file'
         ref={newGroupPostPicRef}
       />
+      </label>
       {authError}
       <div className={styles.openNewPostOptions}>
         <span className={styles.openNewPostSubmit} onClick={submitNewGroupPost}>
