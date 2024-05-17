@@ -24,7 +24,6 @@
   overflow: hidden;
   padding: 0;
   border: 2px solid black;
-  opacity: 1;
   transition: 1s;
 }
 
@@ -55,10 +54,6 @@
   color: black;
 }
 
-.menu:hover .linkButton {
-  opacity: 1;
-}
-
 .menu:hover .linkButton p {
   display: flex;
 }
@@ -87,7 +82,6 @@
   border: 2px solid transparent;
   font-size: inherit;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  opacity: 0;
   transition: 1s;
 }
 
