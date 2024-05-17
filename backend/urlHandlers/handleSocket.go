@@ -194,8 +194,10 @@ func handleMessages() {
 					if eventReciever.Id == msg.FromId {
 						continue
 					}
-					eventNotificationId := validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever.Id)
-					msg.NotificationId = eventNotificationId
+					if client == eventReciever.Id {
+						eventNotificationId := validators.ValidateSetNewEventNotification(msg.FromId, msg.GroupId, EventId, eventReciever.Id)
+						msg.NotificationId = eventNotificationId
+					}
 
 					if eventReciever.Id == clientConnections[client].connOwnerId {
 						clientConnections[client].mu.Lock()
