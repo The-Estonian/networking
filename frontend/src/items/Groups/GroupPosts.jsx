@@ -14,7 +14,7 @@ const GroupPosts = (props) => {
   const [selectedPost, setSelectedPost] = useState('');
   const [commentInput, setCommentInput] = useState('');
   const [inputError, setInputError] = useState(false);
-  const [currentCommentId, setCurrentCommentId] = useState("");
+  const [currentCommentId, setCurrentCommentId] = useState('');
   const [inputErrorText, setInputErrorText] = useState('');
   const newCommentPicRef = useRef(null);
 
@@ -25,11 +25,12 @@ const GroupPosts = (props) => {
   }, [props.selectedGroup]);
 
   const handleGroupPostComment = (postId) => {
-    setCurrentCommentId(postId)
+    setCurrentCommentId(postId);
     const formData = new FormData();
     formData.append('groupPostId', postId);
     GetGroupPostComments(formData).then((data) => {
       setGroupPostComments(data.groupComments);
+      console.log(data.groupComments);
     });
     setSelectedPost(postId);
     setShowComments(true);
@@ -108,57 +109,81 @@ const GroupPosts = (props) => {
       )}
       {!showComments ? (
         props.groupPosts.map((eachPost, index) => (
-          <div 
-          className={styles.postContainer} 
-          key={index}
-        >
-          <div className={styles.post}>
-            <div className={styles.topPart}>
-              {eachPost.Avatar ? (
-                <Link to={`/profile/${eachPost.UserId}`}>
-                  <img
-                    className={styles.avatarImg}
-                    src={`${backendUrl}/avatar/${eachPost.Avatar}`}
-                    alt='Avatar'
-                  />
-                </Link>
-                ) : (
-                  ''
-              )}
-              <div>
-                <p>Published by <Link style={{ color: 'inherit', textDecoration: 'none' }} to={`/profile/${eachPost.UserId}`}>{eachPost.Username !== "" ? eachPost.Username : eachPost.Email}</Link></p>
-                <p>at {new Date(eachPost.Date).toLocaleTimeString()} on {new Intl.DateTimeFormat('en-GB').format(new Date(eachPost.Date))}</p>
-              </div>
-            </div>
-
-            <div className={styles.mainContent}>
-              <div className={styles.leftSide}></div>
-              <div className={styles.rightSide}>
-                <p className={styles.title}>{eachPost.Title}</p>
-                {eachPost.Picture ? (
-                  <img
-                    className={styles.postsImg}
-                    src={`${backendUrl}/avatar/${eachPost.Picture}`}
-                    alt='PostPicure'
-                  ></img>
+          <div className={styles.postContainer} key={index}>
+            <div className={styles.post}>
+              <div className={styles.topPart}>
+                {eachPost.Avatar ? (
+                  <Link to={`/profile/${eachPost.UserId}`}>
+                    <img
+                      className={styles.avatarImg}
+                      src={`${backendUrl}/avatar/${eachPost.Avatar}`}
+                      alt='Avatar'
+                    />
+                  </Link>
                 ) : (
                   ''
                 )}
-                <p className={styles.content}>{eachPost.Content}</p>
-                <div 
-                  className={styles.commentsButton}
-                  onClick={() => handleGroupPostComment(eachPost.PostID)}
-                >
-                  View Comments
+                <div>
+                  <p>
+                    Published by{' '}
+                    <Link
+                      style={{ color: 'inherit', textDecoration: 'none' }}
+                      to={`/profile/${eachPost.UserId}`}
+                    >
+                      {eachPost.Username !== ''
+                        ? eachPost.Username
+                        : eachPost.Email}
+                    </Link>
+                  </p>
+                  <p>
+                    at {new Date(eachPost.Date).toLocaleTimeString()} on{' '}
+                    {new Intl.DateTimeFormat('en-GB').format(
+                      new Date(eachPost.Date)
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div className={styles.mainContent}>
+                <div className={styles.leftSide}></div>
+                <div className={styles.rightSide}>
+                  <p className={styles.title}>{eachPost.Title}</p>
+                  {eachPost.Picture ? (
+                    <img
+                      className={styles.postsImg}
+                      src={`${backendUrl}/avatar/${eachPost.Picture}`}
+                      alt='PostPicure'
+                    ></img>
+                  ) : (
+                    ''
+                  )}
+                  <p className={styles.content}>{eachPost.Content}</p>
+                  <div
+                    className={styles.commentsButton}
+                    onClick={() => handleGroupPostComment(eachPost.PostID)}
+                  >
+                    View Comments
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
         ))
       ) : groupPostComments ? (
-        groupPostComments.map((comment, i) => <p key={i}>{comment.Content}</p>)
+        groupPostComments.map((comment, i) => (
+          <div key={i} className={styles.commentContainer}>
+            <p className={styles.commentContent}>{comment.Content}</p>
+            {comment.Picture ? (
+              <img
+                className={styles.commentImg}
+                src={`${backendUrl}/avatar/${comment.Picture}`}
+                alt='CommentPicure'
+              ></img>
+            ) : (
+              ''
+            )}
+          </div>
+        ))
       ) : (
         <p>No comments yet!</p>
       )}
