@@ -121,7 +121,6 @@ const Profile = () => {
   //   setDisplayTitle(post.Title);
   //   setDisplayComments(true);
   // };
-  console.log("user posts: ", posts)
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profileInfo}>

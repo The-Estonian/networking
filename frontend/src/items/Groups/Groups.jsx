@@ -106,6 +106,8 @@ const Groups = () => {
           groupId={selectedGroup && selectedGroup.Id}
           currentUser={currentUser}
           groupTitle={selectedGroup && selectedGroup.Title}
+          setEvents = {setEvents}
+          setGroupMembers = {setGroupMembers}
         />
       )}
       {newGroupPostOpen ? (

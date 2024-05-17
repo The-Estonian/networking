@@ -3,9 +3,11 @@ import { useOutletContext } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import { GetGroupContent } from '../../connections/groupContentConnection.js';
+
 import styles from './NewGroup.module.css';
 
-const NewEvent = ({ groupId, setUpdateGroups, currentUser, groupTitle }) => {
+const NewEvent = ({ groupId, setUpdateGroups, currentUser, groupTitle, setEvents, setGroupMembers }) => {
   const [, , sendJsonMessage, ,] = useOutletContext();
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [eventTitle, setEventTitle] = useState('');
@@ -47,10 +49,16 @@ const NewEvent = ({ groupId, setUpdateGroups, currentUser, groupTitle }) => {
       participation: attendEvent,
       fromuserid: currentUser,
       GroupTitle: groupTitle,
-    });
+    })
+    const formData = new FormData();
+    formData.append('GroupId', groupId);
 
-    switchNewPostOpen();
-  };
+    GetGroupContent(formData).then((data) => {
+      setGroupMembers(data.groupMembers)
+      setEvents(data.events);
+      switchNewPostOpen();
+    })
+  }
 
   return (
     <div className={styles.newPost}>
