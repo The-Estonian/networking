@@ -77,7 +77,7 @@ const Posts = () => {
       {allPosts &&
         allPosts.map((eachPost, index) => {
           const messageDate = new Date(eachPost.Date.slice(0, -1));
-          const messageTimeString = `${messageDate.getHours()}:${messageDate.getMinutes()}:${messageDate.getSeconds()}`;
+          const messageTimeString = `${messageDate.getHours()}:${messageDate.getMinutes()}`;
           const messageDateString = ` ${messageDate.getDate()}-${
             messageDate.getMonth() + 1
           }-${messageDate.getFullYear()}`;
