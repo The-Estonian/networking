@@ -182,7 +182,11 @@ const Profile = () => {
                     <div>
                       <ul className={styles.noBullets}>
                         {following.map((user, index) => (
-                          <li key={index}>{user.SenderEmail}</li>
+                          <li key={index}>
+                            <Link className={styles.noLinks} to={`/profile/${user.fromuserId}`}>
+                              {user.SenderEmail}
+                            </Link>
+                          </li>
                         ))}
                       </ul>
                     </div>
@@ -196,7 +200,11 @@ const Profile = () => {
                     <div>
                       <ul className={styles.noBullets}>
                         {followers.map((user, index) => (
-                          <li key={index}>{user.SenderEmail}</li>
+                          <li key={index}>
+                            <Link className={styles.noLinks} to={`/profile/${user.fromuserId}`}>
+                              {user.SenderEmail}
+                            </Link>
+                          </li>
                         ))}
                       </ul>
                     </div>
