@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { GetStatus } from '../../connections/statusConnection.js';
 import { SetLogout } from '../../connections/logoutConnection.js';
@@ -28,6 +28,7 @@ const Container = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userId, setUserId] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const startWebSocketConnection = () => {
     setSocketUrl(websock);
@@ -73,11 +74,18 @@ const Container = () => {
       const messageData = JSON.parse(lastMessage.data);
       if (
         messageData.type != 'onlineStatus' &&
-        messageData.type != 'challenge' &&
         messageData.type != 'groupMessage'
       ) {
-        handleNotification(`New ${messageData.type}`);
-        setGlow(true);
+        if (messageData.type == 'message') {
+          if (location.pathname != '/chat') {
+            handleNotification(`New ${messageData.type}`);
+          }
+        } else {
+          handleNotification(`New ${messageData.type}`);
+        }
+        if (messageData.type != 'message') {
+          setGlow(true);
+        }
       }
     }
   }, [lastMessage]);

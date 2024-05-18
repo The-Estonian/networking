@@ -118,8 +118,10 @@ const Notifications = () => {
         <div id='grInv' className={styles.groupInvList}>
           {groupInvNotify.map((notification, index) => (
             <div className={styles.notifyBox} key={index}>
-              <p>Group name: {notification.message}</p>
-              <p>Sender: {notification.SenderEmail}</p>
+              <div>
+                {notification.SenderEmail} Has invited you to Group named:{' '}
+                {notification.message}
+              </div>
 
               <button
                 className={styles.accept}
@@ -153,13 +155,10 @@ const Notifications = () => {
             return (
               <div className={styles.notifyBox} key={index}>
                 <div className={styles.eventInfo}>
-                  <p>Sender email: {notification.SenderEmail}</p>
-                  <p>E title: {notification.EventTitle}</p>
-                  <p>E Descr: {notification.EventDescription}</p>
-                  <p>E Time: {messageDateString}</p>
-                  <p>Gr Title: {notification.GroupTitle}</p>
-                  <p>Notf ID: {notification.NotificationId}</p>
-                  <p>Event ID: {notification.EventId}</p>
+                  <p>
+                    {notification.SenderEmail} Has invited you to an{' '}
+                    {notification.EventTitle} event on {messageDateString}
+                  </p>
                 </div>
                 <button
                   className={styles.accept}
@@ -217,7 +216,9 @@ const Notifications = () => {
         <div id='follow' className={styles.groupInvList}>
           {followNotify.map((notification, index) => (
             <div className={styles.notifyBox} key={index}>
-              <p>{notification.SenderEmail}</p>
+              <p>
+                {notification.SenderEmail} Has asked if he/she can follow you?
+              </p>
 
               <button
                 className={styles.accept}
