@@ -102,7 +102,11 @@ const Groups = () => {
 
   return (
     <div className={styles.groupContainer}>
-      <NewGroup setGroups={setGroups} />
+      <NewGroup
+        setGroups={setGroups}
+        setSelectedGroup={setSelectedGroup}
+        Groupinfo={Groupinfo}
+      />
       {isGroupMember && (
         <NewEvent
           groupId={selectedGroup && selectedGroup.Id}
@@ -118,7 +122,7 @@ const Groups = () => {
           selectedGroup={selectedGroup}
           setGroupPosts={setGroupPosts}
         />
-      ) : (
+      ) : groups.length > 0 ? (
         <div className={styles.groupList}>
           <h3>All Groups</h3>
           {groups.map((group) => (
@@ -135,6 +139,8 @@ const Groups = () => {
             </p>
           ))}
         </div>
+      ) : (
+        ''
       )}
       {selectedGroup && !newGroupPostOpen && (
         <div className={styles.groupInfo}>

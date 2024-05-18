@@ -1,30 +1,35 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { SendNewGroup } from '../../connections/newGroupConnection.js';
 import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewGroup.module.css';
 
-const NewGroup = ( {setGroups, setSelectedGroup} ) => {
+const NewGroup = ({ setGroups, setSelectedGroup, Groupinfo }) => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newGroupTitle, setNewGroupTitle] = useState('');
   const [newGroupDescription, setNewGroupDescription] = useState('');
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
-  
+
+  const [, logout, , ,] = useOutletContext();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     GetStatus().then((data) => {
-      if (data.login !== 'success') {
-        navigate('/');
+      if (data?.server) {
+        console.log(data.error);
+      } else if (data.login !== 'success') {
+        logout();
       }
     });
   }, [navigate]);
 
-  const validateNewGroupTitleInput = (e) => setNewGroupTitle(e.target.value)
-  const validateNewGroupDescriptionInput = (e) => setNewGroupDescription(e.target.value)  
+  const validateNewGroupTitleInput = (e) => setNewGroupTitle(e.target.value);
+  const validateNewGroupDescriptionInput = (e) =>
+    setNewGroupDescription(e.target.value);
 
   const switchNewPostOpen = () => {
     setNewPostOpen(!newPostOpen);
@@ -38,21 +43,22 @@ const NewGroup = ( {setGroups, setSelectedGroup} ) => {
       return;
     }
 
-    const formData = new FormData()
-    formData.append('title', newGroupTitle)
-    formData.append('description', newGroupDescription)
+    const formData = new FormData();
+    formData.append('title', newGroupTitle);
+    formData.append('description', newGroupDescription);
 
     //Send new group to server, then append new group to the current grouplist, then set selected group to new group.
     SendNewGroup(formData).then((data) => {
-      setGroups(prevGroup => [data.SendNewGroup, ...prevGroup])
-      setSelectedGroup(data.SendNewGroup)
-    })
-   
+      setGroups((prevGroup) => [data.SendNewGroup, ...prevGroup]);
+      setSelectedGroup(data.SendNewGroup);
+      Groupinfo(data.SendNewGroup);
+    });
+
     setNewGroupDescription('');
     switchNewPostOpen();
-  }
+  };
 
-return (
+  return (
     <div className={styles.newPost}>
       {newPostOpen ? (
         <div className={styles.openNewPost}>
@@ -64,8 +70,12 @@ return (
             id='content'
             onChange={validateNewGroupDescriptionInput}
           />
-          {inputError ? <span className={styles.errorMsg}>{inputErrorText}</span> : ''}
-         
+          {inputError ? (
+            <span className={styles.errorMsg}>{inputErrorText}</span>
+          ) : (
+            ''
+          )}
+
           <div className={styles.openNewPostOptions}>
             <span className={styles.openNewPostSubmit} onClick={createNewGroup}>
               Submit
@@ -85,5 +95,5 @@ return (
       )}
     </div>
   );
-}
+};
 export default NewGroup;

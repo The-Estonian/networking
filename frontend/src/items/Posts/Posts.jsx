@@ -36,7 +36,6 @@ const Posts = () => {
     modal(true);
     GetPosts().then((data) => {
       if (data.login === 'success') {
-        console.log(data.posts);
         setAllPosts(data.posts || []);
         modal(false);
       } else {

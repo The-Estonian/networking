@@ -41,6 +41,7 @@
   text-align: center;
   border: solid 2px black;
   border-right: 1px;
+  padding: 1rem;
 }
 
 .groupName {
