@@ -19,7 +19,6 @@ const Notifications = () => {
     GetNotifications().then((data) => {
       if (data) {
         if (data.login === 'success') {
-          console.log(data);
           data.groupInvNotifications == null
             ? setGroupInvNotify([])
             : setGroupInvNotify(data.groupInvNotifications);
@@ -44,7 +43,6 @@ const Notifications = () => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      console.log('msgdata: ', messageData);
       if (messageData.type === 'groupInvitation') {
         setGroupInvNotify((prevNotifications) => [
           ...prevNotifications,

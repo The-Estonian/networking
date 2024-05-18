@@ -6,7 +6,7 @@ import { GetStatus } from '../../connections/statusConnection.js';
 
 import styles from './NewGroup.module.css';
 
-const NewGroup = ({ setGroups, setSelectedGroup, Groupinfo }) => {
+const NewGroup = ({ setGroups, setSelectedGroup, Groupinfo, toggleNewGroup }) => {
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newGroupTitle, setNewGroupTitle] = useState('');
   const [newGroupDescription, setNewGroupDescription] = useState('');
@@ -33,6 +33,7 @@ const NewGroup = ({ setGroups, setSelectedGroup, Groupinfo }) => {
 
   const switchNewPostOpen = () => {
     setNewPostOpen(!newPostOpen);
+    toggleNewGroup()
     setInputErrorText('');
   };
 

@@ -44,7 +44,6 @@ const GroupChat = (props) => {
   useEffect(() => {
     if (lastMessage) {
       const messageData = JSON.parse(lastMessage.data);
-      console.log(messageData);
       if (messageData.type == 'groupMessage') {
         if (props.selectedGroup.Id === messageData.GroupId) {
           if (groupChat?.length > 0) {
@@ -144,7 +143,6 @@ const GroupChat = (props) => {
       }
     }
   };
-  console.log('groupChat: ', groupChat);
   return (
     <div className={styles.groupChat}>
       <div ref={chatContainerRef} className={styles.groupChatBox}>

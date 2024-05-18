@@ -27,6 +27,7 @@ const Groups = () => {
   const [refreshPosts, setRefreshPosts] = useState(false);
   const [newGroupPostOpen, setNewGroupPostOpen] = useState(false);
   const [groupPosts, setGroupPosts] = useState([]);
+  const [showNewGroup, setShowNewGroup] = useState(false);
 
   const navigate = useNavigate();
 
@@ -100,14 +101,19 @@ const Groups = () => {
     Groupinfo(selectedGroup);
   };
 
+  const toggleNewGroup = () => {
+    setShowNewGroup(!showNewGroup);
+  };
+
   return (
     <div className={styles.groupContainer}>
       <NewGroup
         setGroups={setGroups}
         setSelectedGroup={setSelectedGroup}
         Groupinfo={Groupinfo}
+        toggleNewGroup={toggleNewGroup}
       />
-      {isGroupMember && (
+      {!showNewGroup && isGroupMember && (
         <NewEvent
           groupId={selectedGroup && selectedGroup.Id}
           currentUser={currentUser}
@@ -116,7 +122,7 @@ const Groups = () => {
           setGroupMembers={setGroupMembers}
         />
       )}
-      {newGroupPostOpen ? (
+      {!showNewGroup && newGroupPostOpen ? (
         <NewGroupPost
           newGroupPostHandler={newGroupPostHandler}
           selectedGroup={selectedGroup}
@@ -142,7 +148,7 @@ const Groups = () => {
       ) : (
         ''
       )}
-      {selectedGroup && !newGroupPostOpen && (
+      {!showNewGroup && selectedGroup && !newGroupPostOpen && (
         <div className={styles.groupInfo}>
           <div className={styles.currentGroup}>
             <div className={styles.selectedGroupInfo}>
