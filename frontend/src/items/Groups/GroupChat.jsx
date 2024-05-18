@@ -118,10 +118,15 @@ const GroupChat = (props) => {
       <div ref={chatContainerRef} className={styles.groupChatBox}>
         {groupChat?.map((item, i) => (
           <div key={i} className={styles.groupChatRow}>
-            <p className={styles.groupChatRowUser}>
-              {item.GroupChatMessageSender}
-            </p>
-            <p>{item.GroupChatMessage}</p>
+            <div className={styles.groupChatEmail}>
+              <p>{item.SenderEmail}</p>
+            </div>
+            <div className={styles.groupChatProfileContent}>
+              <p className={styles.groupChatRowUser}>
+                {item.GroupChatMessageSender}
+              </p>
+              <p>{item.GroupChatMessage}</p>              
+            </div>
           </div>
         ))}
       </div>
