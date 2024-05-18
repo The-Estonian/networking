@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import 'emoji-picker-element';
 import { useOutletContext, Link } from 'react-router-dom';
 
 const backendUrl =
@@ -14,8 +15,23 @@ const GroupChat = (props) => {
   const [textMessageError, setTextMessageError] = useState('');
   const [wsConnectionOpen, setWsConnectionOpen] = useState(false);
   const chatContainerRef = useRef(null);
+  const grouppickerRef = useRef(null);
 
   const [, , sendJsonMessage, lastMessage, readyState] = useOutletContext();
+
+  const handleEmojiSelect = (event) => {
+    const emoji = event.detail.unicode;
+    setGroupChatInput((prev) => prev + emoji);
+    togglePicker();
+  };
+
+  const togglePicker = () => {
+    if (grouppickerRef.current.style.display === 'none') {
+      grouppickerRef.current.style.display = 'block';
+    } else {
+      grouppickerRef.current.style.display = 'none';
+    }
+  };
 
   useEffect(() => {
     if (readyState === 1) {
@@ -63,6 +79,18 @@ const GroupChat = (props) => {
       }
     });
   }, [props.selectedGroup]);
+
+  useEffect(() => {
+    const groupPicker = grouppickerRef.current;
+    if (groupPicker) {
+      groupPicker.addEventListener('emoji-click', handleEmojiSelect);
+    }
+    return () => {
+      if (groupPicker) {
+        groupPicker.removeEventListener('emoji-click', handleEmojiSelect);
+      }
+    };
+  }, [wsConnectionOpen]);
 
   const handleChatInput = (e) => {
     setGroupChatInput(e.target.value);
@@ -116,44 +144,51 @@ const GroupChat = (props) => {
       }
     }
   };
-  console.log("groupChat: ", groupChat)
+  console.log('groupChat: ', groupChat);
   return (
     <div className={styles.groupChat}>
       <div ref={chatContainerRef} className={styles.groupChatBox}>
         {groupChat?.map((item, i) => (
           <div key={i} className={`${styles.groupChatRow}`}>
-              {item.LoggedInUser ? (
-                <>
-                  <div className={styles.groupChatProfileContentMirrored}>
-                    <div className={styles.textContent}>{item.GroupChatMessage}</div>
+            {item.LoggedInUser ? (
+              <>
+                <div className={styles.groupChatProfileContentMirrored}>
+                  <div className={styles.textContent}>
+                    {item.GroupChatMessage}
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className={styles.groupChatEmail}>
-                    <Link className={styles.noLinks} to={`/profile/${item.GroupChatMessageSender}`}>
-                      {item.SenderEmail}
-                    </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={styles.groupChatEmail}>
+                  <Link
+                    className={styles.noLinks}
+                    to={`/profile/${item.GroupChatMessageSender}`}
+                  >
+                    {item.SenderEmail}
+                  </Link>
+                </div>
+                <div className={styles.groupChatProfileContent}>
+                  <div className={styles.leftProfile}>
+                    {item.SenderAvatar ? (
+                      <Link to={`/profile/${item.GroupChatMessageSender}`}>
+                        <img
+                          className={styles.avatarImg}
+                          src={`${backendUrl}/avatar/${item.SenderAvatar}`}
+                          alt='Avatar'
+                        />
+                      </Link>
+                    ) : (
+                      ''
+                    )}
                   </div>
-                  <div className={styles.groupChatProfileContent}>
-                    <div className={styles.leftProfile}>
-                      {item.SenderAvatar ? (
-                        <Link to={`/profile/${item.GroupChatMessageSender}`}>
-                          <img
-                            className={styles.avatarImg}
-                            src={`${backendUrl}/avatar/${item.SenderAvatar}`}
-                            alt='Avatar'
-                          />
-                        </Link>
-                      ) : (
-                        ''
-                      )}
-                    </div>
-                    <div className={styles.textContentMirrored}>{item.GroupChatMessage}</div>
+                  <div className={styles.textContentMirrored}>
+                    {item.GroupChatMessage}
                   </div>
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
+          </div>
         ))}
       </div>
       {wsConnectionOpen ? (
@@ -168,6 +203,17 @@ const GroupChat = (props) => {
             id=''
             onKeyDown={handleKeyPress}
           />
+          <button onClick={togglePicker}>😀</button>
+          <emoji-picker
+            ref={grouppickerRef}
+            style={{
+              display: 'none',
+              position: 'absolute',
+              right: '25rem',
+              bottom: '5.5rem',
+            }}
+            // onEmojiClick={handleEmojiSelect}
+          ></emoji-picker>
           <button
             className={styles.chatInputSubmit}
             type='submit'

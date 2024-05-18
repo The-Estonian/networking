@@ -70,6 +70,10 @@ const Chat = () => {
     }
   }, [activeSession]);
 
+  const handleEmojis = (emoj) => {
+    setTextMessage((prevText) => prevText + emoj);
+  };
+
   const handleText = (e) => {
     setTextMessage(e.target.value);
     if (e.target.value.length < 1) {
@@ -167,6 +171,7 @@ const Chat = () => {
           <ChatInput
             textMessage={textMessage}
             handleText={handleText}
+            handleEmojis={handleEmojis}
             handleKeyPress={handleKeyPress}
             sendMessage={sendMessage}
             textMessageError={textMessageError}
