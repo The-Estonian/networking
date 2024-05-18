@@ -112,7 +112,7 @@ const GroupChat = (props) => {
       }
     }
   };
-
+  console.log("groupChat: ", groupChat)
   return (
     <div className={styles.groupChat}>
       <div ref={chatContainerRef} className={styles.groupChatBox}>

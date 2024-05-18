@@ -14,4 +14,6 @@ type GroupMessage struct {
 	GroupChatMessage       string
 	GroupChatId            string
 	Date                   string
+	SenderEmail            string
+	SenderAvatar           string
 }
