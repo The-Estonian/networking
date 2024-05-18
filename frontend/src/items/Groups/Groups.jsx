@@ -66,7 +66,7 @@ const Groups = () => {
 
   const SendGroupInvite = (reciever, title, groupId) => {
     sendJsonMessage({
-      type: 'groupInvatation',
+      type: 'groupInvitation',
       fromuserid: currentUser,
       message: title,
       GroupId: groupId,

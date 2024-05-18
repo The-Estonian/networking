@@ -142,7 +142,7 @@ func handleMessages() {
 					clientConnections[groupMember.Id].mu.Unlock()
 				}
 			}
-		case "groupInvatation":
+		case "groupInvitation":
 			returnedEmail, id := validators.ValidateSetNewGroupNotification(msg.FromId, msg.GroupId, msg.To)
 			msg.NotificationId = id
 			// Send noticication to user only if db insert was succssesful
