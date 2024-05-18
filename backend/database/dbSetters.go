@@ -3,6 +3,7 @@ package database
 import (
 	"backend/database/sqlite"
 	"backend/helpers"
+	"fmt"
 	"time"
 )
 
@@ -189,12 +190,20 @@ func SetNewEventParticipant(groupId, eventId, notificationId, userId, userRespon
 }
 
 func SetNewEvent(groupId, eventCreatorId, title, description, eventTime, participation string) (string, string) {
+	fmt.Println("TIME!!!", eventTime)
+	t, err := time.Parse(time.RFC3339, eventTime)
+	if err != nil {
+		fmt.Println("Error parsing time:", err)
+	}
+	newTime := t.Add(3 * time.Hour).Format(time.RFC3339)
+	fmt.Println("NEWTIME", newTime)
+
 	db := sqlite.DbConnection()
 	defer db.Close()
 
 	var id, email string
 	command := "INSERT INTO events (guildid_fk_guilds, creator_fk_users, event_title, event_description, event_time) VALUES (?, ?, ?, ?, ?) returning id"
-	err := db.QueryRow(command, groupId, eventCreatorId, title, description, eventTime).Scan(&id)
+	err = db.QueryRow(command, groupId, eventCreatorId, title, description, newTime).Scan(&id)
 	if err != nil {
 		helpers.CheckErr("SetNewEvent", err)
 	}

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  useNavigate,
   useOutletContext,
   useLocation,
   Link,
@@ -23,7 +22,6 @@ const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [privacy, setPrivacy] = useState('');
   const [privacyButton, setPrivacyButton] = useState('');
-  const navigate = useNavigate();
   const [modal, logout, sendJsonMessage] = useOutletContext();
   const location = useLocation();
   const currentUser = location.pathname.substring(9);
@@ -60,7 +58,7 @@ const Profile = () => {
         logout();
       }
     });
-  }, [navigate, modal, currentUser]);
+  }, [modal, currentUser]);
   // Privacy settings change
   const handlePrivacyChange = () => {
     let newPrivacy = privacy === '1' ? '2' : '1';
