@@ -62,7 +62,7 @@
   background-color: hsl(0, 0%, 70%);
   border: solid 2px black;
   padding: 10px;
-  text-align: center;
+  /* text-align: center; chat positsioon läheb katki sellega, mütle kas ära kustutada*/
   width: 68vw;
 }
 

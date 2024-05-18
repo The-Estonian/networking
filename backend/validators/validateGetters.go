@@ -95,9 +95,9 @@ func ValidateUserMessages(hash, partnerId string) []structs.ChatMessage {
 	return database.GetMessages(userId, partnerId)
 }
 
-func ValidateGroupMessages(groupId string) []structs.GroupMessage {
+func ValidateGroupMessages(groupId, userId string) []structs.GroupMessage {
 	// get user profile posts by userid
-	return database.GetGroupMessages(groupId)
+	return database.GetGroupMessages(groupId, userId)
 }
 
 func ValidateUserPrivacyHash(hash string) string {

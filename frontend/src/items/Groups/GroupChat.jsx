@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
+
+const backendUrl =
+  import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
 
 import { GetGroupMessages } from '../../connections/getGroupMessagesConnection';
 
@@ -82,6 +85,7 @@ const GroupChat = (props) => {
       GroupId: props.selectedGroup.Id,
       GroupChatMessageSender: props.currentUser,
       GroupChatMessage: groupChatInput,
+      LoggedInUser: true,
     };
 
     if (groupChat?.length > 0) {
@@ -112,17 +116,44 @@ const GroupChat = (props) => {
       }
     }
   };
-
+  console.log("groupChat: ", groupChat)
   return (
     <div className={styles.groupChat}>
       <div ref={chatContainerRef} className={styles.groupChatBox}>
         {groupChat?.map((item, i) => (
-          <div key={i} className={styles.groupChatRow}>
-            <p className={styles.groupChatRowUser}>
-              {item.GroupChatMessageSender}
-            </p>
-            <p>{item.GroupChatMessage}</p>
-          </div>
+          <div key={i} className={`${styles.groupChatRow}`}>
+              {item.LoggedInUser ? (
+                <>
+                  <div className={styles.groupChatProfileContentMirrored}>
+                    <div className={styles.textContent}>{item.GroupChatMessage}</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.groupChatEmail}>
+                    <Link className={styles.noLinks} to={`/profile/${item.GroupChatMessageSender}`}>
+                      {item.SenderEmail}
+                    </Link>
+                  </div>
+                  <div className={styles.groupChatProfileContent}>
+                    <div className={styles.leftProfile}>
+                      {item.SenderAvatar ? (
+                        <Link to={`/profile/${item.GroupChatMessageSender}`}>
+                          <img
+                            className={styles.avatarImg}
+                            src={`${backendUrl}/avatar/${item.SenderAvatar}`}
+                            alt='Avatar'
+                          />
+                        </Link>
+                      ) : (
+                        ''
+                      )}
+                    </div>
+                    <div className={styles.textContentMirrored}>{item.GroupChatMessage}</div>
+                  </div>
+                </>
+              )}
+            </div>
         ))}
       </div>
       {wsConnectionOpen ? (
