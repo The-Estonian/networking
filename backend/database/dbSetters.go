@@ -32,7 +32,7 @@ func SetRemoveHash(hash string) {
 
 func SetNewPost(user, title, postContent, image, privacy string) {
 	db := sqlite.DbConnection()
-	command := "INSERT INTO posts (user_fk_users, post_title, post_content, post_image, privacy_fk_posts_privacy, date) VALUES(?, ?, ?, ?, ?, datetime('now', '+0 hours'))"
+	command := "INSERT INTO posts (user_fk_users, post_title, post_content, post_image, privacy_fk_posts_privacy, date) VALUES(?, ?, ?, ?, ?, datetime('now', '+3 hours'))"
 	_, err := db.Exec(command, user, title, postContent, image, privacy)
 	helpers.CheckErr("SetNewPost", err)
 	defer db.Close()

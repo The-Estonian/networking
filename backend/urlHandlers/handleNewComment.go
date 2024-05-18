@@ -60,7 +60,7 @@ func HandleNewComment(w http.ResponseWriter, r *http.Request) {
 
 		cookie, err := r.Cookie("socialNetworkSession")
 		UserID := validators.ValidateUserSession(cookie.Value)
-
+		fmt.Println(UserID, content, imageName+fileExtension, postId)
 		validators.ValidateSetNewComment(UserID, content, imageName+fileExtension, postId)
 		callback["newComment"] = "accepted"
 		callback["sendNewComment"] = validators.ValidateNewComments()

@@ -36,6 +36,7 @@ const Posts = () => {
     modal(true);
     GetPosts().then((data) => {
       if (data.login === 'success') {
+        console.log(data.posts);
         setAllPosts(data.posts || []);
         modal(false);
       } else {
@@ -54,7 +55,7 @@ const Posts = () => {
   ) => {
     const formData = new FormData();
     formData.append('postID', post.PostID);
-    setActivePost(post.PostId);
+    setActivePost(post.PostID);
 
     GetAllComments(formData).then((data) =>
       data.comments == null ? setAllPosts([]) : setAllPosts(data.comments)
@@ -74,78 +75,82 @@ const Posts = () => {
       <h1>{displayTitle}</h1>
 
       {allPosts &&
-        allPosts.map((eachPost, index) => (
-          <div className={styles.postContainer} key={index}>
-            <div className={styles.post}>
-              <div className={styles.topPart}>
-                {eachPost.Avatar ? (
-                  <Link to={`/profile/${eachPost.UserId}`}>
-                    <img
-                      className={styles.avatarImg}
-                      src={`${backendUrl}/avatar/${eachPost.Avatar}`}
-                      alt='Avatar'
-                    />
-                  </Link>
-                ) : (
-                  ''
-                )}
-                <div>
-                  <p>
-                    Published by{' '}
-                    <Link
-                      style={{ color: 'inherit', textDecoration: 'none' }}
-                      to={`/profile/${eachPost.UserId}`}
-                    >
-                      {eachPost.Username !== ''
-                        ? eachPost.Username
-                        : eachPost.Email}
+        allPosts.map((eachPost, index) => {
+          const messageDate = new Date(eachPost.Date.slice(0, -1));
+          const messageTimeString = `${messageDate.getHours()}:${messageDate.getMinutes()}:${messageDate.getSeconds()}`;
+          const messageDateString = ` ${messageDate.getDate()}-${
+            messageDate.getMonth() + 1
+          }-${messageDate.getFullYear()}`;
+          return (
+            <div className={styles.postContainer} key={index}>
+              <div className={styles.post}>
+                <div className={styles.topPart}>
+                  {eachPost.Avatar ? (
+                    <Link to={`/profile/${eachPost.UserId}`}>
+                      <img
+                        className={styles.avatarImg}
+                        src={`${backendUrl}/avatar/${eachPost.Avatar}`}
+                        alt='Avatar'
+                      />
                     </Link>
-                  </p>
-                  <p>
-                    at {new Date(eachPost.Date).toLocaleTimeString()} on{' '}
-                    {new Intl.DateTimeFormat('en-GB').format(
-                      new Date(eachPost.Date)
-                    )}
-                  </p>
+                  ) : (
+                    ''
+                  )}
+                  <div>
+                    <p>
+                      Published by{' '}
+                      <Link
+                        style={{ color: 'inherit', textDecoration: 'none' }}
+                        to={`/profile/${eachPost.UserId}`}
+                      >
+                        {eachPost.Username !== ''
+                          ? eachPost.Username
+                          : eachPost.Email}
+                      </Link>
+                    </p>
+                    <p>
+                      at {messageTimeString} on {messageDateString}
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              <div className={styles.mainContent}>
-                <div className={styles.leftSide}></div>
-                <div className={styles.rightSide}>
-                  <p className={styles.title}>{eachPost.Title}</p>
-                  {eachPost.Picture ? (
-                    <img
-                      className={styles.postsImg}
-                      src={`${backendUrl}/avatar/${eachPost.Picture}`}
-                      alt='PostPicure'
-                    ></img>
-                  ) : (
-                    ''
-                  )}
-                  <p className={styles.content}>{eachPost.Content}</p>
-                  {!displayComments ? (
-                    <div
-                      className={styles.commentsButton}
-                      onClick={() =>
-                        ShowComments(
-                          eachPost,
-                          setAllPosts,
-                          setDisplayComments,
-                          setDisplayTitle
-                        )
-                      }
-                    >
-                      View Comments
-                    </div>
-                  ) : (
-                    ''
-                  )}
+                <div className={styles.mainContent}>
+                  <div className={styles.leftSide}></div>
+                  <div className={styles.rightSide}>
+                    <p className={styles.title}>{eachPost.Title}</p>
+                    {eachPost.Picture ? (
+                      <img
+                        className={styles.postsImg}
+                        src={`${backendUrl}/avatar/${eachPost.Picture}`}
+                        alt='PostPicure'
+                      ></img>
+                    ) : (
+                      ''
+                    )}
+                    <p className={styles.content}>{eachPost.Content}</p>
+                    {!displayComments ? (
+                      <div
+                        className={styles.commentsButton}
+                        onClick={() =>
+                          ShowComments(
+                            eachPost,
+                            setAllPosts,
+                            setDisplayComments,
+                            setDisplayTitle
+                          )
+                        }
+                      >
+                        View Comments
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       {displayComments ? (
         <button onClick={showPosts}>RETURN TO POSTS</button>
       ) : (
