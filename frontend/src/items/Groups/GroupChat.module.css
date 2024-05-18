@@ -38,25 +38,28 @@
     flex-direction: column;
     margin:0.5rem 2rem;
     padding:0 1rem;
-    border-bottom: 1px solid white;
 }
 
 .groupChatEmail{
-  background-color: green;
-  color: rgb(53, 53, 53);
-  align-items: flex-start;
+  display: flex;
+  color: rgb(49, 49, 49);
   margin: 0.25rem;
+  text-decoration: none;
 }
 
 .groupChatProfileContent{
-  background-color: yellow;
   display: flex;
   flex-direction: row;
 }
 
+.groupChatProfileContentMirrored{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
 .leftProfile{
   display: flex;
-  background-color: red;
   align-items: flex-end;
 }
 
@@ -75,16 +78,28 @@
 
 }
 
-.rightContent{
-  background-color: blue;
+.textContent{
+  background-color: rgb(0, 110, 255);
   display: flex;
   align-items: flex-end;
   border-radius: 1.0rem;
   padding: 0.5rem;
 }
 
-
+.textContentMirrored{
+  background-color: rgb(131, 131, 131);
+  display: flex;
+  align-items: flex-end;
+  border-radius: 1.0rem;
+  padding: 0.5rem;
+}
 
 .groupChatRowUser{
     margin-right: auto;
 }
+
+.noLinks {
+  color: inherit;
+  text-decoration: none;
+}
+

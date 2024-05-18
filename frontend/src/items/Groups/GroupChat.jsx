@@ -85,6 +85,7 @@ const GroupChat = (props) => {
       GroupId: props.selectedGroup.Id,
       GroupChatMessageSender: props.currentUser,
       GroupChatMessage: groupChatInput,
+      LoggedInUser: true,
     };
 
     if (groupChat?.length > 0) {
@@ -120,27 +121,39 @@ const GroupChat = (props) => {
     <div className={styles.groupChat}>
       <div ref={chatContainerRef} className={styles.groupChatBox}>
         {groupChat?.map((item, i) => (
-          <div key={i} className={styles.groupChatRow}>
-            <div className={styles.groupChatEmail}>
-              {item.SenderEmail}
+          <div key={i} className={`${styles.groupChatRow}`}>
+              {item.LoggedInUser ? (
+                <>
+                  <div className={styles.groupChatProfileContentMirrored}>
+                    <div className={styles.textContent}>{item.GroupChatMessage}</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.groupChatEmail}>
+                    <Link className={styles.noLinks} to={`/profile/${item.GroupChatMessageSender}`}>
+                      {item.SenderEmail}
+                    </Link>
+                  </div>
+                  <div className={styles.groupChatProfileContent}>
+                    <div className={styles.leftProfile}>
+                      {item.SenderAvatar ? (
+                        <Link to={`/profile/${item.GroupChatMessageSender}`}>
+                          <img
+                            className={styles.avatarImg}
+                            src={`${backendUrl}/avatar/${item.SenderAvatar}`}
+                            alt='Avatar'
+                          />
+                        </Link>
+                      ) : (
+                        ''
+                      )}
+                    </div>
+                    <div className={styles.textContentMirrored}>{item.GroupChatMessage}</div>
+                  </div>
+                </>
+              )}
             </div>
-            <div className={styles.groupChatProfileContent}>
-              <div className={styles.leftProfile}>
-                {item.SenderAvatar ? (
-                  <Link to={`/profile/${item.GroupChatMessageSender}`}>
-                    <img
-                      className={styles.avatarImg}
-                      src={`${backendUrl}/avatar/${item.SenderAvatar}`}
-                      alt='Avatar'
-                    />
-                  </Link>
-                ) : (
-                  ''
-                )}
-              </div>
-              <div className={styles.rightContent}>{item.GroupChatMessage}</div>              
-            </div>
-          </div>
         ))}
       </div>
       {wsConnectionOpen ? (

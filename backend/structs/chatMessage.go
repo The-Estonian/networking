@@ -16,4 +16,5 @@ type GroupMessage struct {
 	Date                   string
 	SenderEmail            string
 	SenderAvatar           string
+	LoggedInUser           bool
 }

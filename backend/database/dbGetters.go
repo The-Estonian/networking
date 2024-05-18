@@ -413,7 +413,7 @@ func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	return UserMessages
 }
 
-func GetGroupMessages(groupId string) []structs.GroupMessage {
+func GetGroupMessages(groupId, userId string) []structs.GroupMessage {
 	db := sqlite.DbConnection()
 	var UserMessages []structs.GroupMessage
 	command := `SELECT group_messages.*, users.email, users.avatar
@@ -430,6 +430,12 @@ func GetGroupMessages(groupId string) []structs.GroupMessage {
 	for rows.Next() {
 		var groupMessage structs.GroupMessage
 		rows.Scan(&groupMessage.GroupChatMessageId, &groupMessage.GroupChatMessageSender, &groupMessage.GroupChatMessage, &groupMessage.GroupChatId, &groupMessage.Date, &groupMessage.SenderEmail, &groupMessage.SenderAvatar)
+		// Check if the logged in user is fetching own messages
+		if userId == groupMessage.GroupChatMessageSender {
+			groupMessage.LoggedInUser = true
+		} else {
+			groupMessage.LoggedInUser = false
+		}
 		UserMessages = append(UserMessages, groupMessage)
 	}
 	defer rows.Close()
