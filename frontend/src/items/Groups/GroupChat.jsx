@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import 'emoji-picker-element';
 
 import { GetGroupMessages } from '../../connections/getGroupMessagesConnection';
 
@@ -11,8 +12,23 @@ const GroupChat = (props) => {
   const [textMessageError, setTextMessageError] = useState('');
   const [wsConnectionOpen, setWsConnectionOpen] = useState(false);
   const chatContainerRef = useRef(null);
+  const grouppickerRef = useRef(null);
 
   const [, , sendJsonMessage, lastMessage, readyState] = useOutletContext();
+
+  const handleEmojiSelect = (event) => {
+    const emoji = event.detail.unicode;
+    setGroupChatInput((prev) => prev + emoji);
+    togglePicker();
+  };
+
+  const togglePicker = () => {
+    if (grouppickerRef.current.style.display === 'none') {
+      grouppickerRef.current.style.display = 'block';
+    } else {
+      grouppickerRef.current.style.display = 'none';
+    }
+  };
 
   useEffect(() => {
     if (readyState === 1) {
@@ -60,6 +76,18 @@ const GroupChat = (props) => {
       }
     });
   }, [props.selectedGroup]);
+
+  useEffect(() => {
+    const groupPicker = grouppickerRef.current;
+    if (groupPicker) {
+      groupPicker.addEventListener('emoji-click', handleEmojiSelect);
+    }
+    return () => {
+      if (groupPicker) {
+        groupPicker.removeEventListener('emoji-click', handleEmojiSelect);
+      }
+    };
+  }, [wsConnectionOpen]);
 
   const handleChatInput = (e) => {
     setGroupChatInput(e.target.value);
@@ -137,6 +165,17 @@ const GroupChat = (props) => {
             id=''
             onKeyDown={handleKeyPress}
           />
+          <button onClick={togglePicker}>😀</button>
+          <emoji-picker
+            ref={grouppickerRef}
+            style={{
+              display: 'none',
+              position: 'absolute',
+              right: '25rem',
+              bottom: '5.5rem',
+            }}
+            // onEmojiClick={handleEmojiSelect}
+          ></emoji-picker>
           <button
             className={styles.chatInputSubmit}
             type='submit'
