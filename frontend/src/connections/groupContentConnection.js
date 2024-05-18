@@ -1,7 +1,7 @@
 const backendUrl =
   import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8080';
 
-export const GetGroupContent= async (formData) => {
+export const GetGroupContent = async (formData) => {
   try {
     const response = await fetch(`${backendUrl}/groupcontent`, {
       method: 'POST',
@@ -15,7 +15,8 @@ export const GetGroupContent= async (formData) => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('GroupContent connecton error: ');
+    console.log('GetGroupContent connecton error: ');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

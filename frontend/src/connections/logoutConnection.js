@@ -14,7 +14,8 @@ export const SetLogout = async () => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('Logout error');
+    console.log('SetLogout error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

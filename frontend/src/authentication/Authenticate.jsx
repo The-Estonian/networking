@@ -138,7 +138,9 @@ const Authenticate = (props) => {
           setInputError(false);
         } else {
           setInputError(true);
-          if (data?.email) {
+          if (data?.server) {
+            setInputErrorText(data.error);
+          } else if (data?.email) {
             setInputErrorText(data.email);
           } else if (data?.username) {
             setInputErrorText(data.username);
@@ -155,6 +157,9 @@ const Authenticate = (props) => {
           props.setUserId(data['userid']);
           props.setUserAvatar(data['useravatar']);
           props.setUserEmail(data['useremail']);
+        } else if (data?.server) {
+          setInputError(true);
+          setInputErrorText(data.error);
         } else {
           setInputError(true);
           setInputErrorText(data.error);

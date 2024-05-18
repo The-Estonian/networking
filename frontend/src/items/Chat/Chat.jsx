@@ -5,7 +5,6 @@ import { GetMessages } from '../../connections/messagesConnection';
 import Message from './Message';
 import ChatInput from './ChatInput';
 import ChatUserlist from './ChatUserlist';
-import Challenge from './Challenge';
 
 import styles from './Chat.module.css';
 
@@ -17,8 +16,6 @@ const Chat = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [wsConnectionOpen, setWsConnectionOpen] = useState(false);
   const [activeMessage, setActiveMessage] = useState([]);
-  const [activeChallenge, setActiveChallenge] = useState(false);
-  const gameWindowRef = useRef(null);
 
   const [, , sendJsonMessage, lastMessage, readyState, activeSession] =
     useOutletContext();
@@ -82,10 +79,6 @@ const Chat = () => {
     }
   };
 
-  const handleChallenge = () => {
-    setActiveChallenge(!activeChallenge);
-  };
-
   const sendMessage = () => {
     // send to socket backend
     sendJsonMessage({
@@ -132,11 +125,16 @@ const Chat = () => {
     const formData = new FormData();
     formData.append('partner', id);
     GetMessages(formData).then((data) => {
-      setAllUserMessages(data.messages);
-      setTimeout(() => {
-        chatContainerRef.current.scrollTop =
-          chatContainerRef.current.scrollHeight;
-      }, 100);
+      if (data?.server) {
+        console.log(data);
+        setTextMessageError(data.error);
+      } else {
+        setAllUserMessages(data.messages);
+        setTimeout(() => {
+          chatContainerRef.current.scrollTop =
+            chatContainerRef.current.scrollHeight;
+        }, 100);
+      }
     });
   };
 
@@ -158,35 +156,27 @@ const Chat = () => {
         handleUserClick={handleUserClick}
         activeChatPartner={activeChatPartner}
         activeMessage={activeMessage}
-        handleChallenge={handleChallenge}
       />
-      {!activeChallenge ? (
-        <div className={styles.chatContainer}>
-          <div ref={chatContainerRef} className={styles.chat}>
-            {allUserMessages?.map((eachMessage, key) => (
-              <Message messageData={eachMessage} key={key} />
-            ))}
-          </div>
-          {wsConnectionOpen ? (
-            <ChatInput
-              textMessage={textMessage}
-              handleText={handleText}
-              handleKeyPress={handleKeyPress}
-              sendMessage={sendMessage}
-              textMessageError={textMessageError}
-            />
-          ) : (
-            <p className={styles.chatConnection}>Connecting to Chat!</p>
-          )}
+      <div className={styles.chatContainer}>
+        <div ref={chatContainerRef} className={styles.chat}>
+          {allUserMessages?.map((eachMessage, key) => (
+            <Message messageData={eachMessage} key={key} />
+          ))}
         </div>
-      ) : (
-        <Challenge
-          gameWindowRef={gameWindowRef}
-          handleChallenge={handleChallenge}
-          activeChatPartner={activeChatPartner}
-          currentUser={currentUser}
-        />
-      )}
+        {wsConnectionOpen ? (
+          <ChatInput
+            textMessage={textMessage}
+            handleText={handleText}
+            handleKeyPress={handleKeyPress}
+            sendMessage={sendMessage}
+            textMessageError={textMessageError}
+          />
+        ) : textMessageError ? (
+          <p className={styles.chatConnection}>{textMessageError}</p>
+        ) : (
+          <p className={styles.chatConnection}>Connecting to Chat!</p>
+        )}
+      </div>
     </div>
   );
 };

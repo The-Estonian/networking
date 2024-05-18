@@ -7,8 +7,14 @@ import { GetGroupContent } from '../../connections/groupContentConnection.js';
 
 import styles from './NewGroup.module.css';
 
-const NewEvent = ({ groupId, setUpdateGroups, currentUser, groupTitle, setEvents, setGroupMembers }) => {
-  const [, , sendJsonMessage, ,] = useOutletContext();
+const NewEvent = ({
+  groupId,
+  currentUser,
+  groupTitle,
+  setEvents,
+  setGroupMembers,
+}) => {
+  const [, logout, sendJsonMessage, ,] = useOutletContext();
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
@@ -49,16 +55,23 @@ const NewEvent = ({ groupId, setUpdateGroups, currentUser, groupTitle, setEvents
       participation: attendEvent,
       fromuserid: currentUser,
       GroupTitle: groupTitle,
-    })
+    });
     const formData = new FormData();
     formData.append('GroupId', groupId);
 
     GetGroupContent(formData).then((data) => {
-      setGroupMembers(data.groupMembers)
-      setEvents(data.events);
-      switchNewPostOpen();
-    })
-  }
+      if (data?.server) {
+        setInputError(true);
+        setInputErrorText(data.error);
+      } else if (data.login == 'success') {
+        setGroupMembers(data.groupMembers);
+        setEvents(data.events);
+        switchNewPostOpen();
+      } else {
+        logout();
+      }
+    });
+  };
 
   return (
     <div className={styles.newPost}>

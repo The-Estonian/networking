@@ -14,7 +14,8 @@ export const GetStatus = async () => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('Status error');
+    console.log('GetStatus error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

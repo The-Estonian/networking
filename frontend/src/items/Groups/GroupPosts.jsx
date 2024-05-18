@@ -29,8 +29,14 @@ const GroupPosts = (props) => {
     const formData = new FormData();
     formData.append('groupPostId', postId);
     GetGroupPostComments(formData).then((data) => {
-      setGroupPostComments(data.groupComments);
-      console.log(data.groupComments);
+      if (data?.server) {
+        setInputError(true);
+        setInputErrorText(data.error);
+      } else if (data.login !== 'success') {
+        logout();
+      } else {
+        setGroupPostComments(data.groupComments);
+      }
     });
     setSelectedPost(postId);
     setShowComments(true);
@@ -58,7 +64,10 @@ const GroupPosts = (props) => {
     formData.append('group', props.selectedGroup.Id);
     formData.append('groupPost', selectedPost);
     SendNewGroupComment(formData).then((data) => {
-      if (data.login !== 'success') {
+      if (data?.server) {
+        setInputError(true);
+        setInputErrorText(data.error);
+      } else if (data.login !== 'success') {
         logout();
       } else {
         handleGroupPostComment(currentCommentId);

@@ -12,11 +12,11 @@ export const GetProfile = async (formData) => {
       body: formData,
       credentials: 'include',
     });
-    // console.log('Profile response: ', response);
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('Profile error');
+    console.log('GetProfile error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

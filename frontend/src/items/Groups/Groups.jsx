@@ -33,7 +33,9 @@ const Groups = () => {
   useEffect(() => {
     modal(true);
     GetAllGroups().then((data) => {
-      if (data.login === 'success') {
+      if (data?.server) {
+        console.log(data.error);
+      } else if (data.login === 'success') {
         data.groups == null ? setGroups([]) : setGroups(data.groups);
         setCurrentUserEmail(data.currentUserEmail);
         if (data?.groups?.length > 0) {
@@ -106,8 +108,8 @@ const Groups = () => {
           groupId={selectedGroup && selectedGroup.Id}
           currentUser={currentUser}
           groupTitle={selectedGroup && selectedGroup.Title}
-          setEvents = {setEvents}
-          setGroupMembers = {setGroupMembers}
+          setEvents={setEvents}
+          setGroupMembers={setGroupMembers}
         />
       )}
       {newGroupPostOpen ? (
@@ -162,7 +164,8 @@ const Groups = () => {
                       <h4>{event.EventTitle}</h4>
                       <p>{event.EventDescription}</p>
                       <p>Creator: {event.CreatorEmail}</p>
-                      <p>{messageDateString}</p><br></br>
+                      <p>{messageDateString}</p>
+                      <br></br>
                       <p>Participants:</p>
                       {event.Participants.map((participant) => (
                         <p key={participant.ParticipantId}>

@@ -17,5 +17,6 @@ export const GetNotifications = async (formData) => {
   } catch (error) {
     console.log('GetNotifications error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

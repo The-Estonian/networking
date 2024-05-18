@@ -17,5 +17,6 @@ export const SendNewPost = async (formData) => {
   } catch (error) {
     console.log('SendNewPost error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

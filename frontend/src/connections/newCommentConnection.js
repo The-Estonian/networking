@@ -17,5 +17,6 @@ export const SendNewComment = async (formData) => {
   } catch (error) {
     console.log('SendNewComment error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

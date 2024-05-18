@@ -12,10 +12,11 @@ export const SendNewGroup = async (formData) => {
       body: formData,
       credentials: 'include',
     });
-    const resp = await response.json()
-    return resp
+    const resp = await response.json();
+    return resp;
   } catch (error) {
     console.log('SendNewGroup error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

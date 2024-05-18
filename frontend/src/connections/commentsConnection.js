@@ -12,10 +12,11 @@ export const GetAllComments = async (formData) => {
       body: formData,
       credentials: 'include',
     });
-    const resp = await response.json()
-    return resp
+    const resp = await response.json();
+    return resp;
   } catch (error) {
-    console.log('SendNewComment error')
-    console.log(error)
+    console.log('SendNewComment error');
+    console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
-}
+};

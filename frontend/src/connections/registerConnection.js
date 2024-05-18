@@ -13,10 +13,10 @@ export const SetRegister = async (formData) => {
       credentials: 'include',
     });
     const resp = await response.json();
-    console.log(resp);
     return resp;
   } catch (error) {
-    console.log('Registration error');
+    console.log('SetRegister error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

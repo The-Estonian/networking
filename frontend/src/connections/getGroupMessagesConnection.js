@@ -15,7 +15,8 @@ export const GetGroupMessages = async (formData) => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('SendNewComment error');
+    console.log('GetGroupMessages error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

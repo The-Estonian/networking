@@ -15,7 +15,8 @@ export const GetPosts = async (formData) => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('Posts error');
+    console.log('GetPosts error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

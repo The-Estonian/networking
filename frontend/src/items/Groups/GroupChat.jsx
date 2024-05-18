@@ -9,9 +9,18 @@ const GroupChat = (props) => {
   const [groupChat, setGroupChat] = useState([]);
   const [groupChatInput, setGroupChatInput] = useState('');
   const [textMessageError, setTextMessageError] = useState('');
+  const [wsConnectionOpen, setWsConnectionOpen] = useState(false);
   const chatContainerRef = useRef(null);
 
-  const [, , sendJsonMessage, lastMessage, ,] = useOutletContext();
+  const [, , sendJsonMessage, lastMessage, readyState] = useOutletContext();
+
+  useEffect(() => {
+    if (readyState === 1) {
+      setWsConnectionOpen(true);
+    } else {
+      setWsConnectionOpen(false);
+    }
+  }, [readyState]);
 
   useEffect(() => {
     if (lastMessage) {
@@ -43,10 +52,13 @@ const GroupChat = (props) => {
     const formData = new FormData();
     formData.append('groupId', props.selectedGroup.Id);
     GetGroupMessages(formData).then((data) => {
-      setGroupChat(data.groupMessages);
+      if (data?.server) {
+        setTextMessageError(data.error);
+      } else {
+        setGroupChat(data.groupMessages);
+        setTextMessageError('');
+      }
     });
-    // fetch old group chat and set it
-    // setGroupChat();
   }, [props.selectedGroup]);
 
   const handleChatInput = (e) => {
@@ -113,26 +125,30 @@ const GroupChat = (props) => {
           </div>
         ))}
       </div>
-      <div className={styles.groupChatInputContainer}>
-        <input
-          type='text'
-          value={groupChatInput}
-          onChange={handleChatInput}
-          className={styles.groupChatInput}
-          name='textMessage'
-          placeholder={textMessageError}
-          id=''
-          onKeyDown={handleKeyPress}
-        />
-        <button
-          className={styles.chatInputSubmit}
-          type='submit'
-          onClick={sendGroupMessage}
-          disabled={groupChatInput.length < 1 ? true : false}
-        >
-          Send
-        </button>
-      </div>
+      {wsConnectionOpen ? (
+        <div className={styles.groupChatInputContainer}>
+          <input
+            type='text'
+            value={groupChatInput}
+            onChange={handleChatInput}
+            className={styles.groupChatInput}
+            name='textMessage'
+            placeholder={textMessageError}
+            id=''
+            onKeyDown={handleKeyPress}
+          />
+          <button
+            className={styles.chatInputSubmit}
+            type='submit'
+            onClick={sendGroupMessage}
+            disabled={groupChatInput.length < 1 ? true : false}
+          >
+            Send
+          </button>
+        </div>
+      ) : (
+        textMessageError
+      )}
     </div>
   );
 };

@@ -15,7 +15,8 @@ export const GetAllGroups = async (formData) => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('Groups error');
+    console.log('GetAllGroups error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

@@ -23,7 +23,10 @@ const NewPost = ({ setAllPosts }) => {
 
   useEffect(() => {
     GetStatus().then((data) => {
-      if (data.login == 'success') {
+      if (data?.server) {
+        setInputError(true);
+        setInputErrorText(data.error);
+      } else if (data.login == 'success') {
         setUserId(data['userid']);
       } else {
         logout();
@@ -139,13 +142,13 @@ const NewPost = ({ setAllPosts }) => {
           </div>
           <span>Add Img/Gif</span>
           <label className={styles.pictureCountainer}>
-          <input
-            type='file'
-            name='postPic'
-            accept='.jpg, .jpeg, .gif'
-            id='file'
-            ref={newPostPicRef}
-          />
+            <input
+              type='file'
+              name='postPic'
+              accept='.jpg, .jpeg, .gif'
+              id='file'
+              ref={newPostPicRef}
+            />
           </label>
           {authError}
           <div className={styles.openNewPostOptions}>

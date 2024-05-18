@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { SendNewComment } from '../../connections/newCommentConnection';
 import { GetStatus } from '../../connections/statusConnection.js';
@@ -15,12 +15,17 @@ const NewComment = (props) => {
   const [inputError, setInputError] = useState(true);
   const [inputErrorText, setInputErrorText] = useState('');
 
+  const [, logout] = useOutletContext();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     GetStatus().then((data) => {
-      if (data.login !== 'success') {
-        navigate('/');
+      if (data?.server) {
+        setInputError(true);
+        setInputErrorText(data.error);
+      } else if (data.login !== 'success') {
+        logout();
       }
     });
   }, [navigate]);
@@ -55,9 +60,17 @@ const NewComment = (props) => {
     formData.append('postId', props.activePost);
     formData.append('picture', file);
 
-    SendNewComment(formData).then((data) =>
-      props.setAllPosts((prevPosts) => [data.sendNewComment, ...prevPosts])
-    );
+    SendNewComment(formData).then((data) => {
+      if (data?.server) {
+        setInputError(true);
+        setInputErrorText(data.error);
+      } else {
+        return props.setAllPosts((prevPosts) => [
+          data.sendNewComment,
+          ...prevPosts,
+        ]);
+      }
+    });
 
     setNewPostContent('');
     switchNewPostOpen();

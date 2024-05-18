@@ -15,7 +15,8 @@ export const SendNewGroupComment = async (formData) => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('SendNewComment error');
+    console.log('SendNewGroupComment error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

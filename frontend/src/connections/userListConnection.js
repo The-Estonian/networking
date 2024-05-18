@@ -14,7 +14,8 @@ export const GetUserList = async () => {
     const resp = await response.json();
     return resp;
   } catch (error) {
-    console.log('UserList error');
+    console.log('GetUserList error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };

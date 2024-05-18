@@ -17,5 +17,6 @@ export const SendNewPrivacy = async (formData) => {
   } catch (error) {
     console.log('SendNewPrivacy error');
     console.log(error);
+    return { server: 'fail', error: 'Error 500, Internal server error!' };
   }
 };
