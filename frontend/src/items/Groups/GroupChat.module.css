@@ -43,6 +43,9 @@
 
 .groupChatEmail{
   background-color: green;
+  color: rgb(53, 53, 53);
+  align-items: flex-start;
+  margin: 0.25rem;
 }
 
 .groupChatProfileContent{
@@ -50,6 +53,38 @@
   display: flex;
   flex-direction: row;
 }
+
+.leftProfile{
+  display: flex;
+  background-color: red;
+  align-items: flex-end;
+}
+
+.avatarImg {
+  background: none;
+  color: white;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0.2rem;
+  border-radius: 50%;
+  padding: 0;
+  border: 1px solid black;
+  opacity: 1;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  object-fit: cover;
+
+}
+
+.rightContent{
+  background-color: blue;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 1.0rem;
+  padding: 0.5rem;
+}
+
+
+
 .groupChatRowUser{
     margin-right: auto;
 }

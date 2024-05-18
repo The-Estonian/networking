@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
+
+const backendUrl =
+  import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
 
 import { GetGroupMessages } from '../../connections/getGroupMessagesConnection';
 
@@ -119,13 +122,23 @@ const GroupChat = (props) => {
         {groupChat?.map((item, i) => (
           <div key={i} className={styles.groupChatRow}>
             <div className={styles.groupChatEmail}>
-              <p>{item.SenderEmail}</p>
+              {item.SenderEmail}
             </div>
             <div className={styles.groupChatProfileContent}>
-              <p className={styles.groupChatRowUser}>
-                {item.GroupChatMessageSender}
-              </p>
-              <p>{item.GroupChatMessage}</p>              
+              <div className={styles.leftProfile}>
+                {item.SenderAvatar ? (
+                  <Link to={`/profile/${item.GroupChatMessageSender}`}>
+                    <img
+                      className={styles.avatarImg}
+                      src={`${backendUrl}/avatar/${item.SenderAvatar}`}
+                      alt='Avatar'
+                    />
+                  </Link>
+                ) : (
+                  ''
+                )}
+              </div>
+              <div className={styles.rightContent}>{item.GroupChatMessage}</div>              
             </div>
           </div>
         ))}
