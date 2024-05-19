@@ -416,7 +416,11 @@ func GetUserIdIfEmailExists(email string) string {
 func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	db := sqlite.DbConnection()
 	var UserMessages []structs.ChatMessage
-	command := "SELECT * FROM messages WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) ORDER BY id"
+	command := `SELECT messages.*, users.avatar
+				FROM messages
+				INNER JOIN users ON messages.message_sender_fk_users = users.id
+				WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) 
+				ORDER BY id`
 	rows, err := db.Query(command, touser, fromuser, touser, fromuser)
 	if err != sql.ErrNoRows {
 		helpers.CheckErr("GetMessages", err)
@@ -425,7 +429,13 @@ func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	helpers.CheckErr("GetMessage", err)
 	for rows.Next() {
 		var message structs.ChatMessage
-		rows.Scan(&message.ChatMessageId, &message.MessageSender, &message.Message, &message.MessageReceiver, &message.Date)
+		rows.Scan(&message.ChatMessageId, &message.MessageSender, &message.Message, &message.MessageReceiver, &message.Date, &message.SenderAvatar)
+		// Check if the logged in user is fetching own messages
+		if touser == message.MessageReceiver {
+			message.LoggedInUser = true
+		} else {
+			message.LoggedInUser = false
+		}
 		UserMessages = append(UserMessages, message)
 	}
 	defer rows.Close()

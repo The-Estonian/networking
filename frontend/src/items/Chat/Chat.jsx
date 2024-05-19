@@ -97,6 +97,7 @@ const Chat = () => {
       Message: textMessage,
       MessageReceiver: activeChatPartner,
       MessageSender: currentUser,
+      LoggedInUser: true,
     };
     // set new message in the array
     if (allUserMessages?.length > 0) {
@@ -133,6 +134,7 @@ const Chat = () => {
         console.log(data);
         setTextMessageError(data.error);
       } else {
+        console.log('this is data: ', data)
         setAllUserMessages(data.messages);
         setTimeout(() => {
           chatContainerRef.current.scrollTop =
