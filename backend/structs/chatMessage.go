@@ -6,6 +6,8 @@ type ChatMessage struct {
 	Message         string
 	MessageReceiver string
 	Date            string
+	SenderAvatar    string
+	LoggedInUser    bool
 }
 
 type GroupMessage struct {

@@ -133,6 +133,7 @@ const Chat = () => {
         console.log(data);
         setTextMessageError(data.error);
       } else {
+        console.log('this is data: ', data)
         setAllUserMessages(data.messages);
         setTimeout(() => {
           chatContainerRef.current.scrollTop =
