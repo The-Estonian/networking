@@ -16,7 +16,15 @@ Place where you can create posts with categories, comment the posts, create grou
 
 ## How to Run the Project
 
-Open the project from here [LIVE](https://www.devpipe.ee)
+Live project and default users provided: [LIVE](https://www.devpipe.ee)
+
+user@email.com / password: Password, 
+
+user1@email.com / password: Password, 
+
+user2@email.com / password: Password
+
+###To run the project locally:
 
 Open first terminal
 
