@@ -3,6 +3,7 @@ import {
   useOutletContext,
   useLocation,
   Link,
+  useNavigate,
 } from 'react-router-dom';
 
 const backendUrl =
@@ -24,21 +25,22 @@ const Profile = () => {
   const [privacyButton, setPrivacyButton] = useState('');
   const [modal, logout, sendJsonMessage] = useOutletContext();
   const location = useLocation();
-  const currentUser = location.pathname.substring(9);
   const [ownProfile, setOwnProfile] = useState(false);
   const [alreadyFollowing, setAlreadyFollowing] = useState(false);
-  // const [displayComments, setDisplayComments] = useState(false);
+  const currentUser = location.pathname.substring(9);
+  const navigate = useNavigate();
 
   useEffect(() => {
     modal(true);
 
     const formData = new FormData();
     formData.append('userId', currentUser);
-    // console.log(userProfile?.profile.profile.Id);
 
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
-        console.log('data1: ', data);
+        if (data.ownProfile && currentUser.length > 0) {
+          navigate('/profile');
+        }
         // profile info
         setUserProfile(data.profile);
         setFollowing(data.following);
@@ -181,7 +183,10 @@ const Profile = () => {
                       <ul className={styles.noBullets}>
                         {following.map((user, index) => (
                           <li key={index}>
-                            <Link className={styles.noLinks} to={`/profile/${user.fromuserId}`}>
+                            <Link
+                              className={styles.noLinks}
+                              to={`/profile/${user.fromuserId}`}
+                            >
                               {user.SenderEmail}
                             </Link>
                           </li>
@@ -199,7 +204,10 @@ const Profile = () => {
                       <ul className={styles.noBullets}>
                         {followers.map((user, index) => (
                           <li key={index}>
-                            <Link className={styles.noLinks} to={`/profile/${user.fromuserId}`}>
+                            <Link
+                              className={styles.noLinks}
+                              to={`/profile/${user.fromuserId}`}
+                            >
                               {user.SenderEmail}
                             </Link>
                           </li>
