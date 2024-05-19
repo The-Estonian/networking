@@ -7,7 +7,7 @@ import { GetStatus } from '../../connections/statusConnection.js';
 import styles from './NewComment.module.css';
 
 const NewComment = (props) => {
-  const [newPostOpen, setNewPostOpen] = useState(false);
+  const [newPostOpen, setNewPostOpen] = useState(props.displayComments);
   const [newPostContent, setNewPostContent] = useState('');
   const newPostPicRef = useRef(null);
 

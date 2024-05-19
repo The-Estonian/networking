@@ -2,7 +2,6 @@ package urlHandlers
 
 import (
 	"backend/helpers"
-	"backend/structs"
 	"backend/validators"
 	"encoding/json"
 	"fmt"
@@ -17,9 +16,8 @@ func HandleComments(w http.ResponseWriter, r *http.Request) {
 		callback["login"] = "success"
 
 		postId := r.FormValue("postID")
-		var sendComments []structs.Comments
-		sendComments = validators.ValidateComments(postId)
-		callback["comments"] = sendComments
+		callback["comments"] = validators.ValidateComments(postId)
+		// fmt.Println("comments ", callback["comments"])
 		writeData, err := json.Marshal(callback)
 		helpers.CheckErr("HandleComments", err)
 		w.Write(writeData)

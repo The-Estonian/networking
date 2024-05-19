@@ -65,11 +65,6 @@ const Posts = () => {
 
   return (
     <div className={styles.postsOverlay}>
-      {displayComments ? (
-        <NewComment setAllPosts={setAllPosts} activePost={activePost} />
-      ) : (
-        <NewPost setAllPosts={setAllPosts} />
-      )}
 
       <h1>{displayTitle}</h1>
 
@@ -150,6 +145,11 @@ const Posts = () => {
             </div>
           );
         })}
+      {displayComments ? (
+        <NewComment displayComments={displayComments} setAllPosts={setAllPosts} activePost={activePost} />
+      ) : (
+        <NewPost setAllPosts={setAllPosts} />
+      )}
       {displayComments ? (
         <button onClick={showPosts}>RETURN TO POSTS</button>
       ) : (
