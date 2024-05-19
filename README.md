@@ -1,7 +1,5 @@
 # Networking
 
-![Project Screenshot](socialNetwork.jpg)
-
 [![Build Status](https://img.shields.io/github/actions/workflow/status/The-Estonian/networking/docker-image.yml?branch=master)](https://github.com/The-Estonian/networking/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/license/mit)
 [![React](https://img.shields.io/badge/frontend-react-blue)](https://reactjs.org/)
