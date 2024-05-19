@@ -70,15 +70,13 @@ const NewGroupPost = (props) => {
     formData.append('group', props.selectedGroup.Id);
     formData.append('picture', file);
 
-    SendNewGroupPost(formData).then((data) => {
+    SendNewGroupPost(formData).then(() => {
       sendJsonMessage({
         type: 'newGroupPost',
         fromuserid: userId,
         GroupId: props.selectedGroup.Id,
       });
-      if (data.SendnewPost) {
-        props.setGroupPosts((prevPosts) => [data.SendnewPost, ...prevPosts]);
-      }
+      props.newGroupPostHandler();
     });
 
     setNewGroupPostTitle('');

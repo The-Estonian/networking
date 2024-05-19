@@ -274,7 +274,26 @@ func GetAllUsers(userId string) []structs.Profile {
 			helpers.CheckErr("getAllPosts", err)
 			continue
 		}
-		if user.Id != userId {
+
+		follow := false
+		followers := GetFollowers(userId)
+		following := GetFollowing(userId)
+
+		for _, follower := range followers {
+			if follower.SenderId == user.Id {
+				follow = true
+				break
+			}
+		}
+
+		for _, follower := range following {
+			if follower.SenderId == user.Id {
+				follow = true
+				break
+			}
+		}
+
+		if user.Id != userId && follow {
 			allUsers = append(allUsers, user)
 		}
 	}
