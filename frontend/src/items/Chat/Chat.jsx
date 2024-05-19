@@ -97,6 +97,7 @@ const Chat = () => {
       Message: textMessage,
       MessageReceiver: activeChatPartner,
       MessageSender: currentUser,
+      LoggedInUser: true,
     };
     // set new message in the array
     if (allUserMessages?.length > 0) {
