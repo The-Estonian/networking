@@ -39,7 +39,7 @@ const Profile = () => {
     GetProfile(formData).then((data) => {
       if (data.login === 'success') {
         if (data.ownProfile && currentUser.length > 0) {
-          navigate('/profile');
+          navigate('/profile', { replace: true });
         }
         // profile info
         setUserProfile(data.profile);
