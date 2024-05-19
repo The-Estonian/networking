@@ -2,6 +2,8 @@ To audit the program, find the steps [here](https://github.com/01-edu/public/tre
 
 # Networking
 
+![Project Screenshot](socialNetwork.jpg)
+
 ## Project Description
 
 Networking stack:
@@ -18,11 +20,11 @@ Place where you can create posts with categories, comment the posts, create grou
 
 Live project and default users provided: [LIVE](https://www.devpipe.ee)
 
-- user@email.com / password: Password, 
+- `user@email.com` / password: Password, 
 
-- user1@email.com / password: Password, 
+- `user1@email.com` / password: Password, 
 
-- user2@email.com / password: Password
+- `user2@email.com` / password: Password
 
 ### To run the project locally:
 
