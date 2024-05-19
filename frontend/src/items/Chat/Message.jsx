@@ -6,17 +6,11 @@ const backendUrl =
   import.meta.env.VITE_APP_BACKEND_PICTURE_URL || 'http://localhost:8080';
 
 const Message = (props) => {
-  console.log('props: ', props)
     const messageDate = new Date(props.messageData.Date.slice(0, -1));
     const messageDateString = `${messageDate.getHours()}:${messageDate.getMinutes()}:${messageDate.getSeconds()} ${messageDate.getDate()}-${
       messageDate.getMonth() + 1
     }-${messageDate.getFullYear()}`;
   return (
-    // <div className={styles.messageContainer}>
-    //   <p>{props.messageData.Message}</p>
-    //   <p>{props.messageData.MessageSender}</p>
-    //   <p>{messageDateString}</p>
-    // </div>
     <div className={`${styles.tabChatRow}`}>
       {props.messageData.LoggedInUser ? (
         <>
