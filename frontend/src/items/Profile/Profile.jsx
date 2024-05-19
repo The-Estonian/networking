@@ -82,6 +82,7 @@ const Profile = () => {
     formData.append('userId', currentUser);
 
     GetProfile(formData).then((data) => {
+      console.log("follow: ", data);
       if (data.login === 'success') {
         setFollowers(data.followers);
         setFollowing(data.following);

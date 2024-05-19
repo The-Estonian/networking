@@ -416,11 +416,7 @@ func GetUserIdIfEmailExists(email string) string {
 func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	db := sqlite.DbConnection()
 	var UserMessages []structs.ChatMessage
-	command := `SELECT messages.*, users.avatar
-				FROM messages
-				INNER JOIN users ON messages.message_sender_fk_users = users.id
-				WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) 
-				ORDER BY id`
+	command := "SELECT * FROM messages WHERE (message_sender_fk_users = ? AND message_receiver_fk_users = ?) OR (message_receiver_fk_users = ? AND message_sender_fk_users = ?) ORDER BY id"
 	rows, err := db.Query(command, touser, fromuser, touser, fromuser)
 	if err != sql.ErrNoRows {
 		helpers.CheckErr("GetMessages", err)
@@ -429,13 +425,7 @@ func GetMessages(fromuser, touser string) []structs.ChatMessage {
 	helpers.CheckErr("GetMessage", err)
 	for rows.Next() {
 		var message structs.ChatMessage
-		rows.Scan(&message.ChatMessageId, &message.MessageSender, &message.Message, &message.MessageReceiver, &message.Date, &message.SenderAvatar)
-		// Check if the logged in user is fetching own messages
-		if touser == message.MessageReceiver {
-			message.LoggedInUser = true
-		} else {
-			message.LoggedInUser = false
-		}
+		rows.Scan(&message.ChatMessageId, &message.MessageSender, &message.Message, &message.MessageReceiver, &message.Date)
 		UserMessages = append(UserMessages, message)
 	}
 	defer rows.Close()
@@ -760,8 +750,7 @@ func GetUserProfilePosts(currentUserId string, targetUserId string, followingUse
 		FROM posts p
 		INNER JOIN users u ON p.user_fk_users = u.id
 		INNER JOIN user_privacy up ON u.id = up.user_fk_users
-		WHERE ((up.privacy_fk_users_privacy = 1 AND u.id = ?)
-			OR (u.id = ? AND u.id = ?))
+		WHERE u.id = ?
 	`
 	} else {
 		command = `
@@ -769,8 +758,7 @@ func GetUserProfilePosts(currentUserId string, targetUserId string, followingUse
 		FROM posts p
 		INNER JOIN users u ON p.user_fk_users = u.id
 		INNER JOIN user_privacy up ON u.id = up.user_fk_users
-		WHERE ((up.privacy_fk_users_privacy = 1 AND p.privacy_fk_posts_privacy = 1)
-     	  OR (u.id = ? AND p.privacy_fk_posts_privacy = 2))`
+		WHERE u.id = ? AND p.privacy_fk_posts_privacy != 3`
 	}
 
 	rows, err := db.Query(command, targetUserId, currentUserId, targetUserId)
