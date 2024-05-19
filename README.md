@@ -2,7 +2,7 @@
 
 ![Project Screenshot](socialNetwork.jpg)
 
-[![Build Status](https://img.shields.io/github/workflow/status/The-Estonian/networking/CI)](https://github.com/The-Estonian/networking/actions)
+[![Build Status](https://img.shields.io/github/workflow/status/The-Estonian/networking/docker-image-ci.yml?branch=master)](https://github.com/The-Estonian/networking/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/license/mit)
 [![React](https://img.shields.io/badge/frontend-react-blue)](https://reactjs.org/)
 [![Golang](https://img.shields.io/badge/backend-golang-green)](https://golang.org/)
