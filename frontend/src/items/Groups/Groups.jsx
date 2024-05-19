@@ -24,7 +24,6 @@ const Groups = () => {
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
   const [invatationSent, setInvatationSent] = useState(false);
   const [isGroupMember, setIsGroupMember] = useState(false);
-  const [refreshPosts, setRefreshPosts] = useState(false);
   const [newGroupPostOpen, setNewGroupPostOpen] = useState(false);
   const [groupPosts, setGroupPosts] = useState([]);
   const [showNewGroup, setShowNewGroup] = useState(false);
@@ -93,7 +92,6 @@ const Groups = () => {
         : setIsGroupMember(true);
       data.posts == null ? setGroupPosts([]) : setGroupPosts(data.posts);
     });
-    setRefreshPosts(!refreshPosts);
   };
 
   const newGroupPostHandler = () => {
@@ -127,6 +125,7 @@ const Groups = () => {
           newGroupPostHandler={newGroupPostHandler}
           selectedGroup={selectedGroup}
           setGroupPosts={setGroupPosts}
+          Groupinfo={Groupinfo}
         />
       ) : groups.length > 0 ? (
         <div className={styles.groupList}>
